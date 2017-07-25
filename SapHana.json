@@ -1,0 +1,167 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the storage account that contains the Hana Install files"
+            }
+        },
+        "storageAccountkey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The key to the storage account that contains the Hana Install files"
+            }
+        },
+        "networkName": {
+            "type": "string",
+            "defaultValue": "ra-sap-hana-vnet",
+            "metadata": {
+                "description": "The Hana vNet"
+            }
+        },
+        "addressPrefixes": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "The Hana vNET prefix"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "SAPDataSubnet",
+            "metadata": {
+                "description": "The Hana subnet name"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.5.0/24",
+            "metadata": {
+                "description": "The data subnet"
+            }
+        }
+    },
+    "variables": {
+        "api-version": "2016-04-30-preview",
+        "vmName": "sap-hana-database",
+        "vmSize": "Standard_M64ms",
+        "vmUserName": "testuser",
+        "vmPassword": "AweS0me@PW",
+        "nicName": "[variables('vmName')]",
+        "imagePublisher": "SUSE",
+        "imageOffer": "SLES",
+        "suseOSVersion": "12-SP2",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'saphana')]"
+    },
+    "resources": [{
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "sku": { "name": "Standard_LRS" },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('networkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefixes')]"
+                    ]
+                },
+                "subnets": [{
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnetPrefix')]"
+                    }
+                }]
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('networkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [{
+                    "name": "ipconfig1",
+                    "privateIPAllocationMethod": "Dynamic",
+                    "subnet": {
+                        "id": "[variables('subnetRef')]"
+                    }
+                }]
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('vmName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/',variables('nicName'))]",
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vmName')]",
+                    "adminUsername": "[variables('vmUserName')]",
+                    "adminPassword": "[variables('vmPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('imagePublisher')]",
+                        "offer": "variables('imageOffer')]",
+                        "sku": "variables('suseOSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [{
+                            "diskSizeGB": "1023",
+                            "lun": 0,
+                            "createOption": "empty"
+                        },
+                        {
+                            "diskSizeGB": "1023",
+                            "lun": 1,
+                            "createOption": "empty"
+                        },
+                        {
+                            "diskSizeGB": "1023",
+                            "lun": 2,
+                            "createOption": "empty"
+                        },
+                        {
+                            "diskSizeGB": "1023",
+                            "lun": 3,
+                            "createOption": "empty"
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [{
+                        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                    }]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
