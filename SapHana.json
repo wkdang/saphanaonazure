@@ -46,9 +46,10 @@
         }
     },
     "variables": {
-        "api-version": "2016-04-30-preview",
+        "api-version": "2017-06-01",
+        "api-version-vm": "2017-03-30",
         "vmName": "sap-hana-database",
-        "vmSize": "Standard_M64ms",
+        "vmSize": "Standard_DS12_v2",
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
         "nicName": "[variables('vmName')]",
@@ -98,15 +99,17 @@
             "properties": {
                 "ipConfigurations": [{
                     "name": "ipconfig1",
-                    "privateIPAllocationMethod": "Dynamic",
-                    "subnet": {
-                        "id": "[variables('subnetRef')]"
+                    "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "subnet": {
+                            "id": "[variables('subnetRef')]"
+                        }
                     }
                 }]
             }
         },
         {
-            "apiVersion": "[variables('api-version')]",
+            "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[variables('vmName')]",
             "location": "[resourceGroup().location]",
@@ -126,8 +129,8 @@
                 "storageProfile": {
                     "imageReference": {
                         "publisher": "[variables('imagePublisher')]",
-                        "offer": "variables('imageOffer')]",
-                        "sku": "variables('suseOSVersion')]",
+                        "offer": "[variables('imageOffer')]",
+                        "sku": "[variables('suseOSVersion')]",
                         "version": "latest"
                     },
                     "osDisk": {
