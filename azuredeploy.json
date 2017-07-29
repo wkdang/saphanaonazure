@@ -16,6 +16,26 @@
                 "description": "The key to the storage account that contains the Hana Install files"
             }
         },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Size"
+            },
+            "allowedValues": [
+                "Standard_GS5",
+                "Standard_M64s"
+                "Standard_M64ms",
+                "Standard_M128s",
+                "Standard_M128ms"
+            ]
+        },
+        "mode": {
+            "type": "string",
+            "defaultValue": "Push",
+            "metadata": {
+                "description": "The functional mode, push MOF configuration (Push), distribute MOF configuration (Pull), install custom DSC module (Install)"
+            }
+        },
         "networkName": {
             "type": "string",
             "defaultValue": "ra-sap-hana-vnet",
@@ -43,13 +63,33 @@
             "metadata": {
                 "description": "The data subnet"
             }
+        },
+        "registrationUrl": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The URL of the Azure Automation Account"
+            }
+        },
+        "registrationKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The access key of the Azure Automation account"
+            }
+        },
+        "fileUri": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The uri of the MOF file/Meta MOF file/resource ZIP file"
+            }
         }
     },
     "variables": {
         "api-version": "2017-06-01",
         "api-version-vm": "2017-03-30",
         "vmName": "sap-hana-database",
-        "vmSize": "Standard_DS12_v2",
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
         "nicName": "[variables('vmName')]",
@@ -119,7 +159,7 @@
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('vmSize')]"
+                    "vmSize": "[parameters('vmSize')]"
                 },
                 "osProfile": {
                     "computerName": "[variables('vmName')]",
@@ -162,6 +202,30 @@
                     "networkInterfaces": [{
                         "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
                     }]
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('vmName'), '/enabledsc' )]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.OSTCExtenstion",
+                "type": "DSCForLinux",
+                "typeHandlerVersion": "2.0",
+                "settings": {
+                    "Mode": "[parameters('mode')]",
+                    "FileUri": ""
+                },
+                "protectedSettings": {
+                    "StorageAccountName": "",
+                    "StorageAccountKey": "",
+                    "RegistrationUrl": "[parameters('registrationUrl')]",
+                    "RegistrationKey": "[parameters('registrationKey')]"
                 }
             }
         }
