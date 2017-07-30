@@ -203,7 +203,30 @@
                         "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
                     }]
                 }
-            }
+            },
+            "resources": [{
+                "apiVersion": "[variables('api-version')]",
+                "type": "extensions",
+                "name": "config-app",
+                "location": "[resourceGroup().location]",
+                "dependsOn": [
+                    "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                ],
+                "properties": {
+                    "publisher": "Microsoft.Azure.Extensions",
+                    "type": "CustomScript",
+                    "typeHandlerVersion": "2.0",
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                        "fileUris": [
+                            ""
+                        ]
+                    },
+                    "protectedSettings": {
+                        "commandToExecute": ""
+                    }
+                }
+            }]
         },
         {
             "apiVersion": "[variables('api-version')]",

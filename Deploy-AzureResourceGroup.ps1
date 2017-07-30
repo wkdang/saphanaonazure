@@ -107,6 +107,10 @@ if ($ValidateOnly) {
     }
 }
 else {
+    # Create the Azure Automation account necessary for DSC
+
+    New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name ($ResourceGroupName + $ResourceGroupLocation) -Location $ResourceGroupLocation
+
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
