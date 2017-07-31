@@ -307,29 +307,32 @@
                         "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
                     }]
                 }
-            },
-            "resources": [{
-                "apiVersion": "[variables('api-version-vm')]",
-                "type": "extensions",
-                "name": "config-app",
-                "location": "[resourceGroup().location]",
-                "dependsOn": [
-                    "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-                ],
-                "properties": {
-                    "publisher": "Microsoft.Azure.Extensions",
-                    "type": "CustomScript",
-                    "typeHandlerVersion": "2.0",
-                    "autoUpgradeMinorVersion": true,
-                    "settings": {
-                        "fileUris": [
-                            "https://raw.githubusercontent.com/jgardner04/SAP-Hana-ARM/master/installDSC.sh?token=AAYSgTsSMkUKB7DPMuyVyfpM5NV-z87cks5Zh6FwwA%3D%3D"
-                        ],
-                        "commandToExecute": "sh installDSC.sh"
-                    }
-                }
-            }]
+            }
         },
+        {
+            "apiVersion": "[variables('api-version-vm')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('vmName'),'/enabledsc')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.OSTCExtensions",
+                "type": "DSCForLinux",
+                "typeHandlerVersion": "2.0",
+                "settings": {
+                    "Mode": "[parameters('mode')]",
+                    "FileUri": "[parameters('fileUri')]"
+                },
+                "protectedSettings": {
+                    "StorageAccountName": "[parameters('storageAccountName')]",
+                    "StorageAccountKey": "[parameters('storageAccountKey')]",
+                    "RegistrationUrl": "[parameters('registrationUrl')]",
+                    "RegistrationKey": "[parameters('registrationKey')]"
+                }
+            }
+        }
     ],
     "outputs": {}
 }
