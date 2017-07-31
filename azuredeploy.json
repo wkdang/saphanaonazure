@@ -229,7 +229,7 @@
             }]
         },
         {
-            "apiVersion": "[variables('api-version')]",
+            "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('vmName'), '/enabledsc' )]",
             "location": "[resourceGroup().location]",
