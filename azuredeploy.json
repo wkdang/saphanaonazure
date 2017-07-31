@@ -21,9 +21,10 @@
             "metadata": {
                 "description": "VM Size"
             },
+            "defaultValue": "Standard_GS5",
             "allowedValues": [
                 "Standard_GS5",
-                "Standard_M64s"
+                "Standard_M64s",
                 "Standard_M64ms",
                 "Standard_M128s",
                 "Standard_M128ms"
