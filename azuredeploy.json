@@ -106,7 +106,9 @@
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageAccountName')]",
             "location": "[resourceGroup().location]",
-            "sku": { "name": "Standard_LRS" },
+            "sku": {
+                "name": "Standard_LRS"
+            },
             "kind": "Storage",
             "properties": {}
         },
@@ -150,6 +152,22 @@
             }
         },
         {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'shared')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 511
+            }
+        },
+        {
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
@@ -157,7 +175,8 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/',variables('nicName'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -179,24 +198,16 @@
                         "createOption": "FromImage"
                     },
                     "dataDisks": [{
-                            "diskSizeGB": "1023",
+                            "diskSizeGB": "63",
                             "lun": 0,
                             "createOption": "empty"
                         },
                         {
-                            "diskSizeGB": "1023",
                             "lun": 1,
-                            "createOption": "empty"
-                        },
-                        {
-                            "diskSizeGB": "1023",
-                            "lun": 2,
-                            "createOption": "empty"
-                        },
-                        {
-                            "diskSizeGB": "1023",
-                            "lun": 3,
-                            "createOption": "empty"
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]"
+                            }
                         }
                     ]
                 },
@@ -252,7 +263,6 @@
                 }
             }
         }
-
     ],
     "outputs": {}
 }
