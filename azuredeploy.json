@@ -231,29 +231,28 @@
         {
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vmName'), '/enabledsc' )]",
+            "name": "[concat(variables('vmName'),'/enabledsc')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.OSTCExtension",
+                "publisher": "Microsoft.OSTCExtensions",
                 "type": "DSCForLinux",
                 "typeHandlerVersion": "2.0",
                 "settings": {
                     "Mode": "[parameters('mode')]",
-                    "FileUri": ""
+                    "FileUri": "[parameters('fileUri')]"
                 },
                 "protectedSettings": {
-                    "storageAccountName": {
-                        "StorageAccountName": "[parameters('storageAccountName')]",
-                        "StorageAccountKey": "[parameters('storageAccountkey')]",
-                        "RegistrationUrl": "[parameters('registrationUrl')]",
-                        "RegistrationKey": "[parameters('registrationKey')]"
-                    }
+                    "StorageAccountName": "[parameters('storageAccountName')]",
+                    "StorageAccountKey": "[parameters('storageAccountKey')]",
+                    "RegistrationUrl": "[parameters('registrationUrl')]",
+                    "RegistrationKey": "[parameters('registrationKey')]"
                 }
             }
         }
-    ],
-    "outputs": {}
+    }
+],
+"outputs": {}
 }
