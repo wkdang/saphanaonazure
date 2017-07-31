@@ -149,6 +149,7 @@
             }
         },
         {
+            "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[variables('vmName')]",
@@ -219,11 +220,9 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                         "fileUris": [
-                            ""
-                        ]
-                    },
-                    "protectedSettings": {
-                        "commandToExecute": ""
+                            "https://raw.githubusercontent.com/jgardner04/SAP-Hana-ARM/master/installDSC.sh?token=AAYSgTsSMkUKB7DPMuyVyfpM5NV-z87cks5Zh6FwwA%3D%3D"
+                        ],
+                        "commandToExecute": "sh installDSC.sh"
                     }
                 }
             }]
@@ -245,13 +244,14 @@
                     "FileUri": ""
                 },
                 "protectedSettings": {
-                    "StorageAccountName": "",
-                    "StorageAccountKey": "",
-                    "RegistrationUrl": "[parameters('registrationUrl')]",
-                    "RegistrationKey": "[parameters('registrationKey')]"
+                    "storageAccountName": {
+                        "StorageAccountName": "[parameters('storageAccountName')]",
+                        "StorageAccountKey": "[parameters('storageAccountkey')]",
+                        "RegistrationUrl": "[parameters('registrationUrl')]",
+                        "RegistrationKey": "[parameters('registrationKey')]"
+                    }
                 }
             }
-        }
-    ],
-    "outputs": {}
-}
+        ],
+        "outputs": {}
+    }
