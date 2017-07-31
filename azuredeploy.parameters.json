@@ -7,6 +7,9 @@
         },
         "storageAccountkey": {
             "value": ""
+        },
+        "vmSize": {
+            "value": "Standard_GS5"
         }
     }
 }
