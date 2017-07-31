@@ -1,0 +1,24 @@
+{
+    "apiVersion": "[variables('api-version-vm')]",
+    "type": "Microsoft.Compute/virtualMachines/extensions",
+    "name": "[concat(variables('vmName'),'/enabledsc')]",
+    "location": "[resourceGroup().location]",
+    "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+    ],
+    "properties": {
+        "publisher": "Microsoft.OSTCExtensions",
+        "type": "DSCForLinux",
+        "typeHandlerVersion": "2.0",
+        "settings": {
+            "Mode": "[parameters('mode')]",
+            "FileUri": "[parameters('fileUri')]"
+        },
+        "protectedSettings": {
+            "StorageAccountName": "[parameters('storageAccountName')]",
+            "StorageAccountKey": "[parameters('storageAccountKey')]",
+            "RegistrationUrl": "[parameters('registrationUrl')]",
+            "RegistrationKey": "[parameters('registrationKey')]"
+        }
+    }
+}
