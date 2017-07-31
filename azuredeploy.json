@@ -207,7 +207,7 @@
                 }
             },
             "resources": [{
-                "apiVersion": "[variables('api-version')]",
+                "apiVersion": "[variables('api-version-vm')]",
                 "type": "extensions",
                 "name": "config-app",
                 "location": "[resourceGroup().location]",
