@@ -237,9 +237,9 @@
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.OSTCExtenstion",
+                "publisher": "Microsoft.OSTCExtension",
                 "type": "DSCForLinux",
-                "typeHandlerVersion": "2.0",
+                "typeHandlerVersion": "2.8",
                 "settings": {
                     "Mode": "[parameters('mode')]",
                     "FileUri": ""
