@@ -239,7 +239,7 @@
             "properties": {
                 "publisher": "Microsoft.OSTCExtension",
                 "type": "DSCForLinux",
-                "typeHandlerVersion": "2.5",
+                "typeHandlerVersion": "2.0",
                 "settings": {
                     "Mode": "[parameters('mode')]",
                     "FileUri": ""
