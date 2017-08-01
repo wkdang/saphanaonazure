@@ -108,15 +108,25 @@ if ($ValidateOnly) {
 }
 else {
     # Create the Azure Automation account necessary for DSC
-    New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name ($ResourceGroupName + '-' + $ResourceGroupLocation) -Location $ResourceGroupLocation
+    $AutomationAccountName = ($ResourceGroupName + '-' + $ResourceGroupLocation)
+    New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $ResourceGroupLocation
 
     # Import the DSC Configuration into Azure Automation
-    $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name ($ResourceGroupName + $ResourceGroupLocation)
-    Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccount.AutomationAccountName -SourcePath ".\Config.ps1" -Force
+    $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
+
+    $ConfigFile = (Get-Item -Path .\ExampleConfiguration.ps1).FullName
+    Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccount.AutomationAccountName -SourcePath $ConfigFile -Published -Force
 
     # Compile the DSC Configuration
-    $Params = @{}
-    Start-AzureRmAutomationDscCompilationJob -ConfigurationName -AutomationAccountName $AutomationAccount.AutomationAccountName -ConfigurationName "SapHana" -ResourceGroupName $ResourceGroupName
+
+    $CompilationJob = Start-AzureRmAutomationDscCompilationJob -ConfigurationName "ExampleConfiguration" -AutomationAccountName $AutomationAccount.AutomationAccountName -ResourceGroupName $ResourceGroupName
+
+    while ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null) {
+        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
+        Start-Sleep -Seconds 3
+    }
+
+    $CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
 
     # Get the DSC Registration info
     $RegistrationInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo

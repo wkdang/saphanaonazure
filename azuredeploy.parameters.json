@@ -10,6 +10,10 @@
         },
         "vmSize": {
             "value": "Standard_GS5"
+        },
+        "fileUri": {
+            "value": "https://github.com/Microsoft/PowerShell-DSC-for-Linux/releases/download/v1.1.1-70/nxComputerManagement_1.0.zip"
         }
+
     }
 }
