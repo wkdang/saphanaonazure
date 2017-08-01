@@ -108,13 +108,26 @@ if ($ValidateOnly) {
 }
 else {
     # Create the Azure Automation account necessary for DSC
-
     New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name ($ResourceGroupName + $ResourceGroupLocation) -Location $ResourceGroupLocation
 
+    # Import the DSC Configuration into Azure Automation
+    $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name ($ResourceGroupName + $ResourceGroupLocation)
+    Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccount.Name -SourcePath ".\Config.ps1" -Force
+
+    # Compile the DSC Configuration
+    $Params = @{}
+    Start-AzureRmAutomationDscCompilationJob -ConfigurationName -AutomationAccountName $AutomationAccount.Name -ConfigurationName "SapHana" -ResourceGroupName $ResourceGroupName
+
+    # Get the DSC Registration info
+    $RegistrationInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
+
+    # Deploy the SAP HANA Environment from the ARM Template
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
+                                       -registrationUrl $RegistrationInfo.Endpoint`
+                                       -registrationKey $RegistrationInfo.PrimaryKey`
                                        @OptionalParameters `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
