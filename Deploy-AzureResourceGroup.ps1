@@ -6,7 +6,6 @@ Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
     [string] $ResourceGroupName = 'jogardn-sap-hana',
     [string] $vmName = 'sap-hana',
-    [string] $DscConfigurationName = 'ExampleConfiguration',
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
@@ -51,6 +50,10 @@ if ($UploadArtifacts) {
 
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
+        Install-Module -Name nx -Scope CurrentUser
+
+        ($DSCSourceFolder + 'ExampleConfiguration')
+
         $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | ForEach-Object -Process {$_.FullName})
         foreach ($DSCSourceFilePath in $DSCSourceFilePaths) {
             $DSCArchiveFilePath = $DSCSourceFilePath.Substring(0, $DSCSourceFilePath.Length - 4) + '.zip'
@@ -91,6 +94,12 @@ if ($UploadArtifacts) {
         $OptionalParameters[$ArtifactsLocationSasTokenName] = ConvertTo-SecureString -AsPlainText -Force `
             (New-AzureStorageContainerSASToken -Container $StorageContainerName -Context $StorageAccount.Context -Permission r -ExpiryTime (Get-Date).AddHours(4))
     }
+
+    # Set DSC File Uri
+    if (Test-Path $DSCSourceFolder) {
+        $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
+        $mofUri = ($StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '\sap-hana.mof')).ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
+    }
 }
 
 # Create or update the resource group using the specified template file and template parameters file
@@ -109,53 +118,18 @@ if ($ValidateOnly) {
     }
 }
 else {
-    # Create the Azure Automation account necessary for DSC
-    $AutomationAccountName = ($ResourceGroupName + '-' + $ResourceGroupLocation)
-    New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName -Location $ResourceGroupLocation
-
-    # Import the DSC Configuration into Azure Automation
-    $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
-
-    $ConfigFile = (Get-Item -Path .\ExampleConfiguration.ps1).FullName
-    Import-AzureRmAutomationDscConfiguration -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccount.AutomationAccountName -SourcePath $ConfigFile -Published -Force
-
-    # Compile the DSC Configuration
-
-    $CompilationJob = Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigurationName -AutomationAccountName $AutomationAccount.AutomationAccountName -ResourceGroupName $ResourceGroupName
-
-    while ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null) {
-        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
-        Start-Sleep -Seconds 3
-    }
-
-    $CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
-
-    # Get the DSC Registration info
-    $RegistrationInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
-
     # Deploy the SAP HANA Environment from the ARM Template
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -vmName $vmName `
+                                       -fileUri $mofUri `
+                                       -StorageAccountName $StorageAccount.StorageAccountName `
+                                       -StorageAccountKey $OptionalParameters[$ArtifactsLocationSasTokenName] `
                                        @OptionalParameters `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
-
-    # Add the VM to Azure DSC Management
-    $DscNodeConfigurationName = ($DscConfigurationName + $vmName)
-    Register-AzureRmAutomationDscNode -AutomationAccountName $AutomationAccount.AutomationAccountName `
-                                        -AzureVMName $vmName `
-                                        -AzureVMLocation $ResourceGroupLocation `
-                                        -AzureVMResourceGroup $ResourceGroupName `
-                                        -ResourceGroupName $ResourceGroupName `
-                                        -NodeConfigurationName $DscNodeConfigurationName `
-                                        -ConfigurationMode ApplyAndMonitor `
-                                        -RebootNodeIfNeeded $true `
-                                        -Verbose `
-                                        -Debug
-
     if ($ErrorMessages) {
         Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
     }

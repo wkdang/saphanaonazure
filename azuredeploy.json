@@ -2,20 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "storageAccountName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Name of the storage account that contains the Hana Install files"
-            }
-        },
-        "storageAccountkey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The key to the storage account that contains the Hana Install files"
-            }
-        },
         "vmName": {
             "type": "string",
             "metadata": {
@@ -63,7 +49,37 @@
             "metadata": {
                 "description": "The data subnet"
             }
-        }
+        },
+        "fileUri": {
+            "type": "string",
+            "metadata": {
+                "decription": "Uri for MOF file"
+            }
+        },
+        "StorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "StorageAccountKey": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
     },
     "variables": {
         "api-version": "2017-06-01",
@@ -71,6 +87,7 @@
         "vmName": "[parameters('vmName')]",
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
+        "mode": "Pull",
         "nicName": "[variables('vmName')]",
         "imagePublisher": "SUSE",
         "imageOffer": "SLES",
@@ -300,29 +317,32 @@
                     "networkInterfaces": [{
                         "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
                     }]
-                },
-                "resources": [{
-                    "name": "scriptextensiondemo",
-                    "type": "extensions",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "[variables('api-version-vm')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Extensions",
-                        "type": "CustomScript",
-                        "typeHandlerVersion": "2.0",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "fileUris": [
-                                "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/preReqInstall.sh"
-                            ],
-                            "commandToExecute": "sh preReqInstall.sh"
-                        }
+                }
+            },
+            "resources": [{
+                "apiVersion": "[variables('api-version-vm')]",
+                "type": "Microsoft.Compute/virtualMachines/extensions",
+                "name": "[concat(parameters('vmName'),'/enabledsc')]",
+                "location": "[resourceGroup().location]",
+                "dependsOn": [
+                    "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+                ],
+                "properties": {
+                    "publisher": "Microsoft.OSTCExtensions",
+                    "type": "DSCForLinux",
+                    "typeHandlerVersion": "2.0",
+                    "settings": {
+                        "Mode": "[variables('mode')]",
+                        "FileUri": "[parameters('fileUri')]"
+                    },
+                    "protectedSettings": {
+                        "StorageAccountName": "[parameters('storageAccountName')]",
+                        "StorageAccountKey": "[parameters('storageAccountKey')]",
+                        "RegistrationUrl": "",
+                        "RegistrationKey": ""
                     }
-                }]
-            }
+                }
+            }]
         }
     ],
     "outputs": {}
