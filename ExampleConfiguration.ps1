@@ -1,6 +1,6 @@
 Configuration ExampleConfiguration{
 
-        Import-DscResource -Module nx
+        Import-DSCResource -Module nx
 
         Node  "sap-hana"{
         nxFile ExampleFile {

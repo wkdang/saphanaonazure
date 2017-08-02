@@ -5,6 +5,8 @@
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
     [string] $ResourceGroupName = 'jogardn-sap-hana',
+    [string] $vmName = 'sap-hana',
+    [string] $DscConfigurationName = 'ExampleConfiguration',
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
@@ -119,7 +121,7 @@ else {
 
     # Compile the DSC Configuration
 
-    $CompilationJob = Start-AzureRmAutomationDscCompilationJob -ConfigurationName "ExampleConfiguration" -AutomationAccountName $AutomationAccount.AutomationAccountName -ResourceGroupName $ResourceGroupName
+    $CompilationJob = Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigurationName -AutomationAccountName $AutomationAccount.AutomationAccountName -ResourceGroupName $ResourceGroupName
 
     while ($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null) {
         $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
@@ -136,11 +138,24 @@ else {
                                        -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
-                                       -registrationUrl $RegistrationInfo.Endpoint`
-                                       -registrationKey $RegistrationInfo.PrimaryKey`
+                                       -vmName $vmName `
                                        @OptionalParameters `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
+
+    # Add the VM to Azure DSC Management
+    $DscNodeConfigurationName = ($DscConfigurationName + $vmName)
+    Register-AzureRmAutomationDscNode -AutomationAccountName $AutomationAccount.AutomationAccountName `
+                                        -AzureVMName $vmName `
+                                        -AzureVMLocation $ResourceGroupLocation `
+                                        -AzureVMResourceGroup $ResourceGroupName `
+                                        -ResourceGroupName $ResourceGroupName `
+                                        -NodeConfigurationName $DscNodeConfigurationName `
+                                        -ConfigurationMode ApplyAndMonitor `
+                                        -RebootNodeIfNeeded $true `
+                                        -Verbose `
+                                        -Debug
+
     if ($ErrorMessages) {
         Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
     }

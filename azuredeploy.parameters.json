@@ -2,18 +2,8 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "storageAccountName": {
-            "value": "sapbitseastus2"
-        },
-        "storageAccountkey": {
-            "value": ""
-        },
         "vmSize": {
             "value": "Standard_GS5"
-        },
-        "fileUri": {
-            "value": "https://github.com/Microsoft/PowerShell-DSC-for-Linux/releases/download/v1.1.1-70/nxComputerManagement_1.0.zip"
         }
-
     }
 }
