@@ -56,18 +56,6 @@
                 "decription": "Uri for MOF file"
             }
         },
-        "StorageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": ""
-            }
-        },
-        "StorageAccountKey": {
-            "type": "string",
-            "metadata": {
-                "description": ""
-            }
-        },
         "_artifactsLocationSasToken": {
             "type": "string",
             "metadata": {
@@ -79,7 +67,7 @@
             "metadata": {
                 "description": ""
             }
-        },
+        }
     },
     "variables": {
         "api-version": "2017-06-01",
@@ -96,17 +84,7 @@
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'saphana')]"
     },
-    "resources": [{
-            "apiVersion": "[variables('api-version')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('storageAccountName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "kind": "Storage",
-            "properties": {}
-        },
+    "resources": [
         {
             "apiVersion": "[variables('api-version')]",
             "type": "Microsoft.Network/publicIPAddresses",
@@ -250,7 +228,6 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/',variables('nicName'))]",
-                "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
@@ -334,12 +311,6 @@
                     "settings": {
                         "Mode": "[variables('mode')]",
                         "FileUri": "[parameters('fileUri')]"
-                    },
-                    "protectedSettings": {
-                        "StorageAccountName": "[parameters('storageAccountName')]",
-                        "StorageAccountKey": "[parameters('storageAccountKey')]",
-                        "RegistrationUrl": "",
-                        "RegistrationKey": ""
                     }
                 }
             }]
