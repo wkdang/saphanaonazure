@@ -4,9 +4,9 @@
 
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-    [string] $ResourceGroupName,
-    [string] $vmName,
-    [switch] $UploadArtifacts,
+    [string] [Parameter(Mandatory=$true)] $ResourceGroupName,
+    [string] [Parameter(Mandatory=$true)] $vmName,
+    [switch] [Parameter(Mandatory=$true)] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
     [string] $TemplateFile = 'azuredeploy.json',
