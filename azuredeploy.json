@@ -78,7 +78,7 @@
         "mode": "Push",
         "nicName": "[variables('vmName')]",
         "imagePublisher": "SUSE",
-        "imageOffer": "SLES",
+        "imageOffer": "SLES-SAP",
         "suseOSVersion": "12-SP2",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
