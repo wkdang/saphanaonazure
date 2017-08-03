@@ -84,8 +84,7 @@
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'saphana')]"
     },
-    "resources": [
-        {
+    "resources": [{
             "apiVersion": "[variables('api-version')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('vmName')]",
@@ -297,23 +296,46 @@
                 }
             },
             "resources": [{
-                "apiVersion": "[variables('api-version-vm')]",
-                "type": "Microsoft.Compute/virtualMachines/extensions",
-                "name": "[concat(parameters('vmName'),'/enabledsc')]",
-                "location": "[resourceGroup().location]",
-                "dependsOn": [
-                    "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-                ],
-                "properties": {
-                    "publisher": "Microsoft.OSTCExtensions",
-                    "type": "DSCForLinux",
-                    "typeHandlerVersion": "2.0",
-                    "settings": {
-                        "Mode": "[variables('mode')]",
-                        "FileUri": "[parameters('fileUri')]"
+                    "name": "scriptextension",
+                    "type": "extensions",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "[variables('api-version-vm')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "fileUris": [
+                                "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/preReqInstall.sh"
+                            ],
+                            "commandToExecute": "sh preReqInstall.sh"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "[variables('api-version-vm')]",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('vmName'),'/enabledsc')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
+                        "[concat('Microsoft.Compute/virtualMachines/extensions/', 'scriptextension')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.OSTCExtensions",
+                        "type": "DSCForLinux",
+                        "typeHandlerVersion": "2.0",
+                        "settings": {
+                            "Mode": "[variables('mode')]",
+                            "FileUri": "[parameters('fileUri')]"
+                        }
                     }
                 }
-            }]
+            ]
         }
     ],
     "outputs": {}
