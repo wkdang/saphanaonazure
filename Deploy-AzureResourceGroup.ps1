@@ -97,7 +97,7 @@ if ($UploadArtifacts) {
 
     # Set DSC File Uri
     if (Test-Path $DSCSourceFolder) {
-        $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context 
+        $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
         $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
     }
 }

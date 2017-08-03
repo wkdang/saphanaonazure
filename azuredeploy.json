@@ -75,7 +75,7 @@
         "vmName": "[parameters('vmName')]",
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
-        "mode": "Pull",
+        "mode": "Push",
         "nicName": "[variables('vmName')]",
         "imagePublisher": "SUSE",
         "imageOffer": "SLES",
@@ -323,14 +323,15 @@
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
-                        "[concat('Microsoft.Compute/virtualMachines/extensions/', 'scriptextension')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'scriptextension')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.OSTCExtensions",
                         "type": "DSCForLinux",
-                        "typeHandlerVersion": "2.0",
+                        "typeHandlerVersion": "2.5",
+                        "autoUpgradeMinorVersion": true,
                         "settings": {
-                            "Mode": "[variables('mode')]",
+                            "ExtensionAction": "[variables('mode')]",
                             "FileUri": "[parameters('fileUri')]"
                         }
                     }
