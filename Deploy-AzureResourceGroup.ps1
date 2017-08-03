@@ -4,8 +4,8 @@
 
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-    [string] $ResourceGroupName = 'jogardn-sap-hana',
-    [string] $vmName = 'sap-hana',
+    [string] $ResourceGroupName,
+    [string] $vmName,
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
