@@ -9,6 +9,8 @@ Machine Size | RAM | Data and Log Disks | /hana/shared | /root | /usr/sap | hana
 GS5 | 448 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
 
 ## Deploy the Solution
+The solution must be run from PowerShell on Windows that is logged into Azure. It assumes you have logged in and selected the subscription to which you would like to deploy to. If this is not the case run `Login-AzureRmAccount` to get logged in. Once logged in, the current subscription should be displayed. If a different subscription is necessary, run `Get-AzureRmSubscription` to list the subscriptions and then `Select-AzureRmSubscription -SubscriptionName "YOURSUBNAME"` to select the subscription where the solution is to be deployed.
+
 The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` file. Execute the below example replacing `YOURNAME` with your Resource Group Name and `YOURVMNAME` with your VM name. The solution can be deployed in any location with the available sku. **We will be adding additional SKUs that will drive the available deployment locations.** For more information on Sku availability can be found on the [Azure website](https://azure.microsoft.com/en-us/pricing/details/cloud-services/).
 
 ```powershell
