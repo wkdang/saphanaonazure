@@ -71,18 +71,13 @@
     },
     "variables": {
         "api-version": "2017-06-01",
-        "api-version-vm": "2017-03-30",
         "vmName": "[parameters('vmName')]",
-        "vmUserName": "testuser",
-        "vmPassword": "AweS0me@PW",
-        "mode": "Push",
         "nicName": "[variables('vmName')]",
         "imagePublisher": "SUSE",
         "imageOffer": "SLES-SAP",
         "suseOSVersion": "12-SP2",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
-        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
-        "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'saphana')]"
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
     },
     "resources": [{
             "apiVersion": "[variables('api-version')]",
@@ -140,203 +135,20 @@
             }
         },
         {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-shared')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 511
-            }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-sap')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 63
-            }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-backup')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 1023
-            }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data1')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Premium_LRS",
-                "tier": "Premium"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 1023
-            }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data2')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Premium_LRS",
-                "tier": "Premium"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 1023
-            }
-        },
-        {
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "type": "Microsoft.Compute/virtualMachines",
-            "name": "[variables('vmName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/',variables('nicName'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
-            ],
+            "apiVersion": "[variables('api-version')]",
+            "name": "Gs5LinkedTemplate",
+            "type": "Microsoft.Resource/deployments",
             "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('vmSize')]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(uri(deployment().properties.templateLink.uri, 'Parameters/gs5.json'))]"
                 },
-                "osProfile": {
-                    "computerName": "[variables('vmName')]",
-                    "adminUsername": "[variables('vmUserName')]",
-                    "adminPassword": "[variables('vmPassword')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "[variables('imagePublisher')]",
-                        "offer": "[variables('imageOffer')]",
-                        "sku": "[variables('suseOSVersion')]",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "createOption": "FromImage"
-                    },
-                    "dataDisks": [{
-                            "lun": 0,
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]"
-                            }
-                        },
-                        {
-                            "lun": 1,
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]"
-                            }
-                        },
-                        {
-                            "lun": 2,
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]"
-                            }
-                        },
-                        {
-                            "lun": 3,
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]"
-                            }
-                        },
-                        {
-                            "lun": 4,
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
-                            }
-                        }
-                    ]
-                },
-                "networkProfile": {
-                    "networkInterfaces": [{
-                        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
-                    }]
+                "parameters": {
+                    "vmName": "[parameters('vmName')]",
+                    "fileUri": "[parameters('fileUri')]"
                 }
-            },
-            "resources": [{
-                    "name": "scriptextension",
-                    "type": "extensions",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "[variables('api-version-vm')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Extensions",
-                        "type": "CustomScript",
-                        "typeHandlerVersion": "2.0",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "fileUris": [
-                                "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/preReqInstall.sh"
-                            ],
-                            "commandToExecute": "sh preReqInstall.sh"
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "[variables('api-version-vm')]",
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat(parameters('vmName'),'/enabledsc')]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
-                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'scriptextension')]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.OSTCExtensions",
-                        "type": "DSCForLinux",
-                        "typeHandlerVersion": "2.5",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "ExtensionAction": "[variables('mode')]",
-                            "FileUri": "[parameters('fileUri')]"
-                        }
-                    }
-                }
-            ]
+            }
         }
     ],
     "outputs": {}
