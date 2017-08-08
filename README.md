@@ -17,3 +17,5 @@ The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` fi
 ./Deploy-AzureResourceGroup.ps1 -ResourceGroupName YOURNAME -vmName
 YOURVMNAME -ResourceGroupLocation eastus2 -UploadArtifacts -DSCSourceFolder .\DSC\
 ```
+## Troubleshooting
+
