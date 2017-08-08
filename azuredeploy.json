@@ -142,7 +142,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(uri(deployment().properties.templateLink.uri, 'Parameters/gs5.json'))]"
+                    "uri": "[concat(uri(deployment().properties.templateLink.uri, '/Parameters/gs5.json'))]"
                 },
                 "parameters": {
                     "vmName": "[parameters('vmName')]",
