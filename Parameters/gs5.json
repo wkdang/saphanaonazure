@@ -13,6 +13,34 @@
             "metadata": {
                 "description": "Uri for MOF file"
             }
+        },
+        "networkName": {
+            "type": "string",
+            "defaultValue": "ra-sap-hana-vnet",
+            "metadata": {
+                "description": "The Hana vNet"
+            }
+        },
+        "addressPrefixes": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "The Hana vNET prefix"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "SAPDataSubnet",
+            "metadata": {
+                "description": "The Hana subnet name"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.5.0/24",
+            "metadata": {
+                "description": "The data subnet"
+            }
         }
     },
     "variables": {
@@ -23,12 +51,70 @@
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
         "mode": "Push",
-        "nicName": "[variables('vmName')]",
+        "nicName": "[parameters('vmName')]",
         "imagePublisher": "SUSE",
         "imageOffer": "SLES-SAP",
-        "suseOSVersion": "12-SP2"
+        "suseOSVersion": "12-SP2",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
+
     },
     "resources": [{
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('vmName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('vmName')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('networkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefixes')]"
+                    ]
+                },
+                "subnets": [{
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnetPrefix')]"
+                    }
+                }]
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('networkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [{
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "subnet": {
+                            "id": "[variables('subnetRef')]"
+                        },
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmName'))]"
+                        }
+                    }
+                }]
+            }
+        },
+        {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(variables('vmName'),'-shared')]",
             "apiVersion": "[variables('api-version-vm')]",
@@ -105,7 +191,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 1023
+                "diskSizeGB": 511
             }
         },
         {
@@ -121,7 +207,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 1023
+                "diskSizeGB": 511
             }
         },
         {
@@ -130,7 +216,7 @@
             "name": "[variables('vmName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/',variables('nicName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",

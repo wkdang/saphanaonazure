@@ -69,92 +69,22 @@
             }
         }
     },
-    "variables": {
-        "api-version": "2017-06-01",
-        "vmName": "[parameters('vmName')]",
-        "nicName": "[variables('vmName')]",
-        "imagePublisher": "SUSE",
-        "imageOffer": "SLES-SAP",
-        "suseOSVersion": "12-SP2",
-        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
-        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
-    },
-    "resources": [
-        {
-            "apiVersion": "[variables('api-version')]",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[variables('vmName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[variables('vmName')]"
-                }
-            }
-        },
-        {
-            "apiVersion": "[variables('api-version')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('networkName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('addressPrefixes')]"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[parameters('subnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetPrefix')]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "apiVersion": "[variables('api-version')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[variables('nicName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('networkName'))]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[variables('subnetRef')]"
-                            },
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmName'))]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
-            "apiVersion": "[variables('api-version')]",
-            "name": "Gs5LinkedTemplate",
-            "type": "Microsoft.Resource/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(uri(deployment().properties.templateLink.uri, concat('Parameters/', 'gs5.json')))]"
-                },
-                "parameters": {
-                    "vmName": "[parameters('vmName')]",
-                    "fileUri": "[parameters('fileUri')]"
-                }
+    "variables": {},
+    "resources": [{
+        "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
+        "apiVersion": "2016-09-01",
+        "name": "Gs5LinkedTemplate",
+        "type": "Microsoft.Resources/deployments",
+        "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+                "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Parameters/gs5.json"
+            },
+            "parameters": {
+                "vmName": { "value": "[parameters('vmName')]" },
+                "fileUri": { "value": "[parameters('fileUri')]" }
             }
         }
-    ],
+    }],
     "outputs": {}
 }
