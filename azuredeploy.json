@@ -200,7 +200,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 1023
+                "diskSizeGB": 511
             }
         },
         {
@@ -216,7 +216,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 1023
+                "diskSizeGB": 511
             }
         },
         {
