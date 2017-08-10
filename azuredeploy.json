@@ -78,7 +78,7 @@
         "properties": {
             "mode": "Incremental",
             "templateLink": {
-                "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Parameters/gs5.json"
+                "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/gs5.json"
             },
             "parameters": {
                 "vmName": { "value": "[parameters('vmName')]" },
