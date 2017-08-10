@@ -56,8 +56,7 @@
         "imageOffer": "SLES-SAP",
         "suseOSVersion": "12-SP2",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
-        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
-        "dataDiskCount": 2
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
 
     },
     "resources": [{
@@ -165,7 +164,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data', copyIndex())]",
+            "name": "[concat(variables('vmName'),'-data1')]",
             "apiVersion": "[variables('api-version-vm')]",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -177,10 +176,22 @@
                     "createOption": "Empty"
                 },
                 "diskSizeGB": 511
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-data2')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
             },
-            "copy": {
-                "name": "dataDiskCopy",
-                "count": "[variables('dataDiskCount')]"
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 511
             }
         },
         {
@@ -192,7 +203,9 @@
                 "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
             ],
             "properties": {
                 "hardwareProfile": {
