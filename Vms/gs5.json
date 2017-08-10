@@ -192,9 +192,7 @@
                 "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]"
             ],
             "properties": {
                 "hardwareProfile": {
