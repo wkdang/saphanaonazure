@@ -1,0 +1,333 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Name"
+            }
+        },
+        "fileUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Uri for MOF file"
+            }
+        },
+        "networkName": {
+            "type": "string",
+            "defaultValue": "ra-sap-hana-vnet",
+            "metadata": {
+                "description": "The Hana vNet"
+            }
+        },
+        "addressPrefixes": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "The Hana vNET prefix"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "SAPDataSubnet",
+            "metadata": {
+                "description": "The Hana subnet name"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.5.0/24",
+            "metadata": {
+                "description": "The data subnet"
+            }
+        }
+    },
+    "variables": {
+        "api-version": "2017-06-01",
+        "api-version-vm": "2017-03-30",
+        "vmName": "[parameters('vmName')]",
+        "vmSize": "Standard_GS5",
+        "vmUserName": "testuser",
+        "vmPassword": "AweS0me@PW",
+        "mode": "Push",
+        "nicName": "[parameters('vmName')]",
+        "imagePublisher": "SUSE",
+        "imageOffer": "SLES-SAP",
+        "suseOSVersion": "12-SP2",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
+
+    },
+    "resources": [{
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('vmName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('vmName')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('networkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefixes')]"
+                    ]
+                },
+                "subnets": [{
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnetPrefix')]"
+                    }
+                }]
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('networkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [{
+                    "name": "ipconfig1",
+                    "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "subnet": {
+                            "id": "[variables('subnetRef')]"
+                        },
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('vmName'))]"
+                        }
+                    }
+                }]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-shared')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 511
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-sap')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 63
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-backup')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 1023
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-data1')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 1023
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-data2')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 511
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-data3')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 511
+            }
+        },
+        {
+            "apiVersion": "[variables('api-version-vm')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('vmName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vmName')]",
+                    "adminUsername": "[variables('vmUserName')]",
+                    "adminPassword": "[variables('vmPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('imagePublisher')]",
+                        "offer": "[variables('imageOffer')]",
+                        "sku": "[variables('suseOSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": [{
+                            "lun": 0,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]"
+                            }
+                        },
+                        {
+                            "lun": 1,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]"
+                            }
+                        },
+                        {
+                            "lun": 2,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]"
+                            }
+                        },
+                        {
+                            "lun": 3,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]"
+                            }
+                        },
+                        {
+                            "lun": 4,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
+                            }
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [{
+                        "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                    }]
+                }
+            },
+            "resources": [{
+                    "name": "scriptextension",
+                    "type": "extensions",
+                    "location": "[resourceGroup().location]",
+                    "apiVersion": "[variables('api-version-vm')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "fileUris": [
+                                "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/preReqInstall.sh"
+                            ],
+                            "commandToExecute": "sh preReqInstall.sh"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "[variables('api-version-vm')]",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('vmName'),'/enabledsc')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'scriptextension')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.OSTCExtensions",
+                        "type": "DSCForLinux",
+                        "typeHandlerVersion": "2.5",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ExtensionAction": "[variables('mode')]",
+                            "FileUri": "[parameters('fileUri')]"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {}
+}

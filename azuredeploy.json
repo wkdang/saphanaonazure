@@ -71,36 +71,165 @@
     },
     "variables": {},
     "resources": [{
-        "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
-        "apiVersion": "2016-09-01",
-        "name": "Gs5LinkedTemplate",
-        "type": "Microsoft.Resources/deployments",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/gs5.json"
-            },
-            "parameters": {
-                "vmName": {
-                    "value": "[parameters('vmName')]"
+            "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
+            "apiVersion": "2016-09-01",
+            "name": "Gs5LinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/gs5.json"
                 },
-                "fileUri": {
-                    "value": "[parameters('fileUri')]"
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "fileUri": {
+                        "value": "[parameters('fileUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_M64s')]",
+            "apiVersion": "2016-09-01",
+            "name": "Gs5LinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m64s.json"
                 },
-                "networkName": {
-                    "value": "[parameters('networkName')]"
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "fileUri": {
+                        "value": "[parameters('fileUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_M64ms')]",
+            "apiVersion": "2016-09-01",
+            "name": "Gs5LinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m64ms.json"
                 },
-                "addressPrefixes": {
-                    "value": "[parameters('addressPrefixes')]"
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "fileUri": {
+                        "value": "[parameters('fileUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_M128s')]",
+            "apiVersion": "2016-09-01",
+            "name": "Gs5LinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m128s.json"
                 },
-                "subnetName": {
-                    "value": "[parameters('subnetName')]"
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "fileUri": {
+                        "value": "[parameters('fileUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_M128ms')]",
+            "apiVersion": "2016-09-01",
+            "name": "Gs5LinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m128ms.json"
                 },
-                "subnetPrefix": {
-                    "value": "[parameters('subnetPrefix')]"
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "fileUri": {
+                        "value": "[parameters('fileUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    }
                 }
             }
         }
-    }],
+    ],
     "outputs": {}
 }
