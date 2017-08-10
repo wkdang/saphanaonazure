@@ -164,26 +164,6 @@
             }
         },
         {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data', copyIndex())]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Premium_LRS",
-                "tier": "Premium"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 511
-            },
-            "copy": {
-                "name": "dataDiskCopy",
-                "count": "[variables('dataDiskCount')]"
-            }
-        },
-        {
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[variables('vmName')]",
@@ -192,8 +172,7 @@
                 "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data',variables('dataDiskCount')))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -237,10 +216,8 @@
                         },
                         {
                             "lun": "[add(2, copyIndex())]",
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data', copyIndex()))]"
-                            },
+                            "createOption": "empty",
+                            "diskSizeGB": 511,
                             "copy": {
                                 "name": "dataDiskAttach",
                                 "count": "[variables('dataDiskCount')]"
