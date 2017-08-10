@@ -215,6 +215,7 @@
                             }
                         },
                         {
+                            "name": "[concat(variables('vmName'),'-data',copyIndex())]",
                             "lun": "[add(2, copyIndex())]",
                             "createOption": "empty",
                             "diskSizeGB": 511,
