@@ -81,8 +81,24 @@
                 "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/gs5.json"
             },
             "parameters": {
-                "vmName": { "value": "[parameters('vmName')]" },
-                "fileUri": { "value": "[parameters('fileUri')]" }
+                "vmName": {
+                    "value": "[parameters('vmName')]"
+                },
+                "fileUri": {
+                    "value": "[parameters('fileUri')]"
+                },
+                "networkName": {
+                    "value": "[parameters('networkName')]"
+                },
+                "addressPrefixes": {
+                    "value": "[parameters('addressPrefixes')]"
+                },
+                "subnetName": {
+                    "value": "[parameters('subnetName')]"
+                },
+                "subnetPrefix": {
+                    "value": "[parameters('subnetPrefix')]"
+                }
             }
         }
     }],
