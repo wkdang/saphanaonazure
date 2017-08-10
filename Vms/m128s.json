@@ -127,7 +127,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 511
+                "diskSizeGB": 1023
             }
         },
         {
@@ -148,7 +148,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-backup')]",
+            "name": "[concat(variables('vmName'),'-backup1')]",
             "apiVersion": "[variables('api-version-vm')]",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -164,7 +164,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data1')]",
+            "name": "[concat(variables('vmName'),'-data', copyIndex())]",
             "apiVersion": "[variables('api-version-vm')]",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -176,6 +176,10 @@
                     "createOption": "Empty"
                 },
                 "diskSizeGB": 1023
+            },
+            "copy": {
+                "name": "backupDiskCopy",
+                "count": 3
             }
         },
         {

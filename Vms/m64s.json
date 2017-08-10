@@ -127,7 +127,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 511
+                "diskSizeGB": 1023
             }
         },
         {
@@ -148,7 +148,23 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-backup')]",
+            "name": "[concat(variables('vmName'),'-backup1')]",
+            "apiVersion": "[variables('api-version-vm')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": 1023
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(variables('vmName'),'-backup2')]",
             "apiVersion": "[variables('api-version-vm')]",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -191,7 +207,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 511
+                "diskSizeGB": 1023
             }
         },
         {
@@ -207,7 +223,7 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": 511
+                "diskSizeGB": 1023
             }
         },
         {
@@ -219,7 +235,8 @@
                 "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup1'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup2'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
             ],
@@ -260,18 +277,25 @@
                             "lun": 2,
                             "createOption": "attach",
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup1'))]"
                             }
                         },
                         {
                             "lun": 3,
                             "createOption": "attach",
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup2'))]"
                             }
                         },
                         {
                             "lun": 4,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]"
+                            }
+                        },
+                        {
+                            "lun": 5,
                             "createOption": "attach",
                             "managedDisk": {
                                 "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"

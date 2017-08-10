@@ -105,7 +105,7 @@
         {
             "condition": "[equals(parameters('vmSize'), 'Standard_M64s')]",
             "apiVersion": "2016-09-01",
-            "name": "Gs5LinkedTemplate",
+            "name": "M64sLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "Incremental",
@@ -137,7 +137,7 @@
         {
             "condition": "[equals(parameters('vmSize'), 'Standard_M64ms')]",
             "apiVersion": "2016-09-01",
-            "name": "Gs5LinkedTemplate",
+            "name": "M64msLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "Incremental",
@@ -169,7 +169,7 @@
         {
             "condition": "[equals(parameters('vmSize'), 'Standard_M128s')]",
             "apiVersion": "2016-09-01",
-            "name": "Gs5LinkedTemplate",
+            "name": "M128sLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "Incremental",
@@ -201,7 +201,7 @@
         {
             "condition": "[equals(parameters('vmSize'), 'Standard_M128ms')]",
             "apiVersion": "2016-09-01",
-            "name": "Gs5LinkedTemplate",
+            "name": "M128msLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "Incremental",

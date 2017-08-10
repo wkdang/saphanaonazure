@@ -56,7 +56,8 @@
         "imageOffer": "SLES-SAP",
         "suseOSVersion": "12-SP2",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
-        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]",
+        "dataDiskCount": 2
 
     },
     "resources": [{
@@ -164,23 +165,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data1')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Premium_LRS",
-                "tier": "Premium"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 1023
-            }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data2')]",
+            "name": "[concat(variables('vmName'),'-data', copyIndex())]",
             "apiVersion": "[variables('api-version-vm')]",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -192,22 +177,10 @@
                     "createOption": "Empty"
                 },
                 "diskSizeGB": 511
-            }
-        },
-        {
-            "type": "Microsoft.Compute/disks",
-            "name": "[concat(variables('vmName'),'-data3')]",
-            "apiVersion": "[variables('api-version-vm')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Premium_LRS",
-                "tier": "Premium"
             },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 511
+            "copy": {
+                "name": "dataDiskCopy",
+                "count": "[variables('dataDiskCount')]"
             }
         },
         {
@@ -220,8 +193,7 @@
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-shared'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-sap'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-backup'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data',variables('dataDiskCount')))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -264,17 +236,14 @@
                             }
                         },
                         {
-                            "lun": 3,
+                            "lun": "[add(2, copyIndex())]",
                             "createOption": "attach",
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data1'))]"
-                            }
-                        },
-                        {
-                            "lun": 4,
-                            "createOption": "attach",
-                            "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data2'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(variables('vmName'),'-data', copyIndex()))]"
+                            },
+                            "copy": {
+                                "name": "dataDiskAttach",
+                                "count": "[variables('dataDiskCount')]"
                             }
                         }
                     ]
