@@ -55,7 +55,10 @@ if ($UploadArtifacts) {
 
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
+<<<<<<< HEAD
         #Install-Module -Name nx -Scope CurrentUser
+=======
+>>>>>>> f27dabc02241c0d82af5d8f9eced5d28a01e8545
 
         ($DSCSourceFolder + 'ExampleConfiguration')
 
