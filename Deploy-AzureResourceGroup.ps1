@@ -4,16 +4,8 @@
 #Requires -Module nx
 
 Param(
-    [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-    [string] [Parameter(Mandatory=$true)] $ResourceGroupName,
-    [string] [Parameter(Mandatory=$true)] $vmName,
     [switch] [Parameter(Mandatory=$true)] $UploadArtifacts,
-    [string] $networkName = $vmName,
-    [string] $addressPrefixes = "10.0.0.0/16",
-    [string] $subnetName = "SAPDataSubnet",
-    [string] $subnetPrefix = "10.0.5.0/24",
     [string] $StorageAccountName,
-    [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
     [string] $TemplateFile = 'azuredeploy.json',
     [string] $TemplateParametersFile = 'azuredeploy.parameters.json',
     [string] $ArtifactStagingDirectory = '.',
@@ -31,7 +23,9 @@ Set-StrictMode -Version 3
 function Format-ValidationOutput {
     param ($ValidationOutput, [int] $Depth = 0)
     Set-StrictMode -Off
-    return @($ValidationOutput | Where-Object { $_ -ne $null } | ForEach-Object { @('  ' * $Depth + ': ' + $_.Message) + @(Format-ValidationOutput @($_.Details) ($Depth + 1)) })
+    return @($ValidationOutput | `
+        Where-Object { $_ -ne $null } | `
+        ForEach-Object { @('  ' * $Depth + ': ' + $_.Message) + @(Format-ValidationOutput @($_.Details) ($Depth + 1)) })
 }
 
 $OptionalParameters = New-Object -TypeName Hashtable
@@ -50,22 +44,56 @@ if ($UploadArtifacts) {
     }
     $ArtifactsLocationName = '_artifactsLocation'
     $ArtifactsLocationSasTokenName = '_artifactsLocationSasToken'
-    $OptionalParameters[$ArtifactsLocationName] = $JsonParameters | Select -Expand $ArtifactsLocationName -ErrorAction Ignore | Select -Expand 'value' -ErrorAction Ignore
-    $OptionalParameters[$ArtifactsLocationSasTokenName] = $JsonParameters | Select -Expand $ArtifactsLocationSasTokenName -ErrorAction Ignore | Select -Expand 'value' -ErrorAction Ignore
+    $OptionalParameters[$ArtifactsLocationName] = $JsonParameters | `
+            Select-Object `
+                -Expand $ArtifactsLocationName `
+                -ErrorAction Ignore | `
+            Select-Object `
+                -Expand 'value' `
+                -ErrorAction Ignore
+    $OptionalParameters[$ArtifactsLocationSasTokenName] = $JsonParameters | `
+            Select-Object `
+                -Expand $ArtifactsLocationSasTokenName
+                -ErrorAction Ignore | `
+            Select-Object `
+                -Expand 'value' `
+                -ErrorAction Ignore
+    $ResourceGroupLocation = $JsonParameters | `
+            Select-Object `
+                -Expand 'ResourceGroupLocation' `
+                -ErrorAction Ignore | `
+            Select-Object `
+                -Expand 'value' `
+                -ErrorAction Ignore
+    $ResourceGroupName = $JsonParameters | `
+            Select-Object `
+                -Expand 'ResourceGroupName' `
+                -ErrorAction Ignore | `
+            Select-Object `
+                -Expand 'value' `
+                -ErrorAction Ignore
+    $vmName = $JsonParameters | `
+            Select-Object `
+                -Expand 'vmName' `
+                -ErrorAction Ignore | `
+            Select-Object `
+            -Expand 'value' `
+            -ErrorAction Ignore
+    $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts'
+
 
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
-<<<<<<< HEAD
-        #Install-Module -Name nx -Scope CurrentUser
-=======
->>>>>>> f27dabc02241c0d82af5d8f9eced5d28a01e8545
 
         ($DSCSourceFolder + 'ExampleConfiguration')
 
-        $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | ForEach-Object -Process {$_.FullName})
+        $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | `
+            ForEach-Object -Process {$_.FullName})
         foreach ($DSCSourceFilePath in $DSCSourceFilePaths) {
             $DSCArchiveFilePath = $DSCSourceFilePath.Substring(0, $DSCSourceFilePath.Length - 4) + '.zip'
-            Publish-AzureRmVMDscConfiguration $DSCSourceFilePath -OutputArchivePath $DSCArchiveFilePath -Force -Verbose
+            Publish-AzureRmVMDscConfiguration $DSCSourceFilePath `
+                -OutputArchivePath $DSCArchiveFilePath `
+                -Force -Verbose
         }
     }
 
@@ -79,8 +107,13 @@ if ($UploadArtifacts) {
     # Create the storage account if it doesn't already exist
     if ($StorageAccount -eq $null) {
         $StorageResourceGroupName = 'ARM_Deploy_Staging'
-        New-AzureRmResourceGroup -Location "$ResourceGroupLocation" -Name $StorageResourceGroupName -Force
-        $StorageAccount = New-AzureRmStorageAccount -StorageAccountName $StorageAccountName -Type 'Standard_LRS' -ResourceGroupName $StorageResourceGroupName -Location "$ResourceGroupLocation"
+        New-AzureRmResourceGroup -Location "$ResourceGroupLocation" `
+                                    -Name $StorageResourceGroupName `
+                                    -Force
+        $StorageAccount = New-AzureRmStorageAccount -StorageAccountName $StorageAccountName `
+                                                    -Type 'Standard_LRS' `
+                                                    -ResourceGroupName $StorageResourceGroupName `
+                                                    -Location "$ResourceGroupLocation"
     }
 
     # Generate the value for artifacts location if it is not provided in the parameter file
@@ -89,18 +122,26 @@ if ($UploadArtifacts) {
     }
 
     # Copy files from the local storage staging location to the storage account container
-    New-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context -Permission Container -ErrorAction SilentlyContinue *>&1
+    New-AzureStorageContainer -Name $StorageContainerName `
+                                -Context $StorageAccount.Context `
+                                -Permission Container `
+                                -ErrorAction SilentlyContinue *>&1
 
     $ArtifactFilePaths = Get-ChildItem $ArtifactStagingDirectory -Recurse -File | ForEach-Object -Process {$_.FullName}
     foreach ($SourcePath in $ArtifactFilePaths) {
         Set-AzureStorageBlobContent -File $SourcePath -Blob $SourcePath.Substring($ArtifactStagingDirectory.length + 1) `
-            -Container $StorageContainerName -Context $StorageAccount.Context -Force
+            -Container $StorageContainerName `
+            -Context $StorageAccount.Context `
+            -Force
     }
 
     # Generate a 4 hour SAS token for the artifacts location if one was not provided in the parameters file
     if ($OptionalParameters[$ArtifactsLocationSasTokenName] -eq $null) {
         $OptionalParameters[$ArtifactsLocationSasTokenName] = ConvertTo-SecureString -AsPlainText -Force `
-            (New-AzureStorageContainerSASToken -Container $StorageContainerName -Context $StorageAccount.Context -Permission r -ExpiryTime (Get-Date).AddHours(4))
+            (New-AzureStorageContainerSASToken -Container $StorageContainerName `
+                                                -Context $StorageAccount.Context `
+                                                -Permission r `
+                                                -ExpiryTime (Get-Date).AddHours(4))
     }
 
     # Set DSC File Uri
@@ -128,10 +169,8 @@ if ($ValidateOnly) {
 else {
     # Deploy the SAP HANA Environment from the ARM Template
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
-                                       -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
-                                       -vmName $vmName `
                                        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        @OptionalParameters `
                                        -Force -Verbose `

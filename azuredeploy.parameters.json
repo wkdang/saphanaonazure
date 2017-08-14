@@ -2,6 +2,15 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "ResourceGroupLocation": {
+            "value": "eastus2"
+        },
+        "ResourceGroupName": {
+            "value": "YourRgName"
+        },
+        "vmName": {
+            "value": "YourVmName"
+        },
         "vmSize": {
             "value": "Standard_GS5"
         },
