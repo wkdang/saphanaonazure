@@ -72,13 +72,6 @@ if ($UploadArtifacts) {
             Select-Object `
                 -Expand 'value' `
                 -ErrorAction Ignore
-    $vmName = $JsonParameters | `
-            Select-Object `
-                -Expand 'vmName' `
-                -ErrorAction Ignore | `
-            Select-Object `
-            -Expand 'value' `
-            -ErrorAction Ignore
     $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts'
 
 
