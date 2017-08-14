@@ -2,6 +2,18 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "ResourceGroupLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "Deployment region"
+            }
+        },
+        "ResourceGroup_Name": {
+            "type": "string",
+            "metadata": {
+                "description": "Deployment region"
+            }
+        },
         "vmName": {
             "type": "string",
             "metadata": {
@@ -24,28 +36,24 @@
         },
         "networkName": {
             "type": "string",
-            "defaultValue": "ra-sap-hana-vnet",
             "metadata": {
                 "description": "The Hana vNet"
             }
         },
         "addressPrefixes": {
             "type": "string",
-            "defaultValue": "10.0.0.0/16",
             "metadata": {
                 "description": "The Hana vNET prefix"
             }
         },
         "subnetName": {
             "type": "string",
-            "defaultValue": "SAPDataSubnet",
             "metadata": {
                 "description": "The Hana subnet name"
             }
         },
         "subnetPrefix": {
             "type": "string",
-            "defaultValue": "10.0.5.0/24",
             "metadata": {
                 "description": "The data subnet"
             }
@@ -55,21 +63,11 @@
             "metadata": {
                 "decription": "Uri for MOF file"
             }
-        },
-        "_artifactsLocationSasToken": {
-            "type": "string",
-            "metadata": {
-                "description": ""
-            }
-        },
-        "_artifactsLocation": {
-            "type": "string",
-            "metadata": {
-                "description": ""
-            }
         }
     },
-    "variables": {},
+    "variables": {
+        "vmName": "[toLower(parameters('vmName'))]"
+    },
     "resources": [{
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
             "apiVersion": "2016-09-01",
@@ -82,7 +80,7 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "[parameters('vmName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
@@ -114,7 +112,7 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "[parameters('vmName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
@@ -146,7 +144,7 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "[parameters('vmName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
@@ -178,7 +176,7 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "[parameters('vmName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
@@ -210,7 +208,7 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "[parameters('vmName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"

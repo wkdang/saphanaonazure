@@ -5,7 +5,7 @@
         "ResourceGroupLocation": {
             "value": "eastus2"
         },
-        "ResourceGroupName": {
+        "ResourceGroup_Name": {
             "value": "YourRgName"
         },
         "vmName": {

@@ -4,13 +4,15 @@
 #Requires -Module nx
 
 Param(
-    [switch] [Parameter(Mandatory=$true)] $UploadArtifacts,
+    [switch] $UploadArtifacts,
     [string] $StorageAccountName,
     [string] $TemplateFile = 'azuredeploy.json',
     [string] $TemplateParametersFile = 'azuredeploy.parameters.json',
     [string] $ArtifactStagingDirectory = '.',
+    [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
-    [switch] $ValidateOnly
+    [switch] $ValidateOnly,
+    [switch] $SkipUpload
 )
 
 try {
@@ -31,6 +33,18 @@ function Format-ValidationOutput {
 $OptionalParameters = New-Object -TypeName Hashtable
 $TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $TemplateFile))
 $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $TemplateParametersFile))
+$JsonParameters = Get-Content $TemplateParametersFile | ConvertFrom-Json
+$ResourceGroupLocation = $JsonParameters.parameters.ResourceGroupLocation.value
+$ResourceGroup_Name = $JsonParameters.parameters.ResourceGroup_Name.value
+
+# This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
+if ($SkipUpload){
+    $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+    $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
+    $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
+    $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
+    $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+}
 
 if ($UploadArtifacts) {
     # Convert relative paths to absolute paths if needed
@@ -38,7 +52,7 @@ if ($UploadArtifacts) {
     $DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $DSCSourceFolder))
 
     # Parse the parameter file and update the values of artifacts location and artifacts location SAS token if they are present
-    $JsonParameters = Get-Content $TemplateParametersFile -Raw | ConvertFrom-Json
+
     if (($JsonParameters | Get-Member -Type NoteProperty 'parameters') -ne $null) {
         $JsonParameters = $JsonParameters.parameters
     }
@@ -51,28 +65,15 @@ if ($UploadArtifacts) {
             Select-Object `
                 -Expand 'value' `
                 -ErrorAction Ignore
-    $OptionalParameters[$ArtifactsLocationSasTokenName] = $JsonParameters | `
-            Select-Object `
-                -Expand $ArtifactsLocationSasTokenName
-                -ErrorAction Ignore | `
-            Select-Object `
-                -Expand 'value' `
-                -ErrorAction Ignore
-    $ResourceGroupLocation = $JsonParameters | `
-            Select-Object `
-                -Expand 'ResourceGroupLocation' `
-                -ErrorAction Ignore | `
-            Select-Object `
-                -Expand 'value' `
-                -ErrorAction Ignore
-    $ResourceGroupName = $JsonParameters | `
-            Select-Object `
-                -Expand 'ResourceGroupName' `
-                -ErrorAction Ignore | `
-            Select-Object `
-                -Expand 'value' `
-                -ErrorAction Ignore
-    $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts'
+    # $OptionalParameters[$ArtifactsLocationSasTokenName] = $JsonParameters | `
+    #         Select-Object `
+    #             -Expand $ArtifactsLocationSasTokenName
+    #             -ErrorAction Ignore | `
+    #         Select-Object `
+    #             -Expand 'value' `
+    #             -ErrorAction Ignore
+
+    $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
 
 
     # Create DSC configuration archive
@@ -145,10 +146,10 @@ if ($UploadArtifacts) {
 }
 
 # Create or update the resource group using the specified template file and template parameters file
-New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Verbose -Force
+New-AzureRmResourceGroup -Name $ResourceGroup_Name -Location $ResourceGroupLocation -Verbose -Force
 
 if ($ValidateOnly) {
-    $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
+    $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
                                                                                   -TemplateFile $TemplateFile `
                                                                                   -TemplateParameterFile $TemplateParametersFile `
                                                                                   @OptionalParameters)
@@ -164,6 +165,7 @@ else {
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
+                                       -ResourceGroupName $ResourceGroup_Name `
                                        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        @OptionalParameters `
                                        -Force -Verbose `
