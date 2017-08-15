@@ -58,21 +58,6 @@ if ($UploadArtifacts) {
     }
     $ArtifactsLocationName = '_artifactsLocation'
     $ArtifactsLocationSasTokenName = '_artifactsLocationSasToken'
-    $OptionalParameters[$ArtifactsLocationName] = $JsonParameters | `
-            Select-Object `
-                -Expand $ArtifactsLocationName `
-                -ErrorAction Ignore | `
-            Select-Object `
-                -Expand 'value' `
-                -ErrorAction Ignore
-    # $OptionalParameters[$ArtifactsLocationSasTokenName] = $JsonParameters | `
-    #         Select-Object `
-    #             -Expand $ArtifactsLocationSasTokenName
-    #             -ErrorAction Ignore | `
-    #         Select-Object `
-    #             -Expand 'value' `
-    #             -ErrorAction Ignore
-
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
 
 
@@ -108,11 +93,6 @@ if ($UploadArtifacts) {
                                                     -Type 'Standard_LRS' `
                                                     -ResourceGroupName $StorageResourceGroupName `
                                                     -Location "$ResourceGroupLocation"
-    }
-
-    # Generate the value for artifacts location if it is not provided in the parameter file
-    if ($OptionalParameters[$ArtifactsLocationName] -eq $null) {
-        $OptionalParameters[$ArtifactsLocationName] = $StorageAccount.Context.BlobEndPoint + $StorageContainerName
     }
 
     # Copy files from the local storage staging location to the storage account container
@@ -151,8 +131,7 @@ New-AzureRmResourceGroup -Name $ResourceGroup_Name -Location $ResourceGroupLocat
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
                                                                                   -TemplateFile $TemplateFile `
-                                                                                  -TemplateParameterFile $TemplateParametersFile `
-                                                                                  @OptionalParameters)
+                                                                                  -TemplateParameterFile $TemplateParametersFile)
     if ($ErrorMessages) {
         Write-Output '', 'Validation returned the following errors:', @($ErrorMessages), '', 'Template is invalid.'
     }
@@ -167,7 +146,6 @@ else {
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -ResourceGroupName $ResourceGroup_Name `
                                        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
-                                       @OptionalParameters `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
     if ($ErrorMessages) {
