@@ -68,7 +68,7 @@ if ($UploadArtifacts) {
         # Create MOF file and change file encoding
         function CreateMof {
             Set-Location $DSCSourceFolder
-            .\ExampleConfiguration.ps1
+            . .\ExampleConfiguration.ps1
             Set-Location ..
             $mofFile = Get-ChildItem ($DSCSourceFolder +'sap-hana.mof')
             $mofFileContent = Get-Content $mofFile
