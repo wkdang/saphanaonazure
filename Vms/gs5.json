@@ -286,7 +286,7 @@
                             "fileUris": [
                                 "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/preReqInstall.sh"
                             ],
-                            "commandToExecute": "[concat('sh preReqInstall.sh URI=',)]"
+                            "commandToExecute": "sh preReqInstall.sh"
                         }
                     }
                 },
