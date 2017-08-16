@@ -70,7 +70,7 @@ if ($UploadArtifacts) {
             Set-Location $DSCSourceFolder
             . .\ExampleConfiguration.ps1
             Set-Location ..
-            $mofFile = Get-ChildItem ($DSCSourceFolder +'sap-hana.mof')
+            $mofFile = Get-ChildItem ($DSCSourceFolder +'\sap-hana.mof')
             $mofFileContent = Get-Content $mofFile
             $mofOutFile = ($DSCSourceFolder +'sap-hana-out.mof')
             [IO.File]::WriteAllLines($mofOutFile,$mofFileContent)
