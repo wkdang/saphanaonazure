@@ -14,6 +14,12 @@
                 "description": "Uri for MOF file"
             }
         },
+        "customUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Uri for MOF file"
+            }
+        },
         "networkName": {
             "type": "string",
             "defaultValue": "ra-sap-hana-vnet",
@@ -284,7 +290,7 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "fileUris": [
-                                "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/preReqInstall.sh"
+                                "[parameters('customUri')]"
                             ],
                             "commandToExecute": "sh preReqInstall.sh"
                         }

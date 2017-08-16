@@ -63,6 +63,12 @@
             "metadata": {
                 "decription": "Uri for MOF file"
             }
+        },
+        "customUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Uri for Custom Script Extension"
+            }
         }
     },
     "variables": {
@@ -84,6 +90,9 @@
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
                     },
                     "networkName": {
                         "value": "[parameters('networkName')]"
