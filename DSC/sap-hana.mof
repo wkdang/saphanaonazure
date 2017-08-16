@@ -1,0 +1,47 @@
+/*
+@TargetNode='sap-hana'
+@GeneratedBy=jogardn
+@GenerationDate=08/16/2017 16:17:56
+@GenerationHost=JOGARDN-SB
+*/
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource1ref
+{
+ResourceID = "[nxFile]ExampleFile";
+ Type = "File";
+ Ensure = "Present";
+ Contents = "https://stageeef21314653e4eec893.blob.core.windows.net/yourrgname-stageartifacts/SapBits";
+ DestinationPath = "/tmp/example";
+ ModuleName = "nx";
+ SourceInfo = "C:\\Users\\jogardn\\Projects\\SAP-HANA-ARM\\DSC\\ExampleConfiguration.ps1::12::5::nxFile";
+ ModuleVersion = "1.0";
+
+ ConfigurationName = "ExampleConfiguration";
+
+};
+instance of OMI_ConfigurationDocument
+
+
+                    {
+ Version="2.0.0";
+ 
+
+                        MinimumCompatibleVersion = "1.0.0";
+ 
+
+                        CompatibleVersionAdditionalProperties= {"Omi_BaseResource:ConfigurationName"};
+ 
+
+                        Author="jogardn";
+ 
+
+                        GenerationDate="08/16/2017 16:17:56";
+ 
+
+                        GenerationHost="JOGARDN-SB";
+ 
+
+                        Name="ExampleConfiguration";
+
+
+                    };

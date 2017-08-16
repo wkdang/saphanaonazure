@@ -1,21 +1,22 @@
+
+Param(
+    [Parameter(Mandatory)][string] $Uri
+)
+
 Configuration ExampleConfiguration{
 
-        Param(
-            [Parameter(Mandatory)][string] $Uri
-        )
+    Import-DSCResource -Module nx
+    Set-StrictMode -Off
 
-        Import-DSCResource -Module nx
-        Set-StrictMode -Off
+    Node  "sap-hana"{
+    nxFile ExampleFile {
 
-        Node  "sap-hana"{
-        nxFile ExampleFile {
-
-            DestinationPath = "/tmp/example"
-            Contents = $Url
-            Ensure = "Present"
-            Type = "File"
-        }
-
-        }
+        DestinationPath = "/tmp/example"
+        Contents = $Uri
+        Ensure = "Present"
+        Type = "File"
     }
-    ExampleConfiguration -OutputPath:".\"
+
+    }
+}
+ExampleConfiguration -OutputPath:".\"
