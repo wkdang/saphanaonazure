@@ -1,5 +1,9 @@
 Configuration ExampleConfiguration{
 
+        Param(
+            [Parameter(Mandatory)][string] $Uri
+        )
+
         Import-DSCResource -Module nx
         Set-StrictMode -Off
 
@@ -7,7 +11,7 @@ Configuration ExampleConfiguration{
         nxFile ExampleFile {
 
             DestinationPath = "/tmp/example"
-            Contents = "hello world `n"
+            Contents = $Url
             Ensure = "Present"
             Type = "File"
         }

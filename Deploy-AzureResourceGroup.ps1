@@ -45,6 +45,7 @@ if ($SkipUpload){
     $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
     $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
+    $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
 }
 
 if ($UploadArtifacts) {
@@ -61,13 +62,20 @@ if ($UploadArtifacts) {
     $ArtifactsLocationSasTokenName = '_artifactsLocationSasToken'
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
 
+    # Create a storage account name if none was provided
+    if ($StorageAccountName -eq '') {
+        $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+    }
 
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
 
+        # Create ContinerUri
+        $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
+
         # Create MOF file and change file encoding
         Set-Location $DSCSourceFolder
-        . .\ExampleConfiguration.ps1
+        ExampleConfiguration -Uri $SapBitsUri
         Set-Location ..
         $mofFile = Get-ChildItem ($DSCSourceFolder +'\sap-hana.mof')
         $mofFileContent = Get-Content $mofFile
@@ -83,11 +91,6 @@ if ($UploadArtifacts) {
                 -OutputArchivePath $DSCArchiveFilePath `
                 -Force -Verbose
         }
-    }
-
-    # Create a storage account name if none was provided
-    if ($StorageAccountName -eq '') {
-        $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
     }
 
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
