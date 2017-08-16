@@ -1,0 +1,1 @@
+This folder location is where the installation media will be palced. It will be automatically updloaded to Azure for automated installation.

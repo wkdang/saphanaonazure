@@ -64,7 +64,18 @@ if ($UploadArtifacts) {
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
 
-        ($DSCSourceFolder + 'ExampleConfiguration')
+        # Create MOF file and change file encoding
+        function CreateMof {
+            Set-Location $DSCSourceFolder
+            .\ExampleConfiguration.ps1
+            Set-Location ..
+            $mofFile = Get-ChildItem ($DSCSourceFolder +'sap-hana.mof')
+            $mofFileContent = Get-Content $mofFile
+            $mofOutFile = ($DSCSourceFolder +'sap-hana-out.mof')
+            [IO.File]::WriteAllLines($mofOutFile,$mofFileContent)
+            Move-Item $mofOutFile $mofFile -Force
+        }
+        CreateMof
 
         $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | `
             ForEach-Object -Process {$_.FullName})
