@@ -126,6 +126,9 @@
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
                     },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
                     "networkName": {
                         "value": "[parameters('networkName')]"
                     },
@@ -157,6 +160,9 @@
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
                     },
                     "networkName": {
                         "value": "[parameters('networkName')]"
@@ -190,6 +196,9 @@
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
                     },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
                     "networkName": {
                         "value": "[parameters('networkName')]"
                     },
@@ -221,6 +230,9 @@
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
                     },
                     "networkName": {
                         "value": "[parameters('networkName')]"
