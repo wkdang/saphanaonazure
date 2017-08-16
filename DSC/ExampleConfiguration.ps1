@@ -1,6 +1,7 @@
 Configuration ExampleConfiguration{
 
         Import-DSCResource -Module nx
+        Set-StrictMode -Off
 
         Node  "sap-hana"{
         nxFile ExampleFile {

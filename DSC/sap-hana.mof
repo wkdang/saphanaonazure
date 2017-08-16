@@ -1,7 +1,7 @@
 /*
 @TargetNode='sap-hana'
 @GeneratedBy=jogardn
-@GenerationDate=08/16/2017 11:34:54
+@GenerationDate=08/16/2017 11:46:44
 @GenerationHost=JOGARDN-REBUILD
 */
 
@@ -13,7 +13,7 @@ ResourceID = "[nxFile]ExampleFile";
  Contents = "hello world \n";
  DestinationPath = "/tmp/example";
  ModuleName = "nx";
- SourceInfo = "J:\\GitHub\\SAP-HANA-ARM\\DSC\\ExampleConfiguration.ps1::6::9::nxFile";
+ SourceInfo = "J:\\GitHub\\SAP-HANA-ARM\\DSC\\ExampleConfiguration.ps1::7::9::nxFile";
  ModuleVersion = "1.0";
 
  ConfigurationName = "ExampleConfiguration";
@@ -35,7 +35,7 @@ instance of OMI_ConfigurationDocument
                         Author="jogardn";
  
 
-                        GenerationDate="08/16/2017 11:34:54";
+                        GenerationDate="08/16/2017 11:46:44";
  
 
                         GenerationHost="JOGARDN-REBUILD";
