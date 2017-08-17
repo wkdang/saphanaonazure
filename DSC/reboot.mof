@@ -1,0 +1,481 @@
+/*
+@TargetNode='reboot'
+@GeneratedBy=ross
+@GenerationDate=08/17/2017 14:33:45
+@GenerationHost=SAPCLIENT2
+*/
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource1ref
+{
+ResourceID = "[nxFile]setparamout";
+ Ensure = "Present";
+ Mode = "755";
+ Contents = "hello world https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits";
+ DestinationPath = "/tmp/parameter.txt";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::13::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource2ref
+{
+ResourceID = "[nxFile]ExampleFile";
+ Type = "File";
+ Ensure = "Present";
+ Contents = "https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits";
+ DestinationPath = "/tmp/example";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::22::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource1ref
+{
+ResourceID = "[nxFileLine]EnableSwap";
+ ContainsLine = "ResourceDisk.EnableSwap = y";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::30::2::nxFileLine";
+ FilePath = "/etc/waagent.conf";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+ DoesNotContainPattern = "ResourceDisk.EnableSwap=n";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource2ref
+{
+ResourceID = "[nxFileLine]EnableSwapSize";
+ ContainsLine = "ResourceDisk.SwapSizeMB = 163840";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::37::2::nxFileLine";
+ FilePath = "/etc/waagent.conf";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxPackageResource as $MSFT_nxPackageResource1ref
+{
+ResourceID = "[nxPackage]glibc";
+ Ensure = "Present";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::43::2::nxPackage";
+ Name = "glibc-2.22-51.6";
+ ModuleName = "nx";
+ PackageManager = "Zypper";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxPackageResource as $MSFT_nxPackageResource2ref
+{
+ResourceID = "[nxPackage]systemd";
+ Ensure = "Present";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::50::2::nxPackage";
+ Name = "systemd-228-142.1";
+ ModuleName = "nx";
+ PackageManager = "Zypper";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxPackageResource as $MSFT_nxPackageResource3ref
+{
+ResourceID = "[nxPackage]unrar";
+ Ensure = "Present";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::57::2::nxPackage";
+ Name = "unrar";
+ ModuleName = "nx";
+ PackageManager = "Zypper";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxPackageResource as $MSFT_nxPackageResource4ref
+{
+ResourceID = "[nxPackage]sapconf";
+ Ensure = "Present";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::64::2::nxPackage";
+ Name = "sapconf";
+ ModuleName = "nx";
+ PackageManager = "Zypper";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxPackageResource as $MSFT_nxPackageResource5ref
+{
+ResourceID = "[nxPackage]saptune";
+ Ensure = "Present";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::71::2::nxPackage";
+ Name = "saptune";
+ ModuleName = "nx";
+ PackageManager = "Zypper";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource3ref
+{
+ResourceID = "[nxFile]loginconfdir";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/etc/systemd/login.conf.d";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::78::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource4ref
+{
+ResourceID = "[nxFile]setLoginconfd";
+ Ensure = "Present";
+ Mode = "755";
+ Contents = "[login]\n\nUserTasksMax=infinity\n";
+ DestinationPath = "/etc/systemd/login.conf.d/sap.conf";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::85::2::nxFile";
+ ModuleVersion = "1.0";
+
+DependsOn = {
+
+    "[nxFile]loginconfdir"};
+
+};
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource1ref
+{
+ResourceID = "[nxScript]SetTunedAdm";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nexit 1";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::97::1::nxScript";
+ SetScript = "#!/bin/bash\ntuned-adm profile sap-hana\nsystemctl start tuned\nsystemctl enable tuned\nsaptune solution apply HANA\nsaptune daemon start";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource3ref
+{
+ResourceID = "[nxFileLine]BootConf";
+ ContainsLine = "GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never numa_balancing=disable intel_idle.max_cstate=1 processor.max_cstate=1\"";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::119::2::nxFileLine";
+ FilePath = "/etc/default/grub";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource2ref
+{
+ResourceID = "[nxScript]grubmkconfig";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`cat /root/boot-done`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::125::1::nxScript";
+ SetScript = "#!/bin/bash\ngrub2-mkconfig -o /boot/grub2/grub.cfg\necho 1 > /root/boot-requested";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+DependsOn = {
+
+    "[nxFileLine]BootConf"};
+
+};
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource3ref
+{
+ResourceID = "[nxScript]logicalvols";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`vgdisplay | grep hanavg | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi\n";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::154::1::nxScript";
+ SetScript = "#!/bin/bash\npvcreate /dev/sd[cdefg]\nvgcreate hanavg /dev/sd[fg]\nlvcreate -l 80%FREE -n datalv hanavg\nlvcreate -l 20%FREE -n loglv hanavg\nmkfs.xfs /dev/hanavg/datalv\nmkfs.xfs /dev/hanavg/loglv";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource5ref
+{
+ResourceID = "[nxFile]hanadatadird";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hanadata";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::184::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource6ref
+{
+ResourceID = "[nxFile]hanalogdird";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hanalog";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::191::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource4ref
+{
+ResourceID = "[nxScript]logicalvols2";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`vgdisplay | grep sharedvg | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi\n";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::198::1::nxScript";
+ SetScript = "#!/bin/bash\nvgcreate sharedvg /dev/sdc \nvgcreate backupvg /dev/sdd  \nvgcreate usrsapvg /dev/sde \nlvcreate -l 100%FREE -n sharedlv sharedvg \nlvcreate -l 100%FREE -n backuplv backupvg \nlvcreate -l 100%FREE -n usrsaplv usrsapvg \nmkfs -t xfs /dev/sharedvg/sharedlv \nmkfs -t xfs /dev/backupvg/backuplv \nmkfs -t xfs /dev/usrsapvg/usrsaplv";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource7ref
+{
+ResourceID = "[nxFile]hanadatadir";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hana/data";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::232::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource8ref
+{
+ResourceID = "[nxFile]hanalogdir";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hana/log";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::239::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource9ref
+{
+ResourceID = "[nxFile]hanasharedir";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hana/shared";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::246::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource10ref
+{
+ResourceID = "[nxFile]usrsapdir";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/usr/sap";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::254::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource11ref
+{
+ResourceID = "[nxFile]hanabackupdir";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hana/backup";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::261::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource4ref
+{
+ResourceID = "[nxFileLine]fstabshared";
+ ContainsLine = "/dev/sharedvg/sharedlv /hana/shared xfs defaults 1 0 ";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::269::2::nxFileLine";
+ FilePath = "/etc/fstab";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource5ref
+{
+ResourceID = "[nxFileLine]fstabbackup";
+ ContainsLine = "/dev/backupvg/backuplv /hana/backup xfs defaults 1 0 ";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::275::2::nxFileLine";
+ FilePath = "/etc/fstab";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource6ref
+{
+ResourceID = "[nxFileLine]fstabusrsap";
+ ContainsLine = "/dev/usrsapvg/usrsaplv /usr/sap xfs defaults 1 0 ";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::281::2::nxFileLine";
+ FilePath = "/etc/fstab";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource7ref
+{
+ResourceID = "[nxFileLine]fstabdatalv";
+ ContainsLine = "/dev/hanavg/datalv /hana/data xfs nofail 0 0  ";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::287::2::nxFileLine";
+ FilePath = "/etc/fstab";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileLineResource as $MSFT_nxFileLineResource8ref
+{
+ResourceID = "[nxFileLine]fstabloglv";
+ ContainsLine = "/dev/hanavg/loglv /hana/log xfs nofail 0 0  ";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::293::2::nxFileLine";
+ FilePath = "/etc/fstab";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource5ref
+{
+ResourceID = "[nxScript]mounthanashared";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`mount | grep /hana/shared | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::299::1::nxScript";
+ SetScript = "#!/bin/bash\nmount -t xfs /dev/sharedvg/sharedlv /hana/shared\nmount -t xfs /dev/backupvg/backuplv /hana/backup \nmount -t xfs /dev/usrsapvg/usrsaplv /usr/sap\nmount -t xfs /dev/hanavg/datalv /hana/data\nmount -t xfs /dev/hanavg/loglv /hana/log ";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource12ref
+{
+ResourceID = "[nxFile]sapbits";
+ Type = "Directory";
+ Ensure = "Present";
+ DestinationPath = "/hana/shared/sapbits";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::330::2::nxFile";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource13ref
+{
+ResourceID = "[nxFile]hanapart1";
+ Ensure = "Present";
+ Mode = "755";
+ DestinationPath = "/hana/shared/sapbits/51052325_part1.exe";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::337::2::nxFile";
+ ModuleVersion = "1.0";
+ SourcePath = "https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits/51052325_part1.exe";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource14ref
+{
+ResourceID = "[nxFile]hanapart2";
+ Ensure = "Present";
+ Mode = "755";
+ DestinationPath = "/hana/shared/sapbits/51052325_part2.rar";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::345::2::nxFile";
+ ModuleVersion = "1.0";
+ SourcePath = "https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits/51052325_part2.rar";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource15ref
+{
+ResourceID = "[nxFile]hanapart3";
+ Ensure = "Present";
+ Mode = "755";
+ DestinationPath = "/hana/shared/sapbits/51052325_part3.rar";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::353::2::nxFile";
+ ModuleVersion = "1.0";
+ SourcePath = "https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits/51052325_part3.rar";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource16ref
+{
+ResourceID = "[nxFile]hanapart4";
+ Ensure = "Present";
+ Mode = "755";
+ DestinationPath = "/hana/shared/sapbits/51052325_part4.rar";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::361::2::nxFile";
+ ModuleVersion = "1.0";
+ SourcePath = "https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits/51052325_part4.rar";
+
+};
+
+instance of MSFT_nxFileResource as $MSFT_nxFileResource17ref
+{
+ResourceID = "[nxFile]hanapart5";
+ Ensure = "Present";
+ Mode = "755";
+ DestinationPath = "/hana/shared/sapbits/hdbinst.cfg";
+ ModuleName = "nx";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::369::2::nxFile";
+ ModuleVersion = "1.0";
+ SourcePath = "https://stagea3d54928db62458aad6.blob.core.windows.net/hanadeleteme-stageartifacts/SapBits/hdbinst.cfg";
+
+};
+
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource6ref
+{
+ResourceID = "[nxScript]unpackrar";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`ls -l /hana/shared/sapbits/51052325 | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi\n";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::377::1::nxScript";
+ SetScript = "#!/bin/bash\nunrar x 51052325_part1.exe";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource7ref
+{
+ResourceID = "[nxScript]hdbinstconfig";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`grep HOSTNAME-REPLACEME /hana/shared/sapbits/hdbinst-local.cfg | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi\n";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::403::1::nxScript";
+ SetScript = "#!/bin/bash\ncd /hana/shared/sapbits\nmyhost=hostname\nsedcmd=\"s/REPLACE-WITH-HOSTNAME//g\"\ncat hdbinst.cfg | sed  > hdbinst-local.cfg";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+};
+
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource8ref
+{
+ResourceID = "[nxScript]bootrequest";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`ls /root | grep boot-requested | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 1\nelse\n    exit 0\nfi";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\BootConfiguration.ps1::431::1::nxScript";
+ SetScript = "#!/bin/bash\nmv /root/boot-requested /root/boot-done\nreboot";
+ ModuleName = "nx";
+ ModuleVersion = "1.0";
+
+DependsOn = {
+
+    "[nxFileLine]BootConf"};
+
+};
+instance of OMI_ConfigurationDocument
+{
+ Version="1.0.0";
+ Author="ross";
+ GenerationDate="08/17/2017 14:33:45";
+ GenerationHost="SAPCLIENT2";
+};
+

@@ -44,6 +44,7 @@ if ($SkipUpload){
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
     $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
     $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+    $bootUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\reboot.mof') -Force    
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
 }
@@ -82,6 +83,15 @@ if ($UploadArtifacts) {
         $mofOutFile = ($DSCSourceFolder +'sap-hana-out.mof')
         [IO.File]::WriteAllLines($mofOutFile,$mofFileContent)
         Move-Item $mofOutFile $mofFile -Force
+
+        Set-Location $DSCSourceFolder
+        . .\BootConfiguration.ps1 -Uri $SapBitsUri
+        Set-Location ..
+        $bootmofFile = Get-ChildItem ($DSCSourceFolder +'\reboot.mof')
+        $bootmofFileContent = Get-Content $bootmofFile
+        $bootmofOutFile = ($DSCSourceFolder +'reboot-out.mof')
+        [IO.File]::WriteAllLines($bootmofOutFile,$bootmofFileContent)
+        Move-Item $bootmofOutFile $bootmofFile -Force
 
         $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | `
             ForEach-Object -Process {$_.FullName})
@@ -134,6 +144,7 @@ if ($UploadArtifacts) {
     if (Test-Path $DSCSourceFolder) {
         $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
         $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+        $bootUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\reboot.mof') -Force	
         $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     }
 }
@@ -159,6 +170,7 @@ else {
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -ResourceGroupName $ResourceGroup_Name `
                                        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
+                                       -bootfileUri $bootUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages

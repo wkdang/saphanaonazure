@@ -1,47 +1,27 @@
 /*
 @TargetNode='sap-hana'
-@GeneratedBy=jogardn
-@GenerationDate=08/16/2017 16:17:56
-@GenerationHost=JOGARDN-SB
+@GeneratedBy=ross
+@GenerationDate=08/17/2017 14:33:44
+@GenerationHost=SAPCLIENT2
 */
 
-instance of MSFT_nxFileResource as $MSFT_nxFileResource1ref
+instance of MSFT_nxScriptResource as $MSFT_nxScriptResource1ref
 {
-ResourceID = "[nxFile]ExampleFile";
- Type = "File";
- Ensure = "Present";
- Contents = "https://stageeef21314653e4eec893.blob.core.windows.net/yourrgname-stageartifacts/SapBits";
- DestinationPath = "/tmp/example";
+ResourceID = "[nxScript]insthana";
+ GetScript = "#!/bin/bash\nexit 1";
+ TestScript = "#!/bin/bash\nfilecount=`cat /etc/passwd | grep sapadm | wc -l`\nif [ $filecount -gt 0 ]\nthen\n    exit 0\nelse\n    exit 1\nfi\n";
+ SourceInfo = "C:\\code5\\SAP-HANA-ARM\\DSC\\ExampleConfiguration.ps1::13::1::nxScript";
+ SetScript = "#!/bin/bash\ncd /hana/shared/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64\n/hana/shared/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/shared/sapbits/hdbinst.cfg";
  ModuleName = "nx";
- SourceInfo = "C:\\Users\\jogardn\\Projects\\SAP-HANA-ARM\\DSC\\ExampleConfiguration.ps1::12::5::nxFile";
  ModuleVersion = "1.0";
 
- ConfigurationName = "ExampleConfiguration";
-
 };
+
 instance of OMI_ConfigurationDocument
+{
+ Version="1.0.0";
+ Author="ross";
+ GenerationDate="08/17/2017 14:33:44";
+ GenerationHost="SAPCLIENT2";
+};
 
-
-                    {
- Version="2.0.0";
- 
-
-                        MinimumCompatibleVersion = "1.0.0";
- 
-
-                        CompatibleVersionAdditionalProperties= {"Omi_BaseResource:ConfigurationName"};
- 
-
-                        Author="jogardn";
- 
-
-                        GenerationDate="08/16/2017 16:17:56";
- 
-
-                        GenerationHost="JOGARDN-SB";
- 
-
-                        Name="ExampleConfiguration";
-
-
-                    };

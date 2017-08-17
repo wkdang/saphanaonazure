@@ -6,10 +6,10 @@
             "value": "eastus2"
         },
         "ResourceGroup_Name": {
-            "value": "YourRgName"
+            "value": "hanadeleteme"
         },
         "vmName": {
-            "value": "YourVmName"
+            "value": "hanadeleteme"
         },
         "vmSize": {
             "value": "Standard_GS5"

@@ -64,6 +64,12 @@
                 "decription": "Uri for MOF file"
             }
         },
+        "bootfileUri": {
+            "type": "string",
+            "metadata": {
+                "decription": "Uri2 for MOF file"
+            }
+        },
         "customUri": {
             "type": "string",
             "metadata": {
@@ -90,6 +96,9 @@
                     },
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
+                    },
+                    "bootfileUri": {
+                        "value": "[parameters('bootfileUri')]"
                     },
                     "customUri": {
                         "value": "[parameters('customUri')]"
@@ -126,6 +135,9 @@
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
                     },
+                    "bootfileUri": {
+                        "value": "[parameters('bootfileUri')]"
+                    },
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
@@ -161,6 +173,10 @@
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
                     },
+                    "bootfileUri": {
+                        "value": "[parameters('bootfileUri')]"
+                    },
+		    
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
@@ -196,6 +212,10 @@
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
                     },
+                    "bootfileUri": {
+                        "value": "[parameters('bootfileUri')]"
+                    },
+		    
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
@@ -231,6 +251,10 @@
                     "fileUri": {
                         "value": "[parameters('fileUri')]"
                     },
+                    "bootfileUri": {
+                        "value": "[parameters('bootfileUri')]"
+                    },
+		    
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },

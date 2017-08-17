@@ -14,6 +14,12 @@
                 "description": "Uri for MOF file"
             }
         },
+        "bootfileUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Uri for MOF file"
+            }
+        },
         "customUri": {
             "type": "string",
             "metadata": {
@@ -299,7 +305,7 @@
                 {
                     "apiVersion": "[variables('api-version-vm')]",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat(parameters('vmName'),'/enabledsc')]",
+                    "name": "[concat(parameters('vmName'),'/rebootdsc')]",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
@@ -312,10 +318,32 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "ExtensionAction": "[variables('mode')]",
+                            "FileUri": "[parameters('bootfileUri')]"
+                        }
+                    }
+                },
+               {
+                    "apiVersion": "[variables('api-version-vm')]",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(parameters('vmName'),'/enabledsc')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'scriptextension')]",
+                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'rebootdsc')]"			
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.OSTCExtensions",
+                        "type": "DSCForLinux",
+                        "typeHandlerVersion": "2.5",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ExtensionAction": "[variables('mode')]",
                             "FileUri": "[parameters('fileUri')]"
                         }
                     }
                 }
+ 			  
             ]
         }
     ],

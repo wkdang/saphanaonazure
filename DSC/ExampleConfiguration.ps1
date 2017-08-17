@@ -9,13 +9,37 @@ Configuration ExampleConfiguration{
     Set-StrictMode -Off
 
     Node  "sap-hana"{
-    nxFile ExampleFile {
 
-        DestinationPath = "/tmp/example"
-        Contents = $Uri
-        Ensure = "Present"
-        Type = "File"
-    }
+nxScript insthana{
+
+    GetScript = @"
+#!/bin/bash
+exit 1
+"@
+
+    SetScript = @"
+#!/bin/bash
+cd /hana/shared/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/shared/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/shared/sapbits/hdbinst.cfg
+"@
+
+    TestScript = @'
+#!/bin/bash
+filecount=`cat /etc/passwd | grep sapadm | wc -l`
+if [ $filecount -gt 0 ]
+then
+    exit 0
+else
+    exit 1
+fi
+
+'@
+} 
+
+
+
+
+
 
     }
 }
