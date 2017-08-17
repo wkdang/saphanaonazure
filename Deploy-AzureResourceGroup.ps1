@@ -68,6 +68,9 @@ if ($UploadArtifacts) {
         $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
     }
 
+    #Set the Base URI for the rest of the script
+    $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
+    
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
 
