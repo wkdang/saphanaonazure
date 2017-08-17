@@ -69,10 +69,21 @@
             "metadata": {
                 "description": "Uri for Custom Script Extension"
             }
+        },
+        "baseUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Base deployment uri"
+            }
         }
     },
     "variables": {
-        "vmName": "[toLower(parameters('vmName'))]"
+        "vmName": "[toLower(parameters('vmName'))]",
+        "gs5Uri": "[concat(parameters('baseUri'), '\\Vms\\gs5.json')]",
+        "m64sUri": "[concat(parameters('baseUri'), '\\Vms\\m64s.json')]",
+        "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
+        "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
+        "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
     },
     "resources": [{
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
@@ -82,7 +93,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/gs5.json"
+                    "uri": "[variables('gs5Uri')]"
                 },
                 "parameters": {
                     "vmName": {
@@ -117,7 +128,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m64s.json"
+                    "uri": "[variables('m64sUri')]"
                 },
                 "parameters": {
                     "vmName": {
@@ -152,7 +163,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m64ms.json"
+                    "uri": "[variables('m64msUri')]"
                 },
                 "parameters": {
                     "vmName": {
@@ -187,7 +198,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m128s.json"
+                    "uri": "[variables('m128sUri')]"
                 },
                 "parameters": {
                     "vmName": {
@@ -222,7 +233,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/VmSizes/Vms/m128ms.json"
+                    "uri": "[variables('m128msUri')]"
                 },
                 "parameters": {
                     "vmName": {

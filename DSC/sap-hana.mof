@@ -1,7 +1,7 @@
 /*
 @TargetNode='sap-hana'
 @GeneratedBy=jogardn
-@GenerationDate=08/16/2017 16:17:56
+@GenerationDate=08/17/2017 10:32:00
 @GenerationHost=JOGARDN-SB
 */
 
@@ -35,7 +35,7 @@ instance of OMI_ConfigurationDocument
                         Author="jogardn";
  
 
-                        GenerationDate="08/16/2017 16:17:56";
+                        GenerationDate="08/17/2017 10:32:00";
  
 
                         GenerationHost="JOGARDN-SB";
