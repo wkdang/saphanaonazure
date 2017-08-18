@@ -1,19 +1,18 @@
 #Requires -Version 3.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
+#Requires -Module nx
 
 Param(
-    [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
-    [string] [Parameter(Mandatory=$true)] $ResourceGroupName,
-    [string] [Parameter(Mandatory=$true)] $vmName,
-    [switch] [Parameter(Mandatory=$true)] $UploadArtifacts,
+    [switch] $UploadArtifacts,
     [string] $StorageAccountName,
-    [string] $StorageContainerName = $ResourceGroupName.ToLowerInvariant() + '-stageartifacts',
     [string] $TemplateFile = 'azuredeploy.json',
     [string] $TemplateParametersFile = 'azuredeploy.parameters.json',
     [string] $ArtifactStagingDirectory = '.',
+    [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
-    [switch] $ValidateOnly
+    [switch] $ValidateOnly,
+    [switch] $SkipUpload
 )
 
 try {
@@ -26,12 +25,29 @@ Set-StrictMode -Version 3
 function Format-ValidationOutput {
     param ($ValidationOutput, [int] $Depth = 0)
     Set-StrictMode -Off
-    return @($ValidationOutput | Where-Object { $_ -ne $null } | ForEach-Object { @('  ' * $Depth + ': ' + $_.Message) + @(Format-ValidationOutput @($_.Details) ($Depth + 1)) })
+    return @($ValidationOutput | `
+        Where-Object { $_ -ne $null } | `
+        ForEach-Object { @('  ' * $Depth + ': ' + $_.Message) + @(Format-ValidationOutput @($_.Details) ($Depth + 1)) })
 }
 
 $OptionalParameters = New-Object -TypeName Hashtable
 $TemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $TemplateFile))
 $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $TemplateParametersFile))
+$JsonParameters = (Get-Content $TemplateParametersFile) -join "`n" | ConvertFrom-Json
+$ResourceGroupLocation = $JsonParameters.parameters.ResourceGroupLocation.value
+$ResourceGroup_Name = $JsonParameters.parameters.ResourceGroup_Name.value
+
+# This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
+if ($SkipUpload){
+    $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+    $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
+    $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
+    $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
+    $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+    $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
+    $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
+    $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
+}
 
 if ($UploadArtifacts) {
     # Convert relative paths to absolute paths if needed
@@ -39,31 +55,46 @@ if ($UploadArtifacts) {
     $DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $DSCSourceFolder))
 
     # Parse the parameter file and update the values of artifacts location and artifacts location SAS token if they are present
-    $JsonParameters = Get-Content $TemplateParametersFile -Raw | ConvertFrom-Json
+
     if (($JsonParameters | Get-Member -Type NoteProperty 'parameters') -ne $null) {
         $JsonParameters = $JsonParameters.parameters
     }
     $ArtifactsLocationName = '_artifactsLocation'
     $ArtifactsLocationSasTokenName = '_artifactsLocationSasToken'
-    $OptionalParameters[$ArtifactsLocationName] = $JsonParameters | Select -Expand $ArtifactsLocationName -ErrorAction Ignore | Select -Expand 'value' -ErrorAction Ignore
-    $OptionalParameters[$ArtifactsLocationSasTokenName] = $JsonParameters | Select -Expand $ArtifactsLocationSasTokenName -ErrorAction Ignore | Select -Expand 'value' -ErrorAction Ignore
-
-    # Create DSC configuration archive
-    if (Test-Path $DSCSourceFolder) {
-        Install-Module -Name nx -Scope CurrentUser
-
-        ($DSCSourceFolder + 'ExampleConfiguration')
-
-        $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | ForEach-Object -Process {$_.FullName})
-        foreach ($DSCSourceFilePath in $DSCSourceFilePaths) {
-            $DSCArchiveFilePath = $DSCSourceFilePath.Substring(0, $DSCSourceFilePath.Length - 4) + '.zip'
-            Publish-AzureRmVMDscConfiguration $DSCSourceFilePath -OutputArchivePath $DSCArchiveFilePath -Force -Verbose
-        }
-    }
+    $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
 
     # Create a storage account name if none was provided
     if ($StorageAccountName -eq '') {
-        $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.SubscriptionId).Replace('-', '').substring(0, 19)
+        $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+    }
+
+    #Set the Base URI for the rest of the script
+    $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
+    
+    # Create DSC configuration archive
+    if (Test-Path $DSCSourceFolder) {
+
+        # Create ContinerUri
+        $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
+
+        # Create MOF file and change file encoding
+        Set-Location $DSCSourceFolder
+        . .\ExampleConfiguration.ps1 -Uri $SapBitsUri
+        Set-Location ..
+        $mofFile = Get-ChildItem ($DSCSourceFolder +'\sap-hana.mof')
+        $mofFileContent = Get-Content $mofFile
+        $mofOutFile = ($DSCSourceFolder +'sap-hana-out.mof')
+        [IO.File]::WriteAllLines($mofOutFile,$mofFileContent)
+        Move-Item $mofOutFile $mofFile -Force
+
+        $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | `
+            ForEach-Object -Process {$_.FullName})
+        foreach ($DSCSourceFilePath in $DSCSourceFilePaths) {
+            $DSCArchiveFilePath = $DSCSourceFilePath.Substring(0, $DSCSourceFilePath.Length - 4) + '.zip'
+            Publish-AzureRmVMDscConfiguration $DSCSourceFilePath `
+                -OutputArchivePath $DSCArchiveFilePath `
+                -Force -Verbose
+        }
     }
 
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
@@ -71,45 +102,53 @@ if ($UploadArtifacts) {
     # Create the storage account if it doesn't already exist
     if ($StorageAccount -eq $null) {
         $StorageResourceGroupName = 'ARM_Deploy_Staging'
-        New-AzureRmResourceGroup -Location "$ResourceGroupLocation" -Name $StorageResourceGroupName -Force
-        $StorageAccount = New-AzureRmStorageAccount -StorageAccountName $StorageAccountName -Type 'Standard_LRS' -ResourceGroupName $StorageResourceGroupName -Location "$ResourceGroupLocation"
-    }
-
-    # Generate the value for artifacts location if it is not provided in the parameter file
-    if ($OptionalParameters[$ArtifactsLocationName] -eq $null) {
-        $OptionalParameters[$ArtifactsLocationName] = $StorageAccount.Context.BlobEndPoint + $StorageContainerName
+        New-AzureRmResourceGroup -Location "$ResourceGroupLocation" `
+                                    -Name $StorageResourceGroupName `
+                                    -Force
+        $StorageAccount = New-AzureRmStorageAccount -StorageAccountName $StorageAccountName `
+                                                    -Type 'Standard_LRS' `
+                                                    -ResourceGroupName $StorageResourceGroupName `
+                                                    -Location "$ResourceGroupLocation"
     }
 
     # Copy files from the local storage staging location to the storage account container
-    New-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context -Permission Container -ErrorAction SilentlyContinue *>&1
+    New-AzureStorageContainer -Name $StorageContainerName `
+                                -Context $StorageAccount.Context `
+                                -Permission Container `
+                                -ErrorAction SilentlyContinue *>&1
 
     $ArtifactFilePaths = Get-ChildItem $ArtifactStagingDirectory -Recurse -File | ForEach-Object -Process {$_.FullName}
     foreach ($SourcePath in $ArtifactFilePaths) {
         Set-AzureStorageBlobContent -File $SourcePath -Blob $SourcePath.Substring($ArtifactStagingDirectory.length + 1) `
-            -Container $StorageContainerName -Context $StorageAccount.Context -Force
+            -Container $StorageContainerName `
+            -Context $StorageAccount.Context `
+            -Force
     }
 
     # Generate a 4 hour SAS token for the artifacts location if one was not provided in the parameters file
     if ($OptionalParameters[$ArtifactsLocationSasTokenName] -eq $null) {
         $OptionalParameters[$ArtifactsLocationSasTokenName] = ConvertTo-SecureString -AsPlainText -Force `
-            (New-AzureStorageContainerSASToken -Container $StorageContainerName -Context $StorageAccount.Context -Permission r -ExpiryTime (Get-Date).AddHours(4))
+            (New-AzureStorageContainerSASToken -Container $StorageContainerName `
+                                                -Context $StorageAccount.Context `
+                                                -Permission r `
+                                                -ExpiryTime (Get-Date).AddHours(4))
     }
 
     # Set DSC File Uri
     if (Test-Path $DSCSourceFolder) {
         $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
         $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+        $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     }
 }
 
 # Create or update the resource group using the specified template file and template parameters file
-New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Verbose -Force
+New-AzureRmResourceGroup -Name $ResourceGroup_Name -Location $ResourceGroupLocation -Verbose -Force
 
 if ($ValidateOnly) {
-    $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
+    $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
                                                                                   -TemplateFile $TemplateFile `
-                                                                                  -TemplateParameterFile $TemplateParametersFile `
-                                                                                  @OptionalParameters)
+                                                                                  -TemplateParameterFile $TemplateParametersFile)
     if ($ErrorMessages) {
         Write-Output '', 'Validation returned the following errors:', @($ErrorMessages), '', 'Template is invalid.'
     }
@@ -120,12 +159,12 @@ if ($ValidateOnly) {
 else {
     # Deploy the SAP HANA Environment from the ARM Template
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
-                                       -ResourceGroupName $ResourceGroupName `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
-                                       -vmName $vmName `
+                                       -ResourceGroupName $ResourceGroup_Name `
                                        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
-                                       @OptionalParameters `
+                                       -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
+                                       -baseUri $baseUri `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
     if ($ErrorMessages) {
