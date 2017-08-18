@@ -9,13 +9,13 @@ Configuration ExampleConfiguration{
     Set-StrictMode -Off
 
     Node  "sap-hana"{
-    nxFile ExampleFile {
+		nxFile ExampleFile {
 
-        DestinationPath = "/tmp/example"
-        Contents = $Uri
-        Ensure = "Present"
-        Type = "File"
-    }
+			DestinationPath = "/tmp/example"
+			Contents = $Uri
+			Ensure = "Present"
+			Type = "File"
+		}
 
     }
 }
