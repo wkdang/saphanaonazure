@@ -288,51 +288,26 @@
                 }
             },
             "resources": [{
-                    "name": "scriptextension",
-                    "type": "extensions",
-                    "location": "[resourceGroup().location]",
-                    "apiVersion": "[variables('api-version-vm')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Extensions",
-                        "type": "CustomScript",
-                        "typeHandlerVersion": "2.0",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "fileUris": [
-                                "[parameters('customUri')]"
-                            ],
-                            "commandToExecute": "sh preReqInstall.sh"
-                        }
-                    }
-                },
-                {
-                    "apiVersion": "[variables('api-version-vm')]",
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat(parameters('vmName'),'/enabledsc')]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]",
-                        "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'scriptextension')]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.OSTCExtensions",
-                        "type": "DSCForLinux",
-                        "typeHandlerVersion": "2.5",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "ExtensionAction": "[variables('mode')]",
-                            "FileUri": "[parameters('fileUri')]"
-                        },
-                        "protectedSettings": {
-                            "RegistrationUrl": "[parameters('AzureDscUri')]",
-                            "RegistrationKey": "[parameters('AzureDscKey')]"
-                        }
+                "name": "scriptextension",
+                "type": "extensions",
+                "location": "[resourceGroup().location]",
+                "apiVersion": "[variables('api-version-vm')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                ],
+                "properties": {
+                    "publisher": "Microsoft.Azure.Extensions",
+                    "type": "CustomScript",
+                    "typeHandlerVersion": "2.0",
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                        "fileUris": [
+                            "[parameters('customUri')]"
+                        ],
+                        "commandToExecute": "[concat('sh preReqInstall.sh ', parameters('AzureDscKey'), ' ' , parameters('AzureDscUri'))]"
                     }
                 }
-            ]
+            }]
         }
     ],
     "outputs": {}
