@@ -47,6 +47,18 @@
             "metadata": {
                 "description": "The data subnet"
             }
+        },
+        "AzureDscUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Uri for Azure Automation DSC"
+            }
+        },
+        "AzureDscKey": {
+            "type": "string",
+            "metadata": {
+                "description": "Key for Azure Automation DSC"
+            }
         }
     },
     "variables": {
@@ -313,6 +325,10 @@
                         "settings": {
                             "ExtensionAction": "[variables('mode')]",
                             "FileUri": "[parameters('fileUri')]"
+                        },
+                        "protectedSettings": {
+                            "RegistrationUrl": "[parameters('AzureDscUri')]",
+                            "RegistrationKey": "[parameters('AzureDscKey')]"
                         }
                     }
                 }

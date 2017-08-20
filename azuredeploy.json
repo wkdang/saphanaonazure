@@ -75,6 +75,18 @@
             "metadata": {
                 "description": "Base deployment uri"
             }
+        },
+        "AzureDscUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Uri for Azure Automation DSC"
+            }
+        },
+        "AzureDscKey": {
+            "type": "string",
+            "metadata": {
+                "description": "Key for Azure Automation DSC"
+            }
         }
     },
     "variables": {
@@ -116,6 +128,12 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
                     }
                 }
             }

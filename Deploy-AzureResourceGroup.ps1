@@ -1,4 +1,4 @@
-#Requires -Version 3.0
+#Requires -Version 5.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
 #Requires -Module nx
@@ -11,8 +11,8 @@ Param(
     [string] $ArtifactStagingDirectory = '.',
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
-    [switch] $ValidateOnly,
-    [switch] $SkipUpload
+    [string] $DscConfigName = 'ExampleConfiguration',
+    [switch] $ValidateOnly
 )
 
 try {
@@ -38,16 +38,17 @@ $ResourceGroupLocation = $JsonParameters.parameters.ResourceGroupLocation.value
 $ResourceGroup_Name = $JsonParameters.parameters.ResourceGroup_Name.value
 
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
-if ($SkipUpload){
-    $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
-    $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
-    $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
-    $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
-    $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
-    $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
-    $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
-    $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
-}
+$StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+$StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
+$StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
+$StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
+$mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+$customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
+$SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
+$baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
+
+# Create or update the resource group using the specified template file and template parameters file
+New-AzureRmResourceGroup -Name $ResourceGroup_Name -Location $ResourceGroupLocation -Verbose -Force
 
 if ($UploadArtifacts) {
     # Convert relative paths to absolute paths if needed
@@ -57,11 +58,12 @@ if ($UploadArtifacts) {
     # Parse the parameter file and update the values of artifacts location and artifacts location SAS token if they are present
 
     if (($JsonParameters | Get-Member -Type NoteProperty 'parameters') -ne $null) {
-        $JsonParameters = $JsonParameters.parameters
+        (Get-Content $TemplateParametersFile) -join "`n" | ConvertFrom-Json
     }
     $ArtifactsLocationName = '_artifactsLocation'
     $ArtifactsLocationSasTokenName = '_artifactsLocationSasToken'
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
+    $vmName = $JsonParameters.parameters.vmName.value
 
     # Create a storage account name if none was provided
     if ($StorageAccountName -eq '') {
@@ -70,7 +72,21 @@ if ($UploadArtifacts) {
 
     #Set the Base URI for the rest of the script
     $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
-    
+
+    # Create an Azure Automation Account
+    $AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
+                                    -Name $vmName `
+                                    -Location $ResourceGroupLocation
+    $AutomationAccountName = (Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName).AutomationAccountName
+
+    # Create Azure Automation Variable
+    $AutomationVariable = $AutomationAccount | Get-AzureRmAutomationVariable
+    if (($AutomationVariable | Where-Object {$_.Name -eq 'baseUri'}) -eq $null)
+    {
+        $AutomationAccount | New-AzureRmAutomationVariable -Name 'baseUri' -Encrypted $false -Value $baseUri
+    }
+    $AutomationVariable | Set-AzureRmAutomationVariable -Value $baseUri
+
     # Create DSC configuration archive
     if (Test-Path $DSCSourceFolder) {
 
@@ -78,14 +94,15 @@ if ($UploadArtifacts) {
         $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
 
         # Create MOF file and change file encoding
-        Set-Location $DSCSourceFolder
-        . .\ExampleConfiguration.ps1 -Uri $SapBitsUri
-        Set-Location ..
-        $mofFile = Get-ChildItem ($DSCSourceFolder +'\sap-hana.mof')
-        $mofFileContent = Get-Content $mofFile
-        $mofOutFile = ($DSCSourceFolder +'sap-hana-out.mof')
-        [IO.File]::WriteAllLines($mofOutFile,$mofFileContent)
-        Move-Item $mofOutFile $mofFile -Force
+        # Set-Location $DSCSourceFolder
+        # $DscFileName = ('.\' + $DscConfigName + '.ps1')
+        # . $DscFileName -Uri $SapBitsUri
+        # Set-Location ..
+        # $mofFile = Get-ChildItem ($DSCSourceFolder +'\sap-hana.mof')
+        # $mofFileContent = Get-Content $mofFile
+        # $mofOutFile = ($DSCSourceFolder +'sap-hana-out.mof')
+        # [IO.File]::WriteAllLines($mofOutFile,$mofFileContent)
+        # Move-Item $mofOutFile $mofFile -Force
 
         $DSCSourceFilePaths = @(Get-ChildItem $DSCSourceFolder -File -Filter '*.ps1' | `
             ForEach-Object -Process {$_.FullName})
@@ -95,6 +112,12 @@ if ($UploadArtifacts) {
                 -OutputArchivePath $DSCArchiveFilePath `
                 -Force -Verbose
         }
+
+        # Unpack DSC Zip for Azure Automation File Upload
+        Expand-Archive -Path $DSCArchiveFilePath -DestinationPath .\DSC\zip\ -Force
+
+        #Zip the module
+        Compress-Archive -Path ($DSCSourceFolder + '\zip\nx\*') -DestinationPath ($DSCSourceFolder + '\nx.zip') -Force
     }
 
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
@@ -134,16 +157,45 @@ if ($UploadArtifacts) {
                                                 -ExpiryTime (Get-Date).AddHours(4))
     }
 
-    # Set DSC File Uri
+    # Set DSC File Uris
     if (Test-Path $DSCSourceFolder) {
         $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
         $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
-        $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
+        $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\preReqInstall.sh' -Force
+        $moduleUri = ($StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\nx.zip') -Force).ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
     }
-}
 
-# Create or update the resource group using the specified template file and template parameters file
-New-AzureRmResourceGroup -Name $ResourceGroup_Name -Location $ResourceGroupLocation -Verbose -Force
+    # Import the module to Azure Automation
+    $ModuleStatus = $AutomationAccount | Get-AzureRmAutomationModule
+    if (($ModuleStatus | Where-Object {$_.Name -eq 'nx'})  -eq $null)
+    {
+        $ModuleStatus = New-AzureRmAutomationModule -ResourceGroupName $ResourceGroup_Name -AutomationAccountName $AutomationAccountName -Name "nx" -ContentLink $moduleUri
+
+        # Wait for nx module to be installed
+        while($ModuleStatus.ProvisioningState -ne "Succeeded")
+        {
+            $ModuleStatus = $ModuleStatus | Get-AzureRmAutomationModule
+            Start-Sleep -Seconds 3
+        }
+    }
+
+    # Import the DSC Node Configuration to Azure Automation
+    $AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath ($DSCSourceFolder + '\' + $DscConfigName + '.ps1') -Published -Force
+
+    # Compile the Configuration
+    $CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigName
+
+    while($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
+    {
+        $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
+        Start-Sleep -Seconds 3
+    }
+
+    $CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
+
+    # Get the Azure Automation info for computer registration
+    $AutomationRegInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
+}
 
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
@@ -165,6 +217,8 @@ else {
                                        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -baseUri $baseUri `
+                                       -AzureDscUri $AutomationRegInfo.Endpoint `
+                                       -AzureDscKey $AutomationRegInfo.PrimaryKey `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
     if ($ErrorMessages) {
