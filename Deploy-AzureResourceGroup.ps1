@@ -241,7 +241,7 @@ $Node | Set-AzureRmAutomationDscNode -NodeConfigurationName $ConfigName -Force
 
 # Check compliance status
 $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
-$message = ($Node.Name + ' is ' + $Node.Status)
+$message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)
 while ($Node.Status -eq 'Pending') {
     $Node = $Node | Get-AzureRmAutomationDscNode
     Write-Host $message
