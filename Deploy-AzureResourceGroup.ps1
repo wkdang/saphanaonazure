@@ -42,22 +42,24 @@ if((Get-AzureRmResourceGroup | Where-Object {$_.ResourceGroupName -eq $ResourceG
     New-AzureRmResourceGroup -Name $ResourceGroup_Name `
                                 -Location $ResourceGroupLocation `
                                 -Verbose -Force
-    $message = ($ResourceGroup_Name + ' was created.')
+    $message = ('The Resource Group ' + $ResourceGroup_Name + ' was created.')
     Write-Host $message
 }
 
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
-$StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
-$StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
-$StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
-$StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
-$mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
-$customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
-$SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
-$baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
-# $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $JsonParameters.parameters.vmName.value
-$moduleUri = ($StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\nx.zip') -Force).ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
-$vmName = $JsonParameters.parameters.vmName.value
+if(!$UploadArtifacts){
+
+    $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+    $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
+    $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
+    $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
+    $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+    $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
+    $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
+    $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
+    # $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $JsonParameters.parameters.vmName.value
+    $moduleUri = ($StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\nx.zip') -Force).ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
+}
 
 if ($UploadArtifacts) {
     # Convert relative paths to absolute paths if needed
@@ -76,7 +78,7 @@ if ($UploadArtifacts) {
     # Create a storage account name if none was provided
     if ($StorageAccountName -eq '') {
         $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
-        $message = ($StorageAccountName + ' was created.')
+        $message = ('Staging storage account ' + $StorageAccountName + ' was created.')
         Write-Host $message
     }
 
@@ -155,6 +157,7 @@ if ($UploadArtifacts) {
 }
 
 # Create an Azure Automation Account
+$vmName = $JsonParameters.parameters.vmName.value
 $AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
                                                     -Name $vmName `
                                                     -Location $ResourceGroupLocation
@@ -163,6 +166,7 @@ $message = ($AutomationAccountName + ' has been created.')
 Write-Host $message
 
 # Create Azure Automation Variable
+$baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
 $AutomationVariable = $AutomationAccount | Get-AzureRmAutomationVariable
 if (($AutomationVariable | Where-Object {$_.Name -eq 'baseUri'}) -eq $null)
 {
