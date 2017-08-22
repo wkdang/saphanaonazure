@@ -1,5 +1,6 @@
 AZ_URI=$2
 AZ_KEY=$1
+DSC_CONFIG_NAME=$3
 
 # Install PowerShell
 wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-beta.5/powershell-6.0.0_beta.5-1.suse.42.1.x86_64.rpm
@@ -24,4 +25,4 @@ wget https://github.com/Microsoft/PowerShell-DSC-for-Linux/releases/download/v1.
 sudo rpm -Uvh omi-1.1.0.ssl_100.x64.rpm dsc-1.1.1-294.ssl_100.x64.rpm
 
 # Register Node for Azure Automation DSC Management
-sudo /opt/microsoft/dsc/Scripts/Register.py $AZ_KEY $AZ_URI
+sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationName $DSC_CONFIG_NAME --RefreshFrequencyMins 5 --ConfigurationMode ApplyAndAutoCorrect --ConfigurationModeFrequencyMins 10

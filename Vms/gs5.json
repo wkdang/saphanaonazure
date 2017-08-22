@@ -59,6 +59,12 @@
             "metadata": {
                 "description": "Key for Azure Automation DSC"
             }
+        },
+        "DscConfigName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of AzureAutomation Config"
+            }
         }
     },
     "variables": {
@@ -304,7 +310,7 @@
                         "fileUris": [
                             "[parameters('customUri')]"
                         ],
-                        "commandToExecute": "[concat('sh preReqInstall.sh ', parameters('AzureDscKey'), ' ' , parameters('AzureDscUri'))]"
+                        "commandToExecute": "[concat('sh preReqInstall.sh ', parameters('AzureDscKey'), ' ' , parameters('AzureDscUri'), ' ', parameters('DscConfigName'))]"
                     }
                 }
             }]
