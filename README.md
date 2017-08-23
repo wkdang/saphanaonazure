@@ -16,13 +16,19 @@ M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
 Installation media for SAP should be downloaded and place in the SapBits folder. This location will be automatically be uploaded to Azure Storage upon deployment.
 
 ## Deploy the Solution
-The solution must be run from PowerShell on Windows that is logged into Azure. It assumes you have logged in and selected the subscription to which you would like to deploy to. If this is not the case run `Login-AzureRmAccount` to get logged in. Once logged in, the current subscription should be displayed. If a different subscription is necessary, run `Get-AzureRmSubscription` to list the subscriptions and then `Select-AzureRmSubscription -SubscriptionName "YOURSUBNAME"` to select the subscription where the solution is to be deployed.
+The solution must be run from PowerShell on Windows that is logged into Azure. *The Powershell script takes advantage of some PowerShell functions that are not available in the cross-platform PowerShell yet.* It assumes you have logged in and selected the subscription to which you would like to deploy to. If this is not the case run `Login-AzureRmAccount` to get logged in. Once logged in, the current subscription should be displayed. If a different subscription is necessary, run `Get-AzureRmSubscription` to list the subscriptions and then `Select-AzureRmSubscription -SubscriptionName "YOURSUBNAME"` to select the subscription where the solution is to be deployed.
 
 The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` file. The solution uses the `azuredeploy.parameters.json` file to set the deployment parameters like Resource Group name, location, and VM size. The solution can be deployed in any location with the available sku. **We will be adding additional SKUs that will drive the available deployment locations.** For more information on Sku availability can be found on the [Azure website](https://azure.microsoft.com/en-us/pricing/details/cloud-services/).
 
 ```powershell
 ./Deploy-AzureResourceGroup.ps1 -UploadArtifacts
 ```
+
+If the files are already uploaded to the staging directory, running the `./Deploy-AzureResourceGroup.ps1` with no switch will skip the upload process.
+
+## Desired State Configuraiton
+This installation takes advantage of [Azure Automation Desired State Configuration](https://azure.microsoft.com/en-us/blog/what-why-how-azure-automation-desired-state-configuration/) to manage the configuration and installation of HANA.
+
 ## Troubleshooting
 
 ## Code of Conduct
