@@ -4,6 +4,7 @@ DSC/ExampleConfiguration.zip
 *.zip
 .DS_Store
 zip/
+.vscode/
 
 # Created by https://www.gitignore.io/api/osx,windows,visualstudiocode
 
