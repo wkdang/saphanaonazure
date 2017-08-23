@@ -7,15 +7,21 @@ The template current deploys HANA on a one of the machines listed in the table b
 Machine Size | RAM | Data and Log Disks | /hana/shared | /root | /usr/sap | hana/backup
 ------------ | --- | ------------------ | ------------ | ----- | -------- | -----------
 GS5 | 448 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
+M64s | 1TB | 2 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S30
+M64ms | 1.7TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 3 x S30
+M128S | 2TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 3 x S30
+M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
+
+## Installation Media
+Installation media for SAP should be downloaded and place in the SapBits folder. This location will be automatically be uploaded to Azure Storage upon deployment.
 
 ## Deploy the Solution
 The solution must be run from PowerShell on Windows that is logged into Azure. It assumes you have logged in and selected the subscription to which you would like to deploy to. If this is not the case run `Login-AzureRmAccount` to get logged in. Once logged in, the current subscription should be displayed. If a different subscription is necessary, run `Get-AzureRmSubscription` to list the subscriptions and then `Select-AzureRmSubscription -SubscriptionName "YOURSUBNAME"` to select the subscription where the solution is to be deployed.
 
-The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` file. Execute the below example replacing `YOURNAME` with your Resource Group Name and `YOURVMNAME` with your VM name. The solution can be deployed in any location with the available sku. **We will be adding additional SKUs that will drive the available deployment locations.** For more information on Sku availability can be found on the [Azure website](https://azure.microsoft.com/en-us/pricing/details/cloud-services/).
+The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` file. The solution uses the `azuredeploy.parameters.json` file to set the deployment parameters like Resource Group name, location, and VM size. The solution can be deployed in any location with the available sku. **We will be adding additional SKUs that will drive the available deployment locations.** For more information on Sku availability can be found on the [Azure website](https://azure.microsoft.com/en-us/pricing/details/cloud-services/).
 
 ```powershell
-./Deploy-AzureResourceGroup.ps1 -ResourceGroupName YOURNAME -vmName
-YOURVMNAME -ResourceGroupLocation eastus2 -UploadArtifacts -DSCSourceFolder .\DSC\
+./Deploy-AzureResourceGroup.ps1 -UploadArtifacts
 ```
 ## Troubleshooting
 

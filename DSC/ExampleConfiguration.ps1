@@ -1,14 +1,12 @@
-
-Param(
-    [Parameter(Mandatory)][string] $Uri
-)
-
 Configuration ExampleConfiguration{
 
-    Import-DSCResource -Module nx
+	$Uri = Get-AutomationVariable -Name 'baseUri'
+	Import-DSCResource -Module nx
     Set-StrictMode -Off
 
     Node  "sap-hana"{
+
+
 		nxFile ExampleFile {
 
 			DestinationPath = "/tmp/example"
