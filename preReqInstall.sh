@@ -51,9 +51,4 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 echo 1 > /root/boot-requested
 
 # Register Node for Azure Automation DSC Management
-<<<<<<< HEAD
-sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationMode ApplyAndAutoCorrect --RefreshMode Pull --ConfigurationName ExampleConfiguration.sap-hana
-
-=======
-sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationName $DSC_CONFIG_NAME --RefreshFrequencyMins 5 --ConfigurationMode ApplyAndAutoCorrect --ConfigurationModeFrequencyMins 10
->>>>>>> 006d46ff7271041f912c168a698e479e212b6253
+sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationName $DSC_CONFIG_NAME --RefreshFrequencyMins 5 --ConfigurationMode ApplyAndAutoCorrect --ConfigurationModeFrequencyMins 10 --RefreshMode Pull
