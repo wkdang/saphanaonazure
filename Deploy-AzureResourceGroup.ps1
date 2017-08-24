@@ -183,7 +183,7 @@ if (($ModuleStatus | Where-Object {$_.Name -eq 'nx'})  -eq $null)
     $message = 'The nx Module has been added to Azure Automation'
     Write-Host $message
 
-    $message = ('The moduel status is ' + $ModuleStatus.ProvisioningState)
+    $message = ('The module status is ' + $ModuleStatus.ProvisioningState)
     # Wait for nx module to be installed
     while($ModuleStatus.ProvisioningState -ne "Succeeded")
     {
