@@ -212,8 +212,8 @@ $AutomationRegInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
 
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
-                                                                                  -TemplateFile $TemplateFile `
-                                                                                  -TemplateParameterFile $TemplateParametersFile)
+                                                                -TemplateFile $TemplateFile `
+                                                                -TemplateParameterFile $TemplateParametersFile)
     if ($ErrorMessages) {
         Write-Output '', 'Validation returned the following errors:', @($ErrorMessages), '', 'Template is invalid.'
     }
@@ -222,6 +222,8 @@ if ($ValidateOnly) {
     }
 }
 else {
+    $ConfigName = ($DscConfigName + '.sap-hana')
+
     # Deploy the SAP HANA Environment from the ARM Template
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -TemplateFile $TemplateFile `
@@ -232,16 +234,17 @@ else {
                                        -baseUri $baseUri `
                                        -AzureDscUri $AutomationRegInfo.Endpoint `
                                        -AzureDscKey $AutomationRegInfo.PrimaryKey `
+                                       -DscConfigName $ConfigName `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
 
-$ConfigName = ($DscConfigName + '.sap-hana')
-$Node = $AutomationAccount | Get-AzureRmAutomationDscNode -Name $JsonParameters.parameters.vmName.value
-$Node | Set-AzureRmAutomationDscNode -NodeConfigurationName $ConfigName -Force
+
+# $Node = $AutomationAccount | Get-AzureRmAutomationDscNode -Name $JsonParameters.parameters.vmName.value
+# $Node | Set-AzureRmAutomationDscNode -NodeConfigurationName $ConfigName -Force
 
 # Check compliance status
 $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
-$message = ($Node.Name + ' is ' + $Node.Status)
+$message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)
 while ($Node.Status -eq 'Pending') {
     $Node = $Node | Get-AzureRmAutomationDscNode
     Write-Host $message

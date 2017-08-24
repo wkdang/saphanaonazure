@@ -87,6 +87,12 @@
             "metadata": {
                 "description": "Key for Azure Automation DSC"
             }
+        },
+        "DscConfigName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of AzureAutomation Config"
+            }
         }
     },
     "variables": {
@@ -134,6 +140,9 @@
                     },
                     "AzureDscKey": {
                         "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
                     }
                 }
             }
@@ -169,6 +178,15 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
                     }
                 }
             }
@@ -204,6 +222,15 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
                     }
                 }
             }
@@ -239,6 +266,15 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
                     }
                 }
             }
@@ -274,6 +310,15 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
                     }
                 }
             }

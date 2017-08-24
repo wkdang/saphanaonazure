@@ -1,5 +1,6 @@
 AZ_URI=$2
 AZ_KEY=$1
+DSC_CONFIG_NAME=$3
 
 # Install PowerShell
 wget https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-beta.5/powershell-6.0.0_beta.5-1.suse.42.1.x86_64.rpm
@@ -50,5 +51,9 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 echo 1 > /root/boot-requested
 
 # Register Node for Azure Automation DSC Management
+<<<<<<< HEAD
 sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationMode ApplyAndAutoCorrect --RefreshMode Pull --ConfigurationName ExampleConfiguration.sap-hana
 
+=======
+sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationName $DSC_CONFIG_NAME --RefreshFrequencyMins 5 --ConfigurationMode ApplyAndAutoCorrect --ConfigurationModeFrequencyMins 10
+>>>>>>> 006d46ff7271041f912c168a698e479e212b6253
