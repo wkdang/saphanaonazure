@@ -13,7 +13,32 @@ M128S | 2TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 3 x S30
 M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
 
 ## Installation Media
-Installation media for SAP should be downloaded and place in the SapBits folder. This location will be automatically be uploaded to Azure Storage upon deployment.
+Installation media for SAP HANA should be downloaded and place in the SapBits folder. This location will be automatically be uploaded to Azure Storage upon deployment.  Specifically you need to download SAP package 51052325, which should consist of four files:
+```
+51052325_part1.exe
+51052325_part2.rar
+51052325_part3.rar
+51052325_part4.rar
+```
+
+To perform this download, go to http://support.sap.com, and log on with your credentials.  You should see a screen that looks like this:
+[!image](./media/)
+
+
+
+You can check the integrity of these files by using the md5sum program, and the md5 hash values are stored in the file md5sums.  This command will check all the deployment files:
+```
+md5sum -c md5sums
+```
+
+## Configure the Solution
+To customize the Azure environment that is deployed, you can edit the `azuredeploy.parameters` file, which contains the network names, IP addresses and virtual machine names that will be deployed in the next step.
+
+To customize the HAHA deployment, you can edit the `SapBits/hdbinst.cfg` - you can change various options such as the SID name and passwords.  Please do not change the line:
+```
+hostname=REPLACE-WITH-HOSTNAME
+```
+because this gets filled in automatically when you do the deployment.
 
 ## Deploy the Solution
 The solution must be run from PowerShell on Windows that is logged into Azure. *The Powershell script takes advantage of some PowerShell functions that are not available in the cross-platform PowerShell yet.* It assumes you have logged in and selected the subscription to which you would like to deploy to. If this is not the case run `Login-AzureRmAccount` to get logged in. Once logged in, the current subscription should be displayed. If a different subscription is necessary, run `Get-AzureRmSubscription` to list the subscriptions and then `Select-AzureRmSubscription -SubscriptionName "YOURSUBNAME"` to select the subscription where the solution is to be deployed.
