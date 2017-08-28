@@ -21,10 +21,7 @@ Installation media for SAP HANA should be downloaded and place in the SapBits fo
 51052325_part4.rar
 ```
 
-To perform this download, go to http://support.sap.com, and log on with your credentials.  You should see a screen that looks like this:
-[!image](./media/)
-
-
+To perform this download, go to http://support.sap.com, and log on with your credentials.  Click on the magnifying glass to search, and enter ***51052325***.  Download all four components.
 
 You can check the integrity of these files by using the md5sum program, and the md5 hash values are stored in the file md5sums.  This command will check all the deployment files:
 ```
