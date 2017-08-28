@@ -1,4 +1,4 @@
-#Requires -Version 5.0
+#Requires -Version 3.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
 #Requires -Module nx
@@ -57,8 +57,6 @@ if(!$UploadArtifacts){
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
     $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
-    # $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $JsonParameters.parameters.vmName.value
-    $moduleUri = ($StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\nx.zip') -Force).ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
 }
 
 if ($UploadArtifacts) {
@@ -96,14 +94,6 @@ if ($UploadArtifacts) {
                 -OutputArchivePath $DSCArchiveFilePath `
                 -Force -Verbose
         }
-
-        # Unpack DSC Zip for Azure Automation File Upload
-        Expand-Archive -Path $DSCArchiveFilePath -DestinationPath .\DSC\zip\ -Force
-
-        #Zip the module
-        Compress-Archive -Path ($DSCSourceFolder + '\zip\nx\*') -DestinationPath ($DSCSourceFolder + '\nx.zip') -Force
-        $message = ('The nx Module was created.')
-        Write-Host $message
     }
 
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
@@ -152,7 +142,6 @@ if ($UploadArtifacts) {
         $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
         $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
         $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\preReqInstall.sh' -Force
-        $moduleUri = ($StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\nx.zip') -Force).ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
     }
 }
 
@@ -177,9 +166,15 @@ $message = ('The baseUri variable was set to ' + $baseUri)
 
 # Import the module to Azure Automation
 $ModuleStatus = $AutomationAccount | Get-AzureRmAutomationModule
-if (($ModuleStatus | Where-Object {$_.Name -eq 'nx'})  -eq $null)
+$ModuleName = "nx"
+if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
 {
-    $ModuleStatus = New-AzureRmAutomationModule -ResourceGroupName $ResourceGroup_Name -AutomationAccountName $AutomationAccountName -Name "nx" -ContentLink $moduleUri
+
+    $ModuleVersion = "1.0.0"
+    $ModuleContentUrl = "https://www.powershellgallery.com/api/v2/package/$ModuleName/$ModuleVersion"
+    $ModulePackage = (Invoke-WebRequest -Uri $ModuleContentUrl -MaximumRedirection 0 -UseBasicParsing -ErrorAction Ignore).Headers.Location
+
+    $ModuleStatus = $AutomationAccount | New-AzureRmAutomationModule -Name $ModuleName -ContentLink $ModulePackage
     $message = 'The nx Module has been added to Azure Automation'
     Write-Host $message
 
@@ -237,10 +232,6 @@ else {
                                        -DscConfigName $ConfigName `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
-
-
-# $Node = $AutomationAccount | Get-AzureRmAutomationDscNode -Name $JsonParameters.parameters.vmName.value
-# $Node | Set-AzureRmAutomationDscNode -NodeConfigurationName $ConfigName -Force
 
 # Check compliance status
 $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
