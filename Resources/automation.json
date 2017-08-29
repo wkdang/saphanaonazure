@@ -33,10 +33,24 @@
             "metadata": {
                 "description": "url for Hana Install Files"
             }
+        },
+        "moduleUri": {
+            "type": "string",
+            "metadata": {
+                "description": "url for the nx Module"
+            },
+            "defaultValue": "https://devopsgallerystorage.blob.core.windows.net/packages/nx.1.0.0.nupkg"
+        },
+        "configUri": {
+            "type": "string",
+            "metadata": {
+                "description": "url for the uri"
+            },
+            "defaultValue": "https://stageeef21314653e4eec893.blob.core.windows.net/yourrgname-stageartifacts/DSC/ExampleConfiguration.ps1"
         }
     },
     "variables": {
-        "apiVersion": "2017-05-15-preview",
+        "apiVersion": "2015-10-31",
         "sku": "Free",
         "configurationName": "ExampleConfiguration"
     },
@@ -71,12 +85,13 @@
                 ],
                 "properties": {
                     "contentLink": {
-                        "uri": "https://devopsgallerystorage.blob.core.windows.net/packages/nx.1.0.0.nupkg"
+                        "uri": "[parameters('moduleUri')]"
                     },
                     "version": "1.0.0"
                 },
                 "location": "[parameters('automationLocation')]"
-            }, {
+            },
+            {
                 "name": "[variables('configurationName')]",
                 "type": "configurations",
                 "apiVersion": "[variables('apiVersion')]",
@@ -84,9 +99,28 @@
                     "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]"
                 ],
                 "properties": {
+                    "logVerbose": true,
+                    "logProgress": true,
+                    "state": "Published",
+                    "overwrite": "true",
                     "source": {
                         "type": "uri",
-                        "value": "https://stageeef21314653e4eec893.blob.core.windows.net/yourrgname-stageartifacts/DSC/ExampleConfiguration.ps1"
+                        "value": "[parameters('configUri')]"
+                    }
+                },
+                "location": "[parameters('automationLocation')]"
+            },
+            {
+                "name": "[parameters('vmName')]",
+                "type": "compilationjobs",
+                "apiVersion": "[variables('apiVersion')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]",
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'), '/configurations/', variables('configurationName'))]"
+                ],
+                "properties": {
+                    "configuration": {
+                        "name": "[variables('configurationName')]"
                     }
                 },
                 "location": "[parameters('automationLocation')]"
