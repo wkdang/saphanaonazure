@@ -149,7 +149,8 @@ if ($UploadArtifacts) {
 $vmName = $JsonParameters.parameters.vmName.value
 $AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
                                                     -Name $vmName `
-                                                    -Location $ResourceGroupLocation
+                                                    -Location $ResourceGroupLocation `
+                                                    -Plan "Basic"
 $AutomationAccountName = (Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName).AutomationAccountName
 $message = ($AutomationAccountName + ' has been created.')
 Write-Host $message
