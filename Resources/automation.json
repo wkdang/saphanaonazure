@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Name"
+            }
+        },
+        "automationLocation": {
+            "type": "string",
+            "allowedValues": [
+                "westeurope",
+                "southeastasia",
+                "eastus2",
+                "southcentralus",
+                "japaneast",
+                "southeastasia",
+                "southcentralus",
+                "northeurope",
+                "canadacentral",
+                "australiasoutheast",
+                "centralindia",
+                "japaneast"
+            ],
+            "metadata": {
+                "description": "Location for the Automation Account"
+            }
+        },
+        "baseUri": {
+            "type": "string",
+            "metadata": {
+                "description": "url for Hana Install Files"
+            }
+        }
+    },
+    "variables": {
+        "apiVersion": "2017-05-15-preview",
+        "sku": "Free",
+        "configurationName": "ExampleConfiguration"
+    },
+    "resources": [{
+        "name": "[parameters('vmName')]",
+        "type": "Microsoft.Automation/automationAccounts",
+        "apiVersion": "[variables('apiVersion')]",
+        "properties": {
+            "sku": {
+                "name": "[variables('sku')]"
+            }
+        },
+        "location": "[parameters('automationLocation')]",
+        "resources": [{
+                "name": "baseUri",
+                "type": "variables",
+                "apiVersion": "[variables('apiVersion')]",
+                "properties": {
+                    "value": "[parameters('baseUri')]",
+                    "description": "base URI"
+                },
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]"
+                ]
+            },
+            {
+                "name": "nx",
+                "type": "modules",
+                "apiVersion": "[variables('apiVersion')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]"
+                ],
+                "properties": {
+                    "contentLink": {
+                        "uri": "https://devopsgallerystorage.blob.core.windows.net/packages/nx.1.0.0.nupkg"
+                    },
+                    "version": "1.0.0"
+                },
+                "location": "[parameters('automationLocation')]"
+            }, {
+                "name": "[variables('configurationName')]",
+                "type": "configurations",
+                "apiVersion": "[variables('apiVersion')]",
+                "dependsOn": [
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]"
+                ],
+                "properties": {
+                    "source": {
+                        "type": "uri",
+                        "value": "https://stageeef21314653e4eec893.blob.core.windows.net/yourrgname-stageartifacts/DSC/ExampleConfiguration.ps1"
+                    }
+                },
+                "location": "[parameters('automationLocation')]"
+            }
+        ]
+    }],
+    "outputs": {}
+}
