@@ -233,15 +233,20 @@ else {
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
 
-# Check compliance status
-$Node = $AutomationAccount | Get-AzureRmAutomationDscNode
-$message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)
-while ($Node.Status -eq 'Pending') {
-    $Node = $Node | Get-AzureRmAutomationDscNode
-    Write-Host $message
-    Start-Sleep -Seconds 3
-}
+    # Install HANA Monitoring Extension
 
+    $AzContext = Get-AzureRmContext
+    $AzContext | Set-AzureRmVMAEMExtension -ResourceGroupName $ResourceGroup_Name -VMName $vmName
+
+
+    # Check compliance status
+    $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
+    $message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)
+    while ($Node.Status -eq 'Pending') {
+        $Node = $Node | Get-AzureRmAutomationDscNode
+        Write-Host $message
+        Start-Sleep -Seconds 3
+    }
 
     if ($ErrorMessages) {
         Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
