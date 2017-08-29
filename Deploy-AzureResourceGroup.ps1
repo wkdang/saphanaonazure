@@ -190,7 +190,8 @@ if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
 }
 
 # Import the DSC Node Configuration to Azure Automation
-$AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath ($DSCSourceFolder + '\' + $DscConfigName + '.ps1') -Published -Force
+$DscConfigPath = ($DSCSourceFolder + '\' + $DscConfigName + '.ps1')
+$AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath $DscConfigPath  -Published -Force
 
 # Compile the Configuration
 $CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigName
