@@ -190,7 +190,7 @@ if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
 }
 
 # Import the DSC Node Configuration to Azure Automation
-$DscConfigPath = ($DSCSourceFolder + '\' + $DscConfigName + '.ps1')
+$DscConfigPath = ('.\' + $DSCSourceFolder + '\' + $DscConfigName + '.ps1')
 $AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath $DscConfigPath  -Published -Force
 
 # Compile the Configuration
@@ -237,8 +237,7 @@ else {
 
     # Install HANA Monitoring Extension
 
-    $AzContext = Get-AzureRmContext
-    $AzContext | Set-AzureRmVMAEMExtension -ResourceGroupName $ResourceGroup_Name -VMName $vmName
+ Set-AzureRmVMAEMExtension -ResourceGroupName $ResourceGroup_Name -VMName $vmName
 
 
     # Check compliance status
