@@ -45,6 +45,7 @@ if((Get-AzureRmResourceGroup | Where-Object {$_.ResourceGroupName -eq $ResourceG
     $message = ('The Resource Group ' + $ResourceGroup_Name + ' was created.')
     Write-Host $message
 }
+$DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $DSCSourceFolder))
 
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
 if(!$UploadArtifacts){
@@ -62,7 +63,7 @@ if(!$UploadArtifacts){
 if ($UploadArtifacts) {
     # Convert relative paths to absolute paths if needed
     $ArtifactStagingDirectory = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $ArtifactStagingDirectory))
-    $DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $DSCSourceFolder))
+
 
     # Parse the parameter file and update the values of artifacts location and artifacts location SAS token if they are present
 
@@ -190,7 +191,7 @@ if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
 }
 
 # Import the DSC Node Configuration to Azure Automation
-$DscConfigPath = ('.\' + $DSCSourceFolder + '\' + $DscConfigName + '.ps1')
+$DscConfigPath = ( $DSCSourceFolder + '\' + $DscConfigName + '.ps1')
 $AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath $DscConfigPath  -Published -Force
 
 # Compile the Configuration
