@@ -2,6 +2,8 @@
 
 DSC/ExampleConfiguration.zip
 *.zip
+*.rar
+*.exe
 .DS_Store
 zip/
 .vscode/

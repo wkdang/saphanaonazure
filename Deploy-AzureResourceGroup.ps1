@@ -45,6 +45,7 @@ if((Get-AzureRmResourceGroup | Where-Object {$_.ResourceGroupName -eq $ResourceG
     $message = ('The Resource Group ' + $ResourceGroup_Name + ' was created.')
     Write-Host $message
 }
+$DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $DSCSourceFolder))
 
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
 if(!$UploadArtifacts){
@@ -62,7 +63,7 @@ if(!$UploadArtifacts){
 if ($UploadArtifacts) {
     # Convert relative paths to absolute paths if needed
     $ArtifactStagingDirectory = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $ArtifactStagingDirectory))
-    $DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, $DSCSourceFolder))
+
 
     # Parse the parameter file and update the values of artifacts location and artifacts location SAS token if they are present
 
@@ -149,7 +150,8 @@ if ($UploadArtifacts) {
 $vmName = $JsonParameters.parameters.vmName.value
 $AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
                                                     -Name $vmName `
-                                                    -Location $ResourceGroupLocation
+                                                    -Location $ResourceGroupLocation `
+                                                    -Plan "Basic"
 $AutomationAccountName = (Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName).AutomationAccountName
 $message = ($AutomationAccountName + ' has been created.')
 Write-Host $message
@@ -189,7 +191,8 @@ if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
 }
 
 # Import the DSC Node Configuration to Azure Automation
-$AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath ($DSCSourceFolder + '\' + $DscConfigName + '.ps1') -Published -Force
+$DscConfigPath = ( $DSCSourceFolder + '\' + $DscConfigName + '.ps1')
+$AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath $DscConfigPath  -Published -Force
 
 # Compile the Configuration
 $CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigName
@@ -235,8 +238,7 @@ else {
 
     # Install HANA Monitoring Extension
 
-    $AzContext = Get-AzureRmContext
-    $AzContext | Set-AzureRmVMAEMExtension -ResourceGroupName $ResourceGroup_Name -VMName $vmName
+ Set-AzureRmVMAEMExtension -ResourceGroupName $ResourceGroup_Name -VMName $vmName
 
 
     # Check compliance status
