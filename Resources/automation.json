@@ -111,8 +111,8 @@
                 "location": "[parameters('automationLocation')]"
             },
             {
-                "name": "[parameters('vmName')]",
-                "type": "compilationjobs",
+                "name": "[concat(variables('configurationName'), '-compileJob')]",
+                "type": "Compilationjobs",
                 "apiVersion": "[variables('apiVersion')]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]",
