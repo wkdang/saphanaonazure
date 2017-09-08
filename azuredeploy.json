@@ -58,12 +58,6 @@
                 "description": "The data subnet"
             }
         },
-        "fileUri": {
-            "type": "string",
-            "metadata": {
-                "decription": "Uri for MOF file"
-            }
-        },
         "customUri": {
             "type": "string",
             "metadata": {
@@ -117,9 +111,6 @@
                     "vmName": {
                         "value": "[variables('vmName')]"
                     },
-                    "fileUri": {
-                        "value": "[parameters('fileUri')]"
-                    },
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
@@ -160,9 +151,6 @@
                 "parameters": {
                     "vmName": {
                         "value": "[variables('vmName')]"
-                    },
-                    "fileUri": {
-                        "value": "[parameters('fileUri')]"
                     },
                     "customUri": {
                         "value": "[parameters('customUri')]"
@@ -205,9 +193,6 @@
                     "vmName": {
                         "value": "[variables('vmName')]"
                     },
-                    "fileUri": {
-                        "value": "[parameters('fileUri')]"
-                    },
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
@@ -249,9 +234,7 @@
                     "vmName": {
                         "value": "[variables('vmName')]"
                     },
-                    "fileUri": {
-                        "value": "[parameters('fileUri')]"
-                    },
+
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
@@ -292,9 +275,6 @@
                 "parameters": {
                     "vmName": {
                         "value": "[variables('vmName')]"
-                    },
-                    "fileUri": {
-                        "value": "[parameters('fileUri')]"
                     },
                     "customUri": {
                         "value": "[parameters('customUri')]"

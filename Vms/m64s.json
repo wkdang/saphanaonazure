@@ -8,12 +8,7 @@
                 "description": "VM Name"
             }
         },
-        "fileUri": {
-            "type": "string",
-            "metadata": {
-                "description": "Uri for MOF file"
-            }
-        },
+
         "customUri": {
             "type": "string",
             "metadata": {
