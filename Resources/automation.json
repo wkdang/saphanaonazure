@@ -8,6 +8,12 @@
                 "description": "VM Name"
             }
         },
+        "compjobguid": {
+            "type": "string",
+            "metadata": {
+                "description": "compjobguid"
+            }
+        },
         "automationLocation": {
             "type": "string",
             "allowedValues": [
@@ -111,12 +117,14 @@
                 "location": "[parameters('automationLocation')]"
             },
             {
-                "name": "[concat(variables('configurationName'), '-compileJob')]",
-                "type": "Compilationjobs",
+                "name": "[parameters('compjobguid')]",
+                "type": "Microsoft.Automation/automationAccounts/compilationjobs",
                 "apiVersion": "[variables('apiVersion')]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]",
-                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'), '/configurations/', variables('configurationName'))]"
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'), '/configurations/', variables('configurationName'))]",
+                    "[concat('Microsoft.Automation/automationAccounts/modules/','nx')]"
+                    
                 ],
                 "properties": {
                     "configuration": {
