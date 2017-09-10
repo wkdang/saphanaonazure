@@ -1,7 +1,6 @@
 #Requires -Version 3.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
-#Requires -Module nx
 
 Param(
     [switch] $UploadArtifacts,
@@ -54,7 +53,7 @@ if(!$UploadArtifacts){
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
     $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
-    $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+    # $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
     $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
@@ -91,9 +90,9 @@ if ($UploadArtifacts) {
             ForEach-Object -Process {$_.FullName})
         foreach ($DSCSourceFilePath in $DSCSourceFilePaths) {
             $DSCArchiveFilePath = $DSCSourceFilePath.Substring(0, $DSCSourceFilePath.Length - 4) + '.zip'
-            Publish-AzureRmVMDscConfiguration $DSCSourceFilePath `
-                -OutputArchivePath $DSCArchiveFilePath `
-                -Force -Verbose
+            # Publish-AzureRmVMDscConfiguration $DSCSourceFilePath `
+            #     -OutputArchivePath $DSCArchiveFilePath `
+            #     -Force -Verbose
         }
     }
 
@@ -141,7 +140,7 @@ if ($UploadArtifacts) {
     # Set DSC File Uris
     if (Test-Path $DSCSourceFolder) {
         $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
-        $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+        # $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
         $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\preReqInstall.sh' -Force
     }
 }
@@ -227,7 +226,6 @@ else {
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -ResourceGroupName $ResourceGroup_Name `
-                                       -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -baseUri $baseUri `
                                        -AzureDscUri $AutomationRegInfo.Endpoint `
