@@ -12,7 +12,7 @@ Param(
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'ExampleConfiguration',
-    [string] $vmSize = "Standard_GS5",
+    [string] [ValidateSet("Standard_GS5")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly
 
 )
