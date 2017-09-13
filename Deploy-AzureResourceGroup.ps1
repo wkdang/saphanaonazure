@@ -1,4 +1,4 @@
-#Requires -Version 3.0
+#,Requires -Version 3.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
 #Requires -Module nx
@@ -12,7 +12,7 @@ Param(
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'ExampleConfiguration',
-    [string] [ValidateSet("Standard_GS5")] $vmSize = "Standard_GS5",
+    [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly
 
 )
