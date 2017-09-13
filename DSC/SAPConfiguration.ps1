@@ -1,4 +1,4 @@
-Configuration ExampleConfiguration{
+Configuration SAPConfiguration{
 
     $Uri = Get-AutomationVariable -Name 'baseUri'
 

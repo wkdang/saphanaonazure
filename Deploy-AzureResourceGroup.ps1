@@ -13,7 +13,9 @@ Param(
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'ExampleConfiguration',
     [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
-    [switch] $ValidateOnly
+    [switch] $ValidateOnly,
+    [switch] $deploytoexistingvnet,
+    [string] $vnetname
 
 )
 
@@ -51,6 +53,16 @@ if((Get-AzureRmResourceGroup | Where-Object {$_.ResourceGroupName -eq $ResourceG
                                 -Verbose -Force
     $message = ('The Resource Group ' + $ResourceGroup_Name + ' was created.')
     Write-Host $message
+}
+
+
+#Enumerate Existing Network (We are choosing to default to the primary subnet for deployment)
+if($deploytoexistingvnet)
+{
+    $vnet = Get-AzureRMVirtualNetwork -ResourceGroupName $ResourceGroup_Name -Name $vnetname
+    $vnetprefix = $vnet.addressspace.addressprefixes[0]
+    $subnetname = $vnet.Subnets[0].Name
+    $subnetprefix = $vnet.Subnets[0].AddressPrefix
 }
 
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
@@ -231,6 +243,8 @@ else {
     $ConfigName = ($DscConfigName + '.sap-hana')
 
     # Deploy the SAP HANA Environment from the ARM Template
+    if(!$deploytoexistingvnet)
+    {
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
@@ -244,7 +258,27 @@ else {
                                        -CompJobGuid $compjobguid `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
-
+    }
+    elseif($deploytoexistingvnet)
+    {
+        New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
+        -TemplateFile $TemplateFile `
+        -TemplateParameterFile $TemplateParametersFile `
+        -ResourceGroupName $ResourceGroup_Name `
+        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
+        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
+        -baseUri $baseUri `
+        -AzureDscUri $AutomationRegInfo.Endpoint `
+        -AzureDscKey $AutomationRegInfo.PrimaryKey `
+        -DscConfigName $ConfigName `
+        -CompJobGuid $compjobguid `
+        -NetworkName $vnetname `
+        -addressPrefixes $vnetprefix `
+        -subnetName $subnetname `
+        -subnetPrefix $subnetprefix `
+        -Force -Verbose `
+        -ErrorVariable ErrorMessages
+    }
 # Check compliance status
 $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
 $message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)
