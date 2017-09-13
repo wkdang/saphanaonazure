@@ -8,12 +8,6 @@
                 "description": "VM Name"
             }
         },
-        "fileUri": {
-            "type": "string",
-            "metadata": {
-                "description": "Uri for MOF file"
-            }
-        },
         "customUri": {
             "type": "string",
             "metadata": {
@@ -71,7 +65,7 @@
         "api-version": "2017-06-01",
         "api-version-vm": "2017-03-30",
         "vmName": "[parameters('vmName')]",
-        "vmSize": "Standard_GS5",
+        "vmSize": "Standard_M128ms",
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
         "mode": "Push",
