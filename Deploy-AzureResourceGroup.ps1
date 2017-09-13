@@ -1,4 +1,4 @@
-#Requires -Version 3.0
+#,Requires -Version 3.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
 
@@ -11,6 +11,10 @@ Param(
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'ExampleConfiguration',
+<<<<<<< HEAD
+=======
+    [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
+>>>>>>> 90a1210cc9c522c411ef30e06633cec3b3dc1f4d
     [switch] $ValidateOnly
 )
 
@@ -53,7 +57,11 @@ if(!$UploadArtifacts){
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
     $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
+<<<<<<< HEAD
     # $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+=======
+    #$mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+>>>>>>> 90a1210cc9c522c411ef30e06633cec3b3dc1f4d
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
     $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
