@@ -12,7 +12,7 @@ Param(
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'ExampleConfiguration',
-    [string] $vmsize = "Standard_GS5",
+    [string] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly
 
 )
@@ -39,8 +39,10 @@ $JsonParameters = (Get-Content $TemplateParametersFile) -join "`n" | ConvertFrom
 $ResourceGroupLocation = $JsonParameters.parameters.ResourceGroupLocation.value
 $ResourceGroup_Name = $JsonParameters.parameters.ResourceGroup_Name.value
 #added in to support choosing multiple VM Sizes available for SAP Hana
-$vmsize = $JsonParameters.parameters.vmSize.value 
-
+if ($vmSize -eq $null)
+{
+    $vmSize = $JsonParameters.parameters.vmSize.value 
+}
 if((Get-AzureRmResourceGroup | Where-Object {$_.ResourceGroupName -eq $ResourceGroup_Name}) -eq $null )
 {
     # Create or update the resource group using the specified template file and template parameters file
