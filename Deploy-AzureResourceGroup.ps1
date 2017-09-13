@@ -12,7 +12,9 @@ Param(
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'ExampleConfiguration',
+    [string] $vmsize = "Standard_GS5",
     [switch] $ValidateOnly
+
 )
 
 try {
@@ -36,6 +38,9 @@ $TemplateParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combin
 $JsonParameters = (Get-Content $TemplateParametersFile) -join "`n" | ConvertFrom-Json
 $ResourceGroupLocation = $JsonParameters.parameters.ResourceGroupLocation.value
 $ResourceGroup_Name = $JsonParameters.parameters.ResourceGroup_Name.value
+#added in to support choosing multiple VM Sizes available for SAP Hana
+$vmsize = $JsonParameters.parameters.vmSize.value 
+
 if((Get-AzureRmResourceGroup | Where-Object {$_.ResourceGroupName -eq $ResourceGroup_Name}) -eq $null )
 {
     # Create or update the resource group using the specified template file and template parameters file
@@ -204,6 +209,8 @@ $CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
 
 # Get the Azure Automation info for computer registration
 $AutomationRegInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
+#New a guid for the automation template and the complitation job
+$CompJobGuid = ([Guid]::NewGuid()).Guid
 
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
@@ -230,6 +237,7 @@ else {
                                        -AzureDscUri $AutomationRegInfo.Endpoint `
                                        -AzureDscKey $AutomationRegInfo.PrimaryKey `
                                        -DscConfigName $ConfigName `
+                                       -CompJobGuid $compjobguid `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
 
