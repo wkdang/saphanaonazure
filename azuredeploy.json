@@ -87,17 +87,56 @@
             "metadata": {
                 "description": "Name of AzureAutomation Config"
             }
+        },
+        "CompJobGuid": {
+            "type": "string",
+            "metadata": {
+                "description": "Guid for the automation complication Job"
+            }
         }
+        
     },
     "variables": {
         "vmName": "[toLower(parameters('vmName'))]",
+        "automation": "[concat(parameters('baseUri'), '\\Resources\\automation.json')]",
         "gs5Uri": "[concat(parameters('baseUri'), '\\Vms\\gs5.json')]",
         "m64sUri": "[concat(parameters('baseUri'), '\\Vms\\m64s.json')]",
         "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
         "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
         "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]"
     },
-    "resources": [{
+    "resources": [
+        {
+            "apiVersion": "2016-09-01",
+            "name": "AutomationTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('automation')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[variables('vmName')]"
+                    },
+                    "CompJobGuid":{
+                        "value": "[parameters('CompJobGuid')]"
+                    },
+                    "AutomationLocation":{
+                        "Value": "eastus2"
+                    },
+                    "baseUri": {
+                        "Value": "[parameters('baseUri')]"
+                    },
+                    "ConfigUri": {
+                        "Value": "[concat(parameters('baseUri'), '\\DSC\\ExampleConfiguration.ps1')]"
+                    }
+                    
+                }
+            }
+               
+        },
+        {
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
             "apiVersion": "2016-09-01",
             "name": "Gs5LinkedTemplate",
