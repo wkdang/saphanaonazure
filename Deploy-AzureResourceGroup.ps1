@@ -147,70 +147,72 @@ if ($UploadArtifacts) {
     # Set DSC File Uris
     if (Test-Path $DSCSourceFolder) {
         $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
-        $mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
+        #commenting out the upload of the mof file as we do direction compile in Azure
+        #$mofUri = $StorageContainer | Set-AzureStorageBlobContent -File ($DSCSourceFolder + '.\sap-hana.mof') -Force
         $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\preReqInstall.sh' -Force
     }
 }
 
 # Create an Azure Automation Account
 $vmName = $JsonParameters.parameters.vmName.value
-$AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
-                                                    -Name $vmName `
-                                                    -Location $ResourceGroupLocation
-$AutomationAccountName = (Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName).AutomationAccountName
-$message = ($AutomationAccountName + ' has been created.')
-Write-Host $message
+#$AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
+#                                                    -Name $vmName `
+#                                                    -Location $ResourceGroupLocation
+#$AutomationAccountName = (Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName).AutomationAccountName
+#$message = ($AutomationAccountName + ' has been created.')
+#Write-Host $message
 
 # Create Azure Automation Variable
-$baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
-$AutomationVariable = $AutomationAccount | Get-AzureRmAutomationVariable
-if (($AutomationVariable | Where-Object {$_.Name -eq 'baseUri'}) -eq $null)
-{
-    $AutomationAccount | New-AzureRmAutomationVariable -Name 'baseUri' -Encrypted $false -Value $baseUri
-}
-$AutomationVariable | Set-AzureRmAutomationVariable -Value $baseUri
-$message = ('The baseUri variable was set to ' + $baseUri)
+#$baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
+#$AutomationVariable = $AutomationAccount | Get-AzureRmAutomationVariable
+#if (($AutomationVariable | Where-Object {$_.Name -eq 'baseUri'}) -eq $null)
+#{
+#    $AutomationAccount | New-AzureRmAutomationVariable -Name 'baseUri' -Encrypted $false -Value $baseUri
+#}
+#$AutomationVariable | Set-AzureRmAutomationVariable -Value $baseUri
+#$message = ('The baseUri variable was set to ' + $baseUri)
 
 # Import the module to Azure Automation
-$ModuleStatus = $AutomationAccount | Get-AzureRmAutomationModule
-$ModuleName = "nx"
-if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
-{
+#$ModuleStatus = $AutomationAccount | Get-AzureRmAutomationModule
+#$ModuleName = "nx"
+#if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
+#{
+#
+#    $ModuleVersion = "1.0.0"
+#    $ModuleContentUrl = "https://www.powershellgallery.com/api/v2/package/$ModuleName/$ModuleVersion"
+#    $ModulePackage = (Invoke-WebRequest -Uri $ModuleContentUrl -MaximumRedirection 0 -UseBasicParsing -ErrorAction Ignore).Headers.Location
+#
+#    $ModuleStatus = $AutomationAccount | New-AzureRmAutomationModule -Name $ModuleName -ContentLink $ModulePackage
+#    $message = 'The nx Module has been added to Azure Automation'
+#    Write-Host $message
 
-    $ModuleVersion = "1.0.0"
-    $ModuleContentUrl = "https://www.powershellgallery.com/api/v2/package/$ModuleName/$ModuleVersion"
-    $ModulePackage = (Invoke-WebRequest -Uri $ModuleContentUrl -MaximumRedirection 0 -UseBasicParsing -ErrorAction Ignore).Headers.Location
-
-    $ModuleStatus = $AutomationAccount | New-AzureRmAutomationModule -Name $ModuleName -ContentLink $ModulePackage
-    $message = 'The nx Module has been added to Azure Automation'
-    Write-Host $message
-
-    $message = ('The module status is ' + $ModuleStatus.ProvisioningState)
+#    $message = ('The module status is ' + $ModuleStatus.ProvisioningState)
     # Wait for nx module to be installed
-    while($ModuleStatus.ProvisioningState -ne "Succeeded")
-    {
-        $ModuleStatus = $ModuleStatus | Get-AzureRmAutomationModule
-        Write-Host $message
-        Start-Sleep -Seconds 3
-    }
-}
+#    while($ModuleStatus.ProvisioningState -ne "Succeeded")
+#    {
+#        $ModuleStatus = $ModuleStatus | Get-AzureRmAutomationModule
+#        Write-Host $message
+#        Start-Sleep -Seconds 3
+#    }
+#}
 
 # Import the DSC Node Configuration to Azure Automation
-$AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath ($DSCSourceFolder + '\' + $DscConfigName + '.ps1') -Published -Force
+#$AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath ($DSCSourceFolder + '\' + $DscConfigName + '.ps1') -Published -Force
 
 # Compile the Configuration
-$CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigName
+#$CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigName
 
-while($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
-{
-    $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
-    Start-Sleep -Seconds 3
-}
+#while($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
+#{
+#    $CompilationJob = $CompilationJob | Get-AzureRmAutomationDscCompilationJob
+#    Start-Sleep -Seconds 3
+#}
 
-$CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
+#$CompilationJob | Get-AzureRmAutomationDscCompilationJobOutput -Stream Any
 
 # Get the Azure Automation info for computer registration
-$AutomationRegInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
+#$AutomationRegInfo = $AutomationAccount | Get-AzureRmAutomationRegistrationInfo
+
 #New a guid for the automation template and the complitation job
 $CompJobGuid = ([Guid]::NewGuid()).Guid
 
