@@ -89,25 +89,7 @@
                 }
             }
         },
-        {
-            "apiVersion": "[variables('api-version')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('networkName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('addressPrefixes')]"
-                    ]
-                },
-                "subnets": [{
-                    "name": "[parameters('subnetName')]",
-                    "properties": {
-                        "addressPrefix": "[parameters('subnetPrefix')]"
-                    }
-                }]
-            }
-        },
+       
         {
             "apiVersion": "[variables('api-version')]",
             "type": "Microsoft.Network/networkInterfaces",

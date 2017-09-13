@@ -34,6 +34,12 @@
                 "Standard_M128ms"
             ]
         },
+        "deployToExistingVnet": {
+            "type": "string",
+            "metadata": {
+                "description": "deploy to existing Vnet"
+            }
+        },
         "networkName": {
             "type": "string",
             "metadata": {
@@ -98,6 +104,7 @@
     },
     "variables": {
         "vmName": "[toLower(parameters('vmName'))]",
+        "network": "[concat(parameters('baseUri'), '\\Resources\\Network.json')]",
         "automation": "[concat(parameters('baseUri'), '\\Resources\\automation.json')]",
         "gs5Uri": "[concat(parameters('baseUri'), '\\Vms\\gs5.json')]",
         "m64sUri": "[concat(parameters('baseUri'), '\\Vms\\m64s.json')]",
@@ -132,6 +139,38 @@
                         "Value": "[concat(parameters('baseUri'), '\\DSC\\ExampleConfiguration.ps1')]"
                     }
                     
+                }
+            }
+               
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "NetworkTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('network')]"
+                },
+                "parameters": {
+                    "deployToExistingVnet": {
+                        "value": "[parameters('deploytoexistingvnet')]"
+                                       },
+                  "networkName": {
+                    "value": "[parameters('networkName')]"                    
+                  },
+                  "addressPrefixes": {
+                    "value": "[parameters('addressPrefixes')]"
+                      
+                  },
+                  "subnetName": {
+                    "value": "[parameters('subnetName')]"
+                      
+                  },
+                  "subnetPrefix": {
+                    "value": "[parameters('subnetPrefix')]"
+                      
+                  }                   
                 }
             }
                
