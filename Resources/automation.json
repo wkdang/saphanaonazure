@@ -58,7 +58,7 @@
     "variables": {
         "apiVersion": "2015-10-31",
         "sku": "Free",
-        "configurationName": "ExampleConfiguration"
+        "configurationName": "SAPConfiguration"
     },
     "resources": [{
         "name": "[parameters('vmName')]",
