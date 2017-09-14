@@ -10,7 +10,7 @@ Param(
     [string] $ArtifactStagingDirectory = '.',
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
-    [string] $DscConfigName = 'ExampleConfiguration',
+    [string] $DscConfigName = 'SAPConfiguration',
     [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly,
     [switch] $deploytoexistingvnet,
