@@ -57,7 +57,7 @@
     },
     "variables": {
         "apiVersion": "2015-10-31",
-        "sku": "Free",
+        "sku": "Basic",
         "configurationName": "SAPConfiguration"
     },
     "resources": [{
@@ -135,5 +135,15 @@
             }
         ]
     }],
-    "outputs": {}
+    "outputs": {
+        "RegistrationUrl" : {
+			"type" : "string",
+			"value" : "[reference(resourceId('Microsoft.Automation/automationAccounts/', parameters('vmName'))).RegistrationUrl]"
+		},
+		"Keys" : {
+			"type" : "object",
+			"value" : "[listKeys(resourceId('Microsoft.Automation/automationAccounts/', parameters('vmName')), '2015-01-01-preview')]"
+		}
+
+    }
 }
