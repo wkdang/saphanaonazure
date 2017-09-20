@@ -31,7 +31,8 @@
                 "Standard_M64s",
                 "Standard_M64ms",
                 "Standard_M128s",
-                "Standard_M128ms"
+                "Standard_M128ms",
+                "Standard_E64S_V3"
             ]
         },
         "deployToExistingVnet": {
@@ -110,7 +111,8 @@
         "m64sUri": "[concat(parameters('baseUri'), '\\Vms\\m64s.json')]",
         "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
         "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
-        "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]"
+        "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
+        "e64s_v3Uri": "[concat(parameters('baseUri'), '\\Vms\\e64s_v3.json')]"
     },
     "resources": [
         {
@@ -380,7 +382,49 @@
                     }
                 }
             }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_e64s_v3')]",
+            "apiVersion": "2016-09-01",
+            "name": "E64sV3LinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('e64s_v3Uri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[variables('vmName')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
+                    }
+                }
+            }
         }
+        
     ],
     "outputs": {}
 }

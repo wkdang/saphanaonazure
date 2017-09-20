@@ -12,7 +12,7 @@
             "value": "YourVmName"
         },
         "vmSize": {
-            "value": "Standard_GS5"
+            "value": "Standard_e64s_v3"
         },
         "networkName": {
             "value": "ra-sap-hana-vnet"
