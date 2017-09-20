@@ -369,4 +369,4 @@ fi
 
     }
 }
-ExampleConfiguration -OutputPath:".\"
+SapConfiguration -OutputPath:".\"
