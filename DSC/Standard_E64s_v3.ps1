@@ -369,4 +369,4 @@ fi
 
     }
 }
-ExampleConfiguration -OutputPath:".\"
+Standard_E64s_v3 -OutputPath:".\"

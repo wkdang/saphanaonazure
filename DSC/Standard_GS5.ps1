@@ -369,4 +369,4 @@ fi
 
     }
 }
-ExampleConfiguration -OutputPath:".\"
+Standard_GS5 -OutputPath:".\"

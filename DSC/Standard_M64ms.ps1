@@ -369,4 +369,4 @@ fi
 
     }
 }
-ExampleConfiguration -OutputPath:".\"
+Standard_M64ms -OutputPath:".\"
