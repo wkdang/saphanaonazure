@@ -136,7 +136,7 @@
                         "Value": "[parameters('baseUri')]"
                     },
                     "ConfigUri": {
-                        "Value": "[concat(parameters('baseUri'), '\\DSC\\ExampleConfiguration.ps1')]"
+                        "Value": "[concat(parameters('baseUri'), '\\DSC\\SapConfiguration.ps1')]"
                     }
                     
                 }
