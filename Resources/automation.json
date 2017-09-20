@@ -52,13 +52,14 @@
             "metadata": {
                 "description": "url for the uri"
             },
-            "defaultValue": "https://stageeef21314653e4eec893.blob.core.windows.net/yourrgname-stageartifacts/DSC/ExampleConfiguration.ps1"
+            "defaultValue": "https://azcatdemo.blob.core.windows.net/saphana/SapConfiguration.ps1"
         }
     },
     "variables": {
         "apiVersion": "2015-10-31",
         "sku": "Basic",
         "configurationName": "SAPConfiguration"
+        
     },
     "resources": [{
         "name": "[parameters('vmName')]",
@@ -74,9 +75,10 @@
                 "name": "baseUri",
                 "type": "variables",
                 "apiVersion": "[variables('apiVersion')]",
-                "properties": {
-                    "value": "[parameters('baseUri')]",
-                    "description": "base URI"
+                   "properties": {
+                    "value": "[concat('\"', parameters('baseUri'),'\"')]",
+         "description": "base URI"
+                  
                 },
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]"
@@ -117,13 +119,13 @@
                 "location": "[parameters('automationLocation')]"
             },
             {
-                "name": "[parameters('compjobguid')]",
+                "name": "[concat(parameters('vmName'), '/', parameters('compjobguid'))]",
                 "type": "Microsoft.Automation/automationAccounts/compilationjobs",
                 "apiVersion": "[variables('apiVersion')]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'))]",
                     "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'), '/configurations/', variables('configurationName'))]",
-                    "[concat('Microsoft.Automation/automationAccounts/modules/','nx')]"
+                    "[concat('Microsoft.Automation/automationAccounts/', parameters('vmName'), '/modules/nx')]"
                     
                 ],
                 "properties": {
