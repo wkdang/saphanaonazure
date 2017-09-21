@@ -10,8 +10,9 @@ Param(
     [string] $ArtifactStagingDirectory = '.',
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
-    [string] $DscConfigName = 'ExampleConfiguration',
+   # [string] $DscConfigName = 'ExampleConfiguration',   Using VM Size for ConfigName
     [switch] $ValidateOnly
+    
 )
 
 try {
@@ -190,11 +191,11 @@ if (($ModuleStatus | Where-Object {$_.Name -eq $ModuleName})  -eq $null)
 }
 
 # Import the DSC Node Configuration to Azure Automation
-$DscConfigPath = ( $DSCSourceFolder + '\' + $DscConfigName + '.ps1')
+$DscConfigPath = ( $DSCSourceFolder + '\' + $JsonParameters.parameters.vmSize.value + '.ps1')
 $AutomationAccount | Import-AzureRmAutomationDscConfiguration -SourcePath $DscConfigPath  -Published -Force
 
 # Compile the Configuration
-$CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $DscConfigName
+$CompilationJob = $AutomationAccount | Start-AzureRmAutomationDscCompilationJob -ConfigurationName $JsonParameters.parameters.vmSize.value
 
 while($CompilationJob.EndTime -eq $null -and $CompilationJob.Exception -eq $null)
 {
@@ -219,7 +220,7 @@ if ($ValidateOnly) {
     }
 }
 else {
-    $ConfigName = ($DscConfigName + '.sap-hana')
+    $ConfigName = ($JsonParameters.parameters.vmSize.value + '.sap-hana')
 
     # Deploy the SAP HANA Environment from the ARM Template
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
