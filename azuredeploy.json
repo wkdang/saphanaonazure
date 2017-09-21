@@ -207,10 +207,10 @@
                         "value": "[parameters('subnetPrefix')]"
                     },
                     "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                        "value": "[reference('AutomationTemplate').outputs.registrationUrl.value]"
                     },
                     "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                        "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
                         "value": "[parameters('DscConfigName')]"
@@ -248,10 +248,10 @@
                         "value": "[parameters('subnetPrefix')]"
                     },
                     "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                        "value": "[reference('AutomationTemplate').outputs.registrationUrl.value]"
                     },
                     "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                        "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
                         "value": "[parameters('DscConfigName')]"
@@ -289,10 +289,10 @@
                         "value": "[parameters('subnetPrefix')]"
                     },
                     "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                        "value": "[reference('AutomationTemplate').outputs.registrationUrl.value]"
                     },
                     "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                        "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
                         "value": "[parameters('DscConfigName')]"
@@ -331,10 +331,10 @@
                         "value": "[parameters('subnetPrefix')]"
                     },
                     "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                        "value": "[reference('AutomationTemplate').outputs.registrationUrl.value]"
                     },
                     "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                        "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
                         "value": "[parameters('DscConfigName')]"
@@ -372,10 +372,10 @@
                         "value": "[parameters('subnetPrefix')]"
                     },
                     "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                        "value": "[reference('AutomationTemplate').outputs.registrationUrl.value]"
                     },
                     "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                        "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
                         "value": "[parameters('DscConfigName')]"
@@ -413,10 +413,10 @@
                         "value": "[parameters('subnetPrefix')]"
                     },
                     "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                        "value": "[reference('AutomationTemplate').outputs.registrationUrl.value]"
                     },
                     "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                        "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
                         "value": "[parameters('DscConfigName')]"
