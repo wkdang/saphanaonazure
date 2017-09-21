@@ -197,7 +197,7 @@ else {
                                        -ErrorVariable ErrorMessages
 
     }
-    elseif($deploytoexistingvnet)
+    elseif(!$deploytoexistingvnet)
     {
         write-host "Deploying to Existing VNET"
         New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
