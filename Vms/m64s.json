@@ -97,8 +97,8 @@
             "name": "[variables('nicName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('networkName'))]"
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]"
+                
             ],
             "properties": {
                 "ipConfigurations": [{

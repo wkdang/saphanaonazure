@@ -73,7 +73,7 @@
         "imagePublisher": "SUSE",
         "imageOffer": "SLES-SAP",
         "suseOSVersion": "12-SP2",
-        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
+        "vnetID": "[resourceid('Microsoft.Network/virtualNetworks',parameters('networkName'))]",
         "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters('subnetName'))]"
 
     },
@@ -96,8 +96,8 @@
             "name": "[variables('nicName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('networkName'))]"
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('vmName'))]"
+                
             ],
             "properties": {
                 "ipConfigurations": [{

@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "ResourceGroupLocation": {
-            "value": "eastus2"
+            "value": "westus2"
         },
         "ResourceGroup_Name": {
             "value": "YourRgName"
