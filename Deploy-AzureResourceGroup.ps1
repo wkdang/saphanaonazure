@@ -13,7 +13,7 @@ Param(
     [string] $DscConfigName = 'SAPConfiguration',
     [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly,
-    [switch] $deploytoexistingvnet,
+    [switch] $deploytoexistingvnet = $false,
     [string] $vnetname
 
 
@@ -65,7 +65,7 @@ if($deploytoexistingvnet)
 
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
 if(!$UploadArtifacts){
-
+    
     $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
@@ -164,9 +164,9 @@ if ($UploadArtifacts) {
     }
 }
 
-# Create an Azure Automation Account
-$vmName = $JsonParameters.parameters.vmName.value
 
+$vmName = $JsonParameters.parameters.vmName.value
+$compjobguid = [GUID]::NewGUID()
 
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
@@ -185,14 +185,13 @@ else {
     # Deploy the SAP HANA Environment from the ARM Template
     if(!$deploytoexistingvnet)
     {
+        write-host "Deploying to New VNET"
     New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -ResourceGroupName $ResourceGroup_Name `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -baseUri $baseUri `
-                                       #-AzureDscUri $AutomationRegInfo.Endpoint `
-                                       #-AzureDscKey $AutomationRegInfo.PrimaryKey `
                                        -DscConfigName $ConfigName `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
@@ -200,6 +199,7 @@ else {
     }
     elseif($deploytoexistingvnet)
     {
+        write-host "Deploying to Existing VNET"
         New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
         -TemplateFile $TemplateFile `
         -TemplateParameterFile $TemplateParametersFile `
@@ -207,8 +207,6 @@ else {
         -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
         -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
         -baseUri $baseUri `
-        #-AzureDscUri $AutomationRegInfo.Endpoint `
-        #-AzureDscKey $AutomationRegInfo.PrimaryKey `
         -DscConfigName $ConfigName `
         -CompJobGuid $compjobguid `
         -deploytoexistingvnet $deploytoexistingvnet
