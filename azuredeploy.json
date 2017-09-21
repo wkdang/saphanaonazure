@@ -176,6 +176,9 @@
             "apiVersion": "2016-09-01",
             "name": "Gs5LinkedTemplate",
             "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'NetworkTemplate')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
