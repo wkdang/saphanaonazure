@@ -6,10 +6,10 @@
             "value": "westus2"
         },
         "ResourceGroup_Name": {
-            "value": "YourRgName"
+            "value": "yourrgname"
         },
         "vmName": {
-            "value": "YourVmName"
+            "value": "sap-hana"
         },
         "vmSize": {
             "value": "Standard_GS5"
