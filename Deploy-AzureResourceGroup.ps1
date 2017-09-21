@@ -11,7 +11,7 @@ Param(
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
     [string] $DscConfigName = 'SAPConfiguration',
-    [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
+    [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s","Standard_E64S_V3")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly,
     [switch] $deploytoexistingvnet,
     [string] $vnetname
@@ -57,6 +57,7 @@ $DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSSc
 #Enumerate Existing Network (We are choosing to default to the primary subnet for deployment)
 if($deploytoexistingvnet)
 {
+    write-host "Gathering Existing VNet Information"
     $vnet = Get-AzureRMVirtualNetwork -ResourceGroupName $ResourceGroup_Name -Name $vnetname
     $vnetprefix = $vnet.addressspace.addressprefixes[0]
     $subnetname = $vnet.Subnets[0].Name
@@ -201,16 +202,16 @@ else {
     else
     {
         write-host "Deploying to Existing VNET"
+        
         New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
         -TemplateFile $TemplateFile `
         -TemplateParameterFile $TemplateParametersFile `
         -ResourceGroupName $ResourceGroup_Name `
-        -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
         -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
         -baseUri $baseUri `
         -DscConfigName $ConfigName `
         -CompJobGuid $compjobguid `
-        -deploytoexistingvnet "true"
+        -deploytoexistingvnet "true" `
         -NetworkName $vnetname `
         -addressPrefixes $vnetprefix `
         -subnetName $subnetname `
@@ -221,6 +222,7 @@ else {
 
 
 # Check Node DSC compliance status
+Write-host "Assigning DSC Node"
 $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName
 $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
 $message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)

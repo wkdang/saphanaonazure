@@ -32,7 +32,8 @@
                 "Standard_M64ms",
                 "Standard_M128s",
                 "Standard_M128ms",
-                "Standard_E64S_V3"
+                "Standard_E64S_V3",
+                "Standard_e64s_v3"
             ]
         },
         "deployToExistingVnet": {
@@ -98,7 +99,7 @@
     },
     "variables": {
         "vmName": "[toLower(parameters('vmName'))]",
-        "network": "[concat(parameters('baseUri'), '\\Resources\\Network.json')]",
+        "network": "[concat(parameters('baseUri'), '\\Resources\\network.json')]",
         "automation": "[concat(parameters('baseUri'), '\\Resources\\automation.json')]",
         "gs5Uri": "[concat(parameters('baseUri'), '\\Vms\\gs5.json')]",
         "m64sUri": "[concat(parameters('baseUri'), '\\Vms\\m64s.json')]",
