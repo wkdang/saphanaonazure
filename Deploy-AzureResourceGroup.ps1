@@ -186,18 +186,19 @@ else {
     if(!$deploytoexistingvnet)
     {
         write-host "Deploying to New VNET"
-    New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
+        New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -ResourceGroupName $ResourceGroup_Name `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -baseUri $baseUri `
                                        -DscConfigName $ConfigName `
+                                       -CompJobGuid $compjobguid `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
 
     }
-    elseif(!$deploytoexistingvnet)
+    else
     {
         write-host "Deploying to Existing VNET"
         New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
@@ -209,7 +210,7 @@ else {
         -baseUri $baseUri `
         -DscConfigName $ConfigName `
         -CompJobGuid $compjobguid `
-        -deploytoexistingvnet $deploytoexistingvnet
+        -deploytoexistingvnet "true"
         -NetworkName $vnetname `
         -addressPrefixes $vnetprefix `
         -subnetName $subnetname `

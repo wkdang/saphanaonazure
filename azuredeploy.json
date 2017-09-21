@@ -39,31 +39,36 @@
             "type": "string",
             "metadata": {
                 "description": "deploy to existing Vnet"
-            }
+            },
+            "defaultValue": "false"
         },
         "networkName": {
             "type": "string",
             "metadata": {
                 "description": "The Hana vNet"
-            }
+            },
+            "defaultValue": ""
         },
         "addressPrefixes": {
             "type": "string",
             "metadata": {
                 "description": "The Hana vNET prefix"
-            }
+            },
+            "defaultValue": ""
         },
         "subnetName": {
             "type": "string",
             "metadata": {
                 "description": "The Hana subnet name"
-            }
+            },
+            "defaultValue": ""
         },
         "subnetPrefix": {
             "type": "string",
             "metadata": {
                 "description": "The data subnet"
-            }
+            },
+            "defaultValue": ""
         },
         "customUri": {
             "type": "string",
@@ -372,7 +377,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('vmSize'), 'Standard_e64s_v3')]",
+            "condition": "[equals(parameters('vmSize'), 'Standard_E64S_V3')]",
             "apiVersion": "2016-09-01",
             "name": "E64sV3LinkedTemplate",
             "type": "Microsoft.Resources/deployments",
