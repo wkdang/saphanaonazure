@@ -1,7 +1,7 @@
 #,Requires -Version 3.0
 #Requires -Module AzureRM.Resources
 #Requires -Module Azure.Storage
-
+[cmdletbinding()]
 Param(
     [switch] $UploadArtifacts,
     [string] $StorageAccountName,
@@ -13,7 +13,7 @@ Param(
     [string] $DscConfigName = 'SAPConfiguration',
     [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly,
-    [switch] $deploytoexistingvnet = $false,
+    [switch] $deploytoexistingvnet,
     [string] $vnetname
 
 
