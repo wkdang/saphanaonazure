@@ -191,8 +191,8 @@ else {
                                        -ResourceGroupName $ResourceGroup_Name `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -baseUri $baseUri `
-                                       -AzureDscUri $AutomationRegInfo.Endpoint `
-                                       -AzureDscKey $AutomationRegInfo.PrimaryKey `
+                                       #-AzureDscUri $AutomationRegInfo.Endpoint `
+                                       #-AzureDscKey $AutomationRegInfo.PrimaryKey `
                                        -DscConfigName $ConfigName `
                                        -Force -Verbose `
                                        -ErrorVariable ErrorMessages
@@ -207,8 +207,8 @@ else {
         -fileUri $mofUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
         -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
         -baseUri $baseUri `
-        -AzureDscUri $AutomationRegInfo.Endpoint `
-        -AzureDscKey $AutomationRegInfo.PrimaryKey `
+        #-AzureDscUri $AutomationRegInfo.Endpoint `
+        #-AzureDscKey $AutomationRegInfo.PrimaryKey `
         -DscConfigName $ConfigName `
         -CompJobGuid $compjobguid `
         -deploytoexistingvnet $deploytoexistingvnet
