@@ -6,13 +6,13 @@
             "value": "eastus2"
         },
         "ResourceGroup_Name": {
-            "value": "MVMRG"
+            "value": "GVMRG"
         },
         "vmName": {
             "value": "YourMVmName"
         },
         "vmSize": {
-            "value": "Standard_M64s"
+            "value": "Standard_GS5"
         },
         "networkName": {
             "value": "ra-sap-hana-vnet"
