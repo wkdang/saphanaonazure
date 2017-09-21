@@ -34,7 +34,7 @@ md5sum -c md5sums
 ## Configure the Solution
 To customize the Azure environment that is deployed, you can edit the `azuredeploy.parameters` file, which contains the network names, IP addresses and virtual machine names that will be deployed in the next step.
 
-To customize the HAHA deployment, you can edit the `SapBits/hdbinst.cfg` - you can change various options such as the SID name and passwords.  Please do not change the line:
+To customize the HAHA deployment, you can edit the `SapBits/hdbinst.cfg` - you can change various options such as the SID name and passwords.  **Please do not change the line**:
 ```
 hostname=REPLACE-WITH-HOSTNAME
 ```
@@ -52,7 +52,7 @@ The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` fi
 If the files are already uploaded to the staging directory, running the `./Deploy-AzureResourceGroup.ps1` with no switch will skip the upload process.
 
 ## Desired State Configuraiton
-This installation takes advantage of [Azure Automation Desired State Configuration](https://azure.microsoft.com/en-us/blog/what-why-how-azure-automation-desired-state-configuration/) to manage the configuration and installation of HANA.
+This installation takes advantage of [Azure Automation Desired State Configuration](https://azure.microsoft.com/en-us/blog/what-why-how-azure-automation-desired-state-configuration/) to manage the configuration and installation of HANA. Once the Powershell script runs successfully you should have the HANA VM deployed in your subscription, as well as an Azure Automation Account. Please allow up to 30 minutes after the Powershell script ends for DSC to configure HANA. You can check the progress in your Azure Subscription, navigate to DSC Nodes under the Automation Account and find the Virtual Machine. The first consistency check is expected to fail, as the DSC script includes a reboot. Once the node shows as "Consistent" the installation is complete.
 
 ## Troubleshooting
 
