@@ -10,7 +10,7 @@ Param(
     [string] $ArtifactStagingDirectory = '.',
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
-    [string] $DscConfigName = 'SAPConfiguration',
+    #[string] $DscConfigName = 'SAPConfiguration',
     [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s","Standard_E64S_V3")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly,
     [switch] $deploytoexistingvnet,
@@ -168,6 +168,7 @@ if ($UploadArtifacts) {
 
 $vmName = $JsonParameters.parameters.vmName.value
 $compjobguid = [GUID]::NewGUID()
+$ConfigName = ($JsonParameters.parameters.vmSize.value + '.sap-hana')
 
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
