@@ -188,7 +188,7 @@ else {
     # Deploy the SAP HANA Environment from the ARM Template
     if(!$deploytoexistingvnet)
     {
-        write-host "Deploying to New VNET"
+        write-host "Deploying SAP HANA to New VNET" -foreground Green -Background Black
         New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                        -TemplateFile $TemplateFile `
                                        -TemplateParameterFile $TemplateParametersFile `
@@ -203,7 +203,7 @@ else {
     }
     else
     {
-        write-host "Deploying to Existing VNET"
+        write-host "Deploying to Existing VNET" -foreground Green -Background Black
         
         New-AzureRmResourceGroupDeployment -Name ((Get-ChildItem $TemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
         -TemplateFile $TemplateFile `
@@ -224,7 +224,7 @@ else {
 
 
 # Check Node DSC compliance status
-Write-host "Assigning DSC Node"
+Write-host "Assigning SAP Hana to DSC Node"
 $AutomationAccount = Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName
 $Node = $AutomationAccount | Get-AzureRmAutomationDscNode
 $message = ('The DSC Node: ' + $Node.Name + ' is ' + $Node.Status)
