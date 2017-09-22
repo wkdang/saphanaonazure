@@ -182,7 +182,7 @@ if ($ValidateOnly) {
     }
 }
 else {
-    $ConfigName = ($DscConfigName + '.sap-hana')
+   
 
     # Deploy the SAP HANA Environment from the ARM Template
     if(!$deploytoexistingvnet)
