@@ -106,7 +106,8 @@
         "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
         "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
         "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
-        "e64s_v3Uri": "[concat(parameters('baseUri'), '\\Vms\\e64s_v3.json')]"
+        "e64s_v3Uri": "[concat(parameters('baseUri'), '\\Vms\\e64s_v3.json')]",
+        "configname": "[concat(parameters('DscConfigName'), '.sap-hana')]"
     },
     "resources": [
         {
@@ -213,7 +214,7 @@
                         "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                        "value": "[variables('configname')]"
                     }
                 }
             }
@@ -254,7 +255,7 @@
                         "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                        "value": "[variables('configname')]"
                     }
                 }
             }
@@ -295,7 +296,7 @@
                         "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                        "value": "[variables('configname')]"
                     }
                 }
             }
@@ -337,7 +338,7 @@
                         "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                        "value": "[variables('configname')]"
                     }
                 }
             }
@@ -378,7 +379,7 @@
                         "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                        "value": "[variables('configname')]"
                     }
                 }
             }
@@ -419,7 +420,7 @@
                         "value": "[reference('AutomationTemplate').outputs.keys.value]"
                     },
                     "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                        "value": "[variables('configname')]"
                     }
                 }
             }
