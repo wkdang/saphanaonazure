@@ -32,8 +32,8 @@
                 "Standard_M64ms",
                 "Standard_M128s",
                 "Standard_M128ms",
-                "Standard_E64S_V3",
-                "Standard_e64s_v3"
+                "Standard_E64s_v3"
+                
             ]
         },
         "deployToExistingVnet": {
@@ -384,7 +384,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('vmSize'), 'Standard_E64S_V3')]",
+            "condition": "[equals(parameters('vmSize'), 'Standard_E64s_v3')]",
             "apiVersion": "2016-09-01",
             "name": "E64sV3LinkedTemplate",
             "type": "Microsoft.Resources/deployments",

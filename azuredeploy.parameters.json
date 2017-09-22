@@ -12,7 +12,7 @@
             "value": "sap-hana"
         },
         "vmSize": {
-            "value": "Standard_E64S_V3"
+            "value": "Standard_E64s_v3"
         },
         "networkName": {
             "value": "ra-sap-hana-vnet"
