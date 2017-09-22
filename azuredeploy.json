@@ -133,6 +133,9 @@
                     },
                     "ConfigUri": {
                         "Value": "[concat(parameters('baseUri'), '\\DSC\\', parameters('DscConfigName'), '.ps1')]"
+                    },
+                    "vmSize": {
+                        "Value": "[parameters('vmSize')]"
                     }
                     
                 }

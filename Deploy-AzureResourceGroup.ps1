@@ -10,8 +10,9 @@ Param(
     [string] $ArtifactStagingDirectory = '.',
     [string] $ArtifactsLocationSasTokenName,
     [string] $DSCSourceFolder = 'DSC',
+    #Removing Both Inputs as the DSC Config is built from the VMSize and the VMSize is specified in the Parameters
     #[string] $DscConfigName = 'SAPConfiguration',
-    [string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s","Standard_E64S_V3")] $vmSize = "Standard_GS5",
+    #[string] [ValidateSet("Standard_GS5","Standard_M64s","Standard_M64ms","Standard_M128ms","Standard_M128s","Standard_E64S_V3")] $vmSize = "Standard_GS5",
     [switch] $ValidateOnly,
     [switch] $deploytoexistingvnet,
     [string] $vnetname
@@ -168,7 +169,7 @@ if ($UploadArtifacts) {
 
 $vmName = $JsonParameters.parameters.vmName.value
 $compjobguid = [GUID]::NewGUID()
-$ConfigName = ($JsonParameters.parameters.vmSize.value + '.sap-hana')
+$ConfigName = ($JsonParameters.parameters.vmSize.value)
 
 if ($ValidateOnly) {
     $ErrorMessages = Format-ValidationOutput (Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroup_Name `
