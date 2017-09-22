@@ -49,6 +49,6 @@ saptune daemon start
 echo 'GRUB_CMDLINE_LINUX_DEFAULT="transparent_hugepage=never numa_balancing=disable intel_idle.max_cstate=1 processor.max_cstate=1"' >>/etc/default/grub
 grub2-mkconfig -o /boot/grub2/grub.cfg
 echo 1 > /root/boot-requested
-
+echo $DSC_CONFIG_NAME > /tmp/configinfo.txt
 # Register Node for Azure Automation DSC Management
 sudo /opt/microsoft/dsc/Scripts/Register.py --RegistrationKey $AZ_KEY --ServerURL $AZ_URI --ConfigurationName $DSC_CONFIG_NAME --RefreshFrequencyMins 5 --ConfigurationMode ApplyAndAutoCorrect --ConfigurationModeFrequencyMins 10 --RefreshMode Pull
