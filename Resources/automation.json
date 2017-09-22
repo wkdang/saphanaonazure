@@ -53,12 +53,19 @@
                 "description": "url for the uri"
             },
             "defaultValue": "https://azcatdemo.blob.core.windows.net/saphana/SapConfiguration.ps1"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "vmSize"
+            },
+            "defaultValue": "Standard_GS5"
         }
     },
     "variables": {
         "apiVersion": "2015-10-31",
         "sku": "Basic",
-        "configurationName": "SAPConfiguration"
+        "configurationName": "[parameters('vmSize')]"
         
     },
     "resources": [{
