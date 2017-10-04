@@ -65,7 +65,7 @@
         "api-version": "2017-06-01",
         "api-version-vm": "2017-03-30",
         "vmName": "[parameters('vmName')]",
-        "vmSize": "Standard_E64S_V3",
+        "vmSize": "Standard_E64_v3",
         "vmUserName": "testuser",
         "vmPassword": "AweS0me@PW",
         "mode": "Push",
@@ -89,7 +89,25 @@
                 }
             }
         },
-       
+        {
+            "apiVersion": "[variables('api-version')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('networkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefixes')]"
+                    ]
+                },
+                "subnets": [{
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                        "addressPrefix": "[parameters('subnetPrefix')]"
+                    }
+                }]
+            }
+        },
         {
             "apiVersion": "[variables('api-version')]",
             "type": "Microsoft.Network/networkInterfaces",
