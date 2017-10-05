@@ -6,22 +6,22 @@
             "value": "eastus2"
         },
         "ResourceGroup_Name": {
-            "value": "GVMRG"
+            "value": "AzureSAPHANA22RG"
         },
         "vmName": {
-            "value": "YourMVmName"
+            "value": "AzureSAPHANA22"
         },
         "vmSize": {
-            "value": "Standard_GS5"
+            "value": "Standard_E64s_v3"
         },
         "networkName": {
-            "value": "ra-sap-hana-vnet"
+            "value": "AzureSAPHANA22vnet"
         },
         "addressPrefixes": {
             "value": "10.0.0.0/16"
         },
         "subnetName": {
-            "value": "SAPDataSubnet"
+            "value": "Default"
         },
         "subnetPrefix": {
             "value": "10.0.5.0/24"
