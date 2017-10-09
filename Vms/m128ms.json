@@ -67,7 +67,7 @@
         "vmName": "[parameters('vmName')]",
         "vmSize": "Standard_G128ms",
         "vmUserName": "testuser",
-        "vmPassword": "AweS0me@PW",
+        "vmPassword": "HANA07061992!",
         "mode": "Push",
         "nicName": "[parameters('vmName')]",
         "imagePublisher": "SUSE",
