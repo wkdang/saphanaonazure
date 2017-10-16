@@ -99,8 +99,8 @@
         "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
         "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
         "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
-        "e16sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
-        "e32sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
+        "e16sUri": "[concat(parameters('baseUri'), '\\Vms\\e16s.json')]",
+        "e32sUri": "[concat(parameters('baseUri'), '\\Vms\\e32s.json')]",
         "e64sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]"
     },
     "resources": [{

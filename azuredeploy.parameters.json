@@ -3,16 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "ResourceGroupLocation": {
-            "value": "eastus2"
+            "value": "southeastasia"
         },
         "ResourceGroup_Name": {
             "value": "AzureSAPHANA22RG"
         },
         "vmName": {
-            "value": "AzureSAPHANA22"
+            "value": "AzureSAPHANA32"
         },
         "vmSize": {
-            "value": "Standard_E16s_v3"
+            "value": "Standard_E32s_v3"
         },
         "networkName": {
             "value": "AzureSAPHANA22vnet"
