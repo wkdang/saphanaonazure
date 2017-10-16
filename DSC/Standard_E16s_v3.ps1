@@ -1,4 +1,4 @@
-Configuration Standard_E64s_v3{
+Configuration Standard_E16s_v3{
 
     $Uri = Get-AutomationVariable -Name 'baseUri'
 
@@ -369,4 +369,4 @@ fi
 
     }
 }
-Standard_E64s_v3 -OutputPath:".\"
+Standard_E16s_v3 -OutputPath:".\"
