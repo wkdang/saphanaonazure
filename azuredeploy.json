@@ -32,6 +32,8 @@
                 "Standard_M64ms",
                 "Standard_M128s",
                 "Standard_M128ms",
+                "Standard_E16s_v3",
+                "Standard_E32s_v3",
                 "Standard_E64s_v3"
             ]
         },
@@ -97,6 +99,8 @@
         "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
         "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
         "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
+        "e16sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
+        "e32sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
         "e64sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]"
     },
     "resources": [{
@@ -108,6 +112,88 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "uri": "[variables('gs5Uri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[variables('vmName')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_E16s_v3')]",
+            "apiVersion": "2016-09-01",
+            "name": "E16sLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('e16sUri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[variables('vmName')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    },
+                    "AzureDscUri": {
+                        "value": "[parameters('AzureDscUri')]"
+                    },
+                    "AzureDscKey": {
+                        "value": "[parameters('AzureDscKey')]"
+                    },
+                    "DscConfigName": {
+                        "value": "[parameters('DscConfigName')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('vmSize'), 'Standard_E32s_v3')]",
+            "apiVersion": "2016-09-01",
+            "name": "E32sLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('e32sUri')]"
                 },
                 "parameters": {
                     "vmName": {

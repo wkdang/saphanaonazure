@@ -12,7 +12,7 @@
             "value": "AzureSAPHANA22"
         },
         "vmSize": {
-            "value": "Standard_GS5"
+            "value": "Standard_E16s_v3"
         },
         "networkName": {
             "value": "AzureSAPHANA22vnet"
