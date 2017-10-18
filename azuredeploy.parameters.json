@@ -9,7 +9,7 @@
             "value": "AzureSAPHANA22RG"
         },
         "vmName": {
-            "value": "AzureSAPHANA32"
+            "value": "AzureSAPHANA32s"
         },
         "vmSize": {
             "value": "Standard_E32s_v3"

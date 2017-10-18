@@ -81,8 +81,8 @@ exit 1
 #!/bin/bash
 echo "logicalvols2 start" >> /tmp/parameter.txt
 vgcreate sharedvg /dev/sdc 
-vgcreate backupvg /dev/sdd  
-vgcreate usrsapvg /dev/sde 
+vgcreate usrsapvg /dev/sdd  
+vgcreate backup /dev/sde 
 lvcreate -l 100%FREE -n sharedlv sharedvg 
 lvcreate -l 100%FREE -n backuplv backupvg 
 lvcreate -l 100%FREE -n usrsaplv usrsapvg 
