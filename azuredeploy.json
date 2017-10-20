@@ -20,6 +20,13 @@
                 "description": "VM Name"
             }
         },
+        "HanaJumpbox": {
+            "type": "string",
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
+        },
         "vmSize": {
             "type": "string",
             "metadata": {
@@ -101,7 +108,8 @@
         "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
         "e16sUri": "[concat(parameters('baseUri'), '\\Vms\\e16s.json')]",
         "e32sUri": "[concat(parameters('baseUri'), '\\Vms\\e32s.json')]",
-        "e64sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]"
+        "e64sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
+        "hanajbUri": "[concat(parameters('baseUri'), '\\Vms\\hanajb.json')]"
     },
     "resources": [{
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
@@ -118,6 +126,9 @@
                         "value": "[variables('vmName')]"
                     },
                     "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "hanaUri": {
                         "value": "[parameters('customUri')]"
                     },
                     "networkName": {
@@ -431,7 +442,44 @@
                     }
                 }
             }
+        },
+        {
+            "condition": "[equals(parameters('HanaJumpbox'),'yes')]",
+            "apiVersion": "2016-09-01",
+            "name": "HANAjbLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('hanajbUri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[variables('vmName')]"
+                    },
+                    "hanaUri": {
+                        "value": "[parameters('hanaUri')]"
+                    },
+                    "baseUri": {
+                        "value": "[parameters('baseUri')]"
+                    },
+                    "networkName": {
+                        "value": "[parameters('networkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetPrefix": {
+                        "value": "[parameters('subnetPrefix')]"
+                    }
+                }
+        
+            }    
         }
+
     ],
     "outputs": {}
 }
