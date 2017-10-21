@@ -80,6 +80,12 @@
                 "description": "Base deployment uri"
             }
         },
+        "hanaUri": {
+            "type": "string",
+            "metadata": {
+                "description": "Base deployment uri"
+            }
+        },
         "AzureDscUri": {
             "type": "string",
             "metadata": {
@@ -126,9 +132,6 @@
                         "value": "[variables('vmName')]"
                     },
                     "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "hanaUri": {
                         "value": "[parameters('customUri')]"
                     },
                     "networkName": {
@@ -454,9 +457,6 @@
                     "uri": "[variables('hanajbUri')]"
                 },
                 "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
                     "hanaUri": {
                         "value": "[parameters('hanaUri')]"
                     },

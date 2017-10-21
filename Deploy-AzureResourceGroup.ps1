@@ -59,6 +59,7 @@ if(!$UploadArtifacts){
     $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
     $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
     $hanaScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\hanastudio.ps1 -Force
+    $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\preReqInstall.sh' -Force
 }
 
 if ($UploadArtifacts) {

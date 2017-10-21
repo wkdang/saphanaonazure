@@ -14,7 +14,7 @@ Invoke-WebRequest $hanasource -OutFile "$hanadest"
 
 $jresource = $baseUri + "\SAPbits\JRE\"
 
-$jredest = "C:\Program Files\jdk-9\bin"
+$jredest = "C:\Program Files\"
 
 New-Item -Path $jredest -ItemType directory
 
