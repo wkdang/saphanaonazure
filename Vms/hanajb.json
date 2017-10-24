@@ -200,7 +200,7 @@
                                         "autoUpgradeMinorVersion": true,
                                         "settings": {
                                             "fileUris": [
-                                            "https://stagea66a6dd3ca954d68bdd.blob.core.windows.net/azuresaphana22rg-stageartifacts/hanastudio.ps1"
+                                            "https://stagea66a6dd3ca954d68bdd.blob.core.windows.net/azuresaphana22rg-stageartifacts/SapBits/hanastudio.ps1"
                                             ],
                                             "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio.ps1', variables('scriptParameters'))]"
                                         },
