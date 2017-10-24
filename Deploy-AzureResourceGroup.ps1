@@ -58,8 +58,12 @@ if(!$UploadArtifacts){
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\preReqInstall.sh -Force
     $SapBitsUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName + '/SapBits')
     $baseUri = ('https://' + $StorageAccountName + '.blob.core.windows.net/' + $StorageContainerName)
-    $hanaScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  .\hanastudio.ps1 -Force
+    $hanaScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\hanastudio.ps1' -Force
     $customScriptExtUri = $StorageContainer | Set-AzureStorageBlobContent -File  '.\preReqInstall.sh' -Force
+    $artifactsLocationSasToken = New-AzureStorageContainerSASToken -Container $StorageContainerName `
+                                                -Context $StorageAccount.Context `
+                                                -Permission r `
+                                                -ExpiryTime (Get-Date).AddHours(4)
 }
 
 if ($UploadArtifacts) {
@@ -130,7 +134,10 @@ if ($UploadArtifacts) {
     }
     $message = 'Staging files have been uploaded.'
     Write-Host $message
-
+    $artifactsLocationSasToken = New-AzureStorageContainerSASToken -Container $StorageContainerName `
+                                                -Context $StorageAccount.Context `
+                                                -Permission r `
+                                                -ExpiryTime (Get-Date).AddHours(4)
     # Generate a 4 hour SAS token for the artifacts location if one was not provided in the parameters file
     if ($OptionalParameters[$ArtifactsLocationSasTokenName] -eq $null) {
         $OptionalParameters[$ArtifactsLocationSasTokenName] = ConvertTo-SecureString -AsPlainText -Force `
@@ -231,8 +238,9 @@ else {
                                        -TemplateParameterFile $TemplateParametersFile `
                                        -ResourceGroupName $ResourceGroup_Name `
                                        -customUri $customScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
-                                       -hanaUri $hanaScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri `
                                        -baseUri $baseUri `
+                                       -saName $StorageAccountName `
+                                       -artifactsLocationSasToken $ArtifactsLocationSasToken `
                                        -AzureDscUri $AutomationRegInfo.Endpoint `
                                        -AzureDscKey $AutomationRegInfo.PrimaryKey `
                                        -DscConfigName $ConfigName `
@@ -240,7 +248,8 @@ else {
                                        -ErrorVariable ErrorMessages
 
     # Install HANA Monitoring Extension
-
+Write-Output $artifactsLocationSasToken
+Write-Output $hanaScriptExtUri.ICloudBlob.StorageUri.PrimaryUri.AbsoluteUri
  Set-AzureRmVMAEMExtension -ResourceGroupName $ResourceGroup_Name -VMName $vmName
 
 

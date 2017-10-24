@@ -20,6 +20,12 @@
                 "description": "VM Name"
             }
         },
+        "saName": {
+            "type": "string",
+            "metadata": {
+                "description": "sa Name"
+            }
+        },
         "HanaJumpbox": {
             "type": "string",
             "allowedValues": [
@@ -80,7 +86,7 @@
                 "description": "Base deployment uri"
             }
         },
-        "hanaUri": {
+        "artifactsLocationSasToken": {
             "type": "string",
             "metadata": {
                 "description": "Base deployment uri"
@@ -115,7 +121,8 @@
         "e16sUri": "[concat(parameters('baseUri'), '\\Vms\\e16s.json')]",
         "e32sUri": "[concat(parameters('baseUri'), '\\Vms\\e32s.json')]",
         "e64sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
-        "hanajbUri": "[concat(parameters('baseUri'), '\\Vms\\hanajb.json')]"
+        "hanajbUri": "[concat(parameters('baseUri'), '\\Vms\\hanajb.json')]",
+        "hanaUri":"[concat(parameters('baseUri'), '\\hanastudio.ps1')]"
     },
     "resources": [{
             "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
@@ -457,11 +464,11 @@
                     "uri": "[variables('hanajbUri')]"
                 },
                 "parameters": {
-                    "hanaUri": {
-                        "value": "[parameters('hanaUri')]"
-                    },
                     "baseUri": {
                         "value": "[parameters('baseUri')]"
+                    },
+                    "hanaUri": {
+                        "value": "[variables('hanaUri')]"
                     },
                     "networkName": {
                         "value": "[parameters('networkName')]"
@@ -474,6 +481,12 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
+                    },
+                    "artifactsLocationSasToken": {
+                        "value": "[parameters('artifactsLocationSasToken')"
+                    },
+                    "saName": {
+                        "value": "[parameters('saName')"
                     }
                 }
         
