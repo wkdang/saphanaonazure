@@ -467,9 +467,7 @@
                     "baseUri": {
                         "value": "[parameters('baseUri')]"
                     },
-                    "hanaUri": {
-                        "value": "[variables('hanaUri')]"
-                    },
+                    
                     "networkName": {
                         "value": "[parameters('networkName')]"
                     },
@@ -481,13 +479,8 @@
                     },
                     "subnetPrefix": {
                         "value": "[parameters('subnetPrefix')]"
-                    },
-                    "artifactsLocationSasToken": {
-                        "value": "[parameters('artifactsLocationSasToken')"
-                    },
-                    "saName": {
-                        "value": "[parameters('saName')"
                     }
+                 
                 }
         
             }    
