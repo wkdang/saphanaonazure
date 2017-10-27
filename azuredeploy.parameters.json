@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "ResourceGroupLocation": {
-            "value": "southeastasia"
+            "value": "westus2"
         },
         "ResourceGroup_Name": {
             "value": "AzureSAPHANA22RG"
@@ -25,6 +25,9 @@
         },
         "subnetPrefix": {
             "value": "10.0.5.0/24"
+        },
+        "HanaJumpbox": {
+            "value": "yes"
         }
     }
 }
