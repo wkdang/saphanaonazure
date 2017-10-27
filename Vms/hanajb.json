@@ -35,38 +35,24 @@
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
             }
-        },
-        "hanaURI": {
-            "type": "string",
-            "metadata": {
-                "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
-            }
-        },
-        "artifactsLocationSasToken": {
-            "type": "string",
-            "metadata": {
-                "description": "Sas token"
-            }
-        },
-            "saName": {
-                "type": "string",
-                "metadata": {
-                    "description": "storage account name"
-                }
         }
+      
+
     },
     "variables": {
         "adminUsername": "testuser",
         "adminPassword": "HANA07061992!",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('NetworkName'), parameters('subnetName'))]",
-        "vmName": "HANAJB",
-        "vNicName": "HANAJBNic",
-        "PIPName": "HANAJBPIP",
+        "vmName": "hanajb",
+        "vNicName": "hanajbnic",
+        "PIPName": "hanajbpip",
         "vhdStorageAccountName": "[uniqueString(resourceGroup().id, 'storage')]",
         "dnsNameForPublicIP": "[uniqueString(resourceGroup().id)]",
         "scriptFolder": ".",
         "scriptFileName": "hanastudio.ps1",
-        "scriptParameters": "[concat(' -BaseURI ', parameters('baseURI'), ' -artifactsLocationSasToken ', parameters('artifactsLocationSasToken'))]" 
+        "scriptParameters": "[concat(' -BaseURI ', parameters('baseURI'))]",
+        "fileuri":"[concat(parameters('BaseURI') , '/SapBits/hanastudio.ps1')]"
+        
     },
     "resources": [
         {
@@ -200,13 +186,12 @@
                                         "autoUpgradeMinorVersion": true,
                                         "settings": {
                                             "fileUris": [
-                                            "https://stagea66a6dd3ca954d68bdd.blob.core.windows.net/azuresaphana22rg-stageartifacts/SapBits/hanastudio.ps1"
+                                                "variables('fileuri')"
                                             ],
                                             "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio.ps1', variables('scriptParameters'))]"
                                         },
                                         "protectedSettings": {
-                                            "storageAccountName": "[parameters('saName')]",
-                                            "storageAccountKey": "[parameters('artifactsLocationSasToken')]"
+                                           
                                         }
                                     }                
                                 }
@@ -217,10 +202,7 @@
         "vm-fqdn": {
             "type": "string",
             "value": "[reference(variables('PIPName'), '2016-03-30').dnsSettings.fqdn]"
-        },
-        "hanauri": {
-            "type": "string",
-            "value": "[parameters('hanaURI')]"
         }
+        
     }
 }

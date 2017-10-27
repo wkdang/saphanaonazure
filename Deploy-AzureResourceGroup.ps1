@@ -50,7 +50,7 @@ $DSCSourceFolder = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSSc
 # This section allows for the running the script without uploading the files again. It assumes that you have already uploaded the files with the default values
 if(!$UploadArtifacts){
 
-    $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.Id).Replace('-', '').substring(0, 19)
+    $StorageAccountName = 'stage' + ((Get-AzureRmContext).Subscription.SubscriptionId).Replace('-', '').substring(0, 19)
     $StorageContainerName = $ResourceGroup_Name.ToLowerInvariant() + '-stageartifacts'
     $StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
     $StorageContainer = Get-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context
@@ -160,7 +160,7 @@ if ($UploadArtifacts) {
 $vmName = $JsonParameters.parameters.vmName.value
 $AutomationAccount = New-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name `
                                                     -Name $vmName `
-                                                    -Location $ResourceGroupLocation `
+                                                    -Location "eastus2" `
                                                     -Plan "Basic"
 $AutomationAccountName = (Get-AzureRmAutomationAccount -ResourceGroupName $ResourceGroup_Name -Name $vmName).AutomationAccountName
 $message = ($AutomationAccountName + ' has been created.')
