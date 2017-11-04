@@ -72,10 +72,7 @@
             "name": "[variables('PIPName')]",
             "location": "[resourceGroup().location]",
             "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[variables('vmName')]"
-                }
+                "publicIPAllocationMethod": "Dynamic"
             }
         },
         {
@@ -198,11 +195,6 @@
                         ]
         }
     ],
-    "outputs": {
-        "vm-fqdn": {
-            "type": "string",
-            "value": "[reference(variables('PIPName'), '2016-03-30').dnsSettings.fqdn]"
-        }
-        
+    "outputs": {  
     }
 }

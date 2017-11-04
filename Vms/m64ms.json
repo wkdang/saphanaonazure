@@ -83,10 +83,7 @@
             "name": "[variables('vmName')]",
             "location": "[resourceGroup().location]",
             "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[variables('vmName')]"
-                }
+                "publicIPAllocationMethod": "Dynamic"
             }
         },
         {
