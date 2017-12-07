@@ -69,7 +69,6 @@ az group deployment create \
 
 ## Parameters
 
-```
 Parameter name | Required | Description | Default Value | Allowed Values
 -------------- | -------- | ----------- | ------------- | --------------
 VMName |Yes |Name of the HANA Virtual Machine. | None | No restrictions
@@ -90,5 +89,3 @@ HANANumber | No | SAP HANA Instance Number | 00 | No restrictions
 ExistingNetworkResourceGroup | No | This gives you the option to deploy the VMs to an existing VNET in a different Resource Group. The value provided should match the name of the existing Resource Group. To deploy the VNET in the same Resource Group the value should be set to "no" | no | No restrictions
 IPAllocationMethod | no | LEts you choose between Static and Dynamic IP Allocation | Dynamic | Dynamic, Static
 StaticIP | No | Allows you to choose the specific IP to be assgined to the HANA server. If the allocation method is Dynamic this parameter will be ignored | 10.0.5.6 | No restrictions
-
-```
