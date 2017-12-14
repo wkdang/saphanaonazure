@@ -341,7 +341,7 @@
               "autoUpgradeMinorVersion": true,
               "settings": {
                 "fileUris": [
-                  "https://raw.githubusercontent.com/AzureCAT-GSI/saptest/master/scripts/small.sh"
+                  "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/scripts/small.sh"
                 ],
                 "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
               }

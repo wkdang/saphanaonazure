@@ -375,7 +375,7 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                       "fileUris": [
-                        "https://raw.githubusercontent.com/AzureCAT-GSI/saptest/master/scripts/large.sh"
+                        "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/scripts/large.sh"
                       ],
                         "commandToExecute": "[concat('sh large.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
                     }
