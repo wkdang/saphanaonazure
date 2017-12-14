@@ -1,57 +1,44 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "networkName": {
-            "type": "string",
-            "defaultValue": "ra-sap-hana-vnet",
-            "metadata": {
-                "description": "The Hana vNet"
-            }
-        },
-        "addressPrefixes": {
-            "type": "string",
-            "defaultValue": "10.0.0.0/16",
-            "metadata": {
-                "description": "The Hana vNET prefix"
-            }
-        },
-        "subnetName": {
-            "type": "string",
-            "defaultValue": "SAPDataSubnet",
-            "metadata": {
-                "description": "The Hana subnet name"
-            }
-        },
-        "subnetPrefix": {
-            "type": "string",
-            "defaultValue": "10.0.5.0/24",
-            "metadata": {
-                "description": "The data subnet"
-            }
-        },
-        "baseURI": {
-            "type": "string",
-            "metadata": {
-                "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
-            }
-        }
-      
-
+  "parameters": {
+    "vmUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the Virtual Machine"
+      },
+      "defaultValue": "testuser"
     },
+    "mgmtSubnetRef": {
+        "type": "string",
+        "metadata": {
+            "description": "The Hana subnet reference ID"
+        }
+    },
+    "vmPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Password for the Virtual Machine"
+      },
+      "defaultValue": "Hana07061992!"
+    },
+    "customUri": {
+      "type": "string",
+      "metadata": {
+        "description": "Uri for SAP Bits"
+      }
+    }
+  },
     "variables": {
-        "adminUsername": "testuser",
-        "adminPassword": "HANA07061992!",
-        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('NetworkName'), parameters('subnetName'))]",
+        "subnetRef": "[parameters('mgmtSubnetRef')]",
         "vmName": "hanajb",
         "vNicName": "hanajbnic",
         "PIPName": "hanajbpip",
         "vhdStorageAccountName": "[uniqueString(resourceGroup().id, 'storage')]",
-        "dnsNameForPublicIP": "hanajbdnspub",
         "scriptFolder": ".",
         "scriptFileName": "hanastudio.ps1",
-        "scriptParameters": "[concat(' -BaseURI ', parameters('baseURI'))]",
-        "fileuri":"[concat(parameters('BaseURI') , '/hanastudio.ps1')]"
+        "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'))]",
+        "fileuri":"https://raw.githubusercontent.com/claudhg9/saptest/master/hanastudio.ps1"
         
     },
     "resources": [
@@ -77,33 +64,11 @@
         },
         {
             "apiVersion": "2016-09-01",
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('NetworkName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('addressPrefixes')]"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[parameters('subnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetPrefix')]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "apiVersion": "2016-09-01",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[variables('vNicName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[variables('PIPName')]",
-                "[parameters('NetworkName')]"
+                "[variables('PIPName')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -137,8 +102,8 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('vmName')]",
-                    "adminUsername": "[variables('adminUsername')]",
-                    "adminPassword": "[variables('adminPassword')]"
+                    "adminUsername": "[parameters('vmUserName')]",
+                    "adminPassword": "[parameters('vmPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -195,6 +160,6 @@
                         ]
         }
     ],
-    "outputs": {  
-    }
+    "outputs": { }
+    
 }
