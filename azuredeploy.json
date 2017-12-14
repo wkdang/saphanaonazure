@@ -2,453 +2,391 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "ResourceGroupLocation": {
-            "type": "string",
-            "metadata": {
-                "description": "Deployment region"
-            }
-        },
-        "ResourceGroup_Name": {
-            "type": "string",
-            "metadata": {
-                "description": "Deployment region"
-            }
-        },
-        "vmName": {
+        "VMName": {
             "type": "string",
             "metadata": {
                 "description": "VM Name"
             }
         },
-        "saName": {
+        "HANAJumpbox": {
             "type": "string",
             "metadata": {
-                "description": "sa Name"
-            }
-        },
-        "HanaJumpbox": {
-            "type": "string",
+                "description": "Choose whether to deploy a VM with HANA Studio installed"
+            },
             "allowedValues": [
                 "yes",
                 "no"
             ]
         },
-        "vmSize": {
+        "VMSize": {
             "type": "string",
             "metadata": {
                 "description": "VM Size"
             },
-            "defaultValue": "Standard_GS5",
+            "defaultValue": "Standard_GS5 (448 GB, Certified)",
             "allowedValues": [
-                "Standard_GS5",
-                "Standard_M64s",
-                "Standard_M64ms",
-                "Standard_M128s",
-                "Standard_M128ms",
-                "Standard_E16s_v3",
-                "Standard_E32s_v3",
-                "Standard_E64s_v3"
+                "Standard_GS5 (448 GB, Certified)",
+                "Standard_M64s (1 TB)",
+                "Standard_M64ms (1.7 TB)",
+                "Standard_M128s (2 TB)",
+                "Standard_M128ms (3.8 TB)",
+                "Standard_E16s_v3 (128 GB)",
+                "Standard_E32s_v3 (256 GB)",
+                "Standard_E64s_v3 (448 GB)"
             ]
         },
-        "networkName": {
+        "NetworkName": {
             "type": "string",
+            "defaultValue": "ra-sap-hana-vnet",
             "metadata": {
-                "description": "The Hana vNet"
+                "description": "The HANA VNET"
             }
         },
         "addressPrefixes": {
             "type": "string",
+            "defaultValue": "10.0.0.0/16",
             "metadata": {
-                "description": "The Hana vNET prefix"
+                "description": "The HANA VNET prefix"
             }
         },
-        "subnetName": {
+        "HANASubnetName": {
             "type": "string",
+            "defaultValue": "SAPDataSubnet",
             "metadata": {
-                "description": "The Hana subnet name"
+                "description": "The data subnet name"
             }
         },
-        "subnetPrefix": {
+        "HANASubnetPrefix": {
             "type": "string",
+            "defaultValue": "10.0.5.0/24",
             "metadata": {
-                "description": "The data subnet"
+                "description": "The data subnet prefix"
             }
         },
-        "customUri": {
+        "ManagementSubnetName": {
             "type": "string",
+            "defaultValue": "SAPMgmtSubnet",
             "metadata": {
-                "description": "Uri for Custom Script Extension"
+                "description": "The management subnet name"
             }
         },
-        "baseUri": {
+        "ManagementSubnetPrefix": {
             "type": "string",
+            "defaultValue": "10.0.6.0/24",
             "metadata": {
-                "description": "Base deployment uri"
+                "description": "The management subnet prefix"
             }
         },
-        "artifactsLocationSasToken": {
+        "customURI": {
             "type": "string",
             "metadata": {
-                "description": "Base deployment uri"
+                "description": "URI where SAP bits are uploaded"
             }
         },
-        "AzureDscUri": {
+        "VMUserName": {
             "type": "string",
             "metadata": {
-                "description": "Uri for Azure Automation DSC"
+                "description": "Username for the Virtual Machine"
+            },
+            "defaultValue": "testuser"
+        },
+        "VMPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine"
             }
         },
-        "AzureDscKey": {
+        "OperatingSystem": {
             "type": "string",
             "metadata": {
-                "description": "Key for Azure Automation DSC"
-            }
+                "description": "Operating system for HANA Machine"
+            },
+            "defaultValue": "SLES for SAP 12 SP2",
+            "allowedValues": [
+                "SLES for SAP 12 SP2",
+                "RHEL 7.2 for SAP HANA"
+            ]
         },
-        "DscConfigName": {
+        "HANASID": {
             "type": "string",
             "metadata": {
-                "description": "Name of AzureAutomation Config"
-            }
-        }
+                "description": "SAP HANA System ID"
+            },
+            "defaultValue": "H10"
+        },
+        "HANANumber": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA Instance Number"
+            },
+            "defaultValue": "00"
+        },
+        "ExistingNetworkResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Type in the name of the Resource Group for an existing network or leave no to use the same one"
+            },
+            "defaultValue": "no"
+        },
+        "IPAllocationMethod": {
+            "type": "string",
+            "allowedValues" : [
+              "Dynamic",
+              "Static"
+            ],
+            "metadata": {
+                "description": "IP Allocation Method"
+          },
+          "defaultValue": "Dynamic"
+        },
+        "StaticIP": {
+          "type": "string",
+          "metadata": {
+            "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
+          },
+          "defaultValue": "10.0.5.4"
+        }               
     },
-    "variables": {
-        "vmName": "[toLower(parameters('vmName'))]",
-        "gs5Uri": "[concat(parameters('baseUri'), '\\Vms\\gs5.json')]",
-        "m64sUri": "[concat(parameters('baseUri'), '\\Vms\\m64s.json')]",
-        "m64msUri": "[concat(parameters('baseUri'), '\\Vms\\m64ms.json')]",
-        "m128sUri": "[concat(parameters('baseUri'), '\\Vms\\m128s.json')]",
-        "m128msUri": "[concat(parameters('baseUri'), '\\Vms\\m128ms.json')]",
-        "e16sUri": "[concat(parameters('baseUri'), '\\Vms\\e16s.json')]",
-        "e32sUri": "[concat(parameters('baseUri'), '\\Vms\\e32s.json')]",
-        "e64sUri": "[concat(parameters('baseUri'), '\\Vms\\e64s.json')]",
-        "hanajbUri": "[concat(parameters('baseUri'), '\\Vms\\hanajb.json')]",
-        "hanaUri":"[concat(parameters('baseUri'), '\\hanastudio.ps1')]"
-    },
-    "resources": [{
-            "condition": "[equals(parameters('vmSize'), 'Standard_GS5')]",
-            "apiVersion": "2016-09-01",
-            "name": "Gs5LinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('gs5Uri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
-                    },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
-                    },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_E16s_v3')]",
-            "apiVersion": "2016-09-01",
-            "name": "E16sLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('e16sUri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
-                    },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
-                    },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_E32s_v3')]",
-            "apiVersion": "2016-09-01",
-            "name": "E32sLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('e32sUri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
-                    },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
-                    },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_E64s_v3')]",
-            "apiVersion": "2016-09-01",
-            "name": "E64sLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('e64sUri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
-                    },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
-                    },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_M64s')]",
-            "apiVersion": "2016-09-01",
-            "name": "M64sLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('m64sUri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
-                    },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
-                    },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_M64ms')]",
-            "apiVersion": "2016-09-01",
-            "name": "M64msLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('m64msUri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "customUri": {
-                        "value": "[parameters('customUri')]"
-                    },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
-                    },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
-                    },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('vmSize'), 'Standard_M128s')]",
-            "apiVersion": "2016-09-01",
-            "name": "M128sLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('m128sUri')]"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
+  "variables": {
+    "vmName": "[toLower(parameters('vmName'))]",
+    "smallUri": "https://raw.githubusercontent.com/claudhg9/saptest/master/Vms/small.json",
+    "mediumUri": "https://raw.githubusercontent.com/claudhg9/saptest/master/Vms/medium.json",
+    "largeUri": "https://raw.githubusercontent.com/claudhg9/saptest/master/Vms/large.json",
+    "extralargeUri": "https://raw.githubusercontent.com/claudhg9/saptest/master/Vms/extralarge.json",
+    "hanajbUri": "https://raw.githubusercontent.com/claudhg9/saptest/master/Vms/hanajb.json",
+    "hanaUri": "https://raw.githubusercontent.com/claudhg9/saptest/master/hanastudio.ps1",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
+    "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
+    "mgmtSubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('ManagementSubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('ManagementSubnetName')))]",
+    "vmSizeArray": "[split(parameters('vmSize'),' ')]",
+    "vmSize": "[variables('vmSizeArray')[0]]"
+},
+    "resources": [
 
+        {
+        "condition": "[equals(parameters('ExistingNetworkResourceGroup'), 'no')]",
+        "apiVersion": "2016-09-01",
+        "type": "Microsoft.Network/virtualNetworks",
+        "name": "[parameters('NetworkName')]",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": [
+              "[parameters('addressPrefixes')]"
+            ]
+          },
+          "subnets": [
+            {
+              "name": "[parameters('HANASubnetName')]",
+              "properties": {
+                "addressPrefix": "[parameters('HANASubnetPrefix')]"
+              }
+            },
+            {
+                "name": "[parameters('ManagementSubnetName')]",
+                "properties": {
+                  "addressPrefix": "[parameters('ManagementSubnetPrefix')]"
+                }
+              }
+          ]
+        }
+      },
+          { 
+            "condition": "[or(or(equals(variables('vmSize'),'Standard_E16s_v3'),equals(variables('vmSize'),'Standard_E32s_v3')), or(equals(variables('vmSize'),'Standard_E64s_v3'),equals(variables('vmSize'),'Standard_GS5')))]",
+            "apiVersion": "2016-09-01",
+            "name": "SmallLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+              ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('smallUri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
                     },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
                     },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
                     },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
                     },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
                     },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
                     },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod":{
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP":{
+                        "value": "[parameters('StaticIP')]"
                     }
                 }
             }
         },
         {
-            "condition": "[equals(parameters('vmSize'), 'Standard_M128ms')]",
+            "condition": "[equals(variables('vmSize'),'Standard_M64s')]",
             "apiVersion": "2016-09-01",
-            "name": "M128msLinkedTemplate",
+            "name": "MediumLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+              ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('m128msUri')]"
+                    "uri": "[variables('mediumUri')]"
                 },
                 "parameters": {
                     "vmName": {
-                        "value": "[variables('vmName')]"
+                        "value": "[parameters('vmName')]"
                     },
                     "customUri": {
                         "value": "[parameters('customUri')]"
                     },
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
                     },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
                     },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
                     },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
                     },
-                    "AzureDscUri": {
-                        "value": "[parameters('AzureDscUri')]"
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
                     },
-                    "AzureDscKey": {
-                        "value": "[parameters('AzureDscKey')]"
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
                     },
-                    "DscConfigName": {
-                        "value": "[parameters('DscConfigName')]"
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod":{
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP":{
+                        "value": "[parameters('StaticIP')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[or(equals(variables('vmSize'),'Standard_M64ms'),equals(variables('vmSize'),'Standard_M128s'))]",
+            "apiVersion": "2016-09-01",
+            "name": "LargeLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+              ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('largeUri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
+                    },
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
+                    },
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
+                    },
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
+                    },
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod":{
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP":{
+                        "value": "[parameters('StaticIP')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(variables('vmSize'), 'Standard_M128ms')]",
+            "apiVersion": "2016-09-01",
+            "name": "extralargeLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+              ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('extralargeUri')]"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
+                    },
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
+                    },
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
+                    },
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
+                    },
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod":{
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP":{
+                        "value": "[parameters('StaticIP')]"
                     }
                 }
             }
@@ -458,32 +396,32 @@
             "apiVersion": "2016-09-01",
             "name": "HANAjbLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('hanajbUri')]"
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+              ],
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "[variables('hanajbUri')]"
+            },
+            "parameters": {
+              
+                "mgmtSubnetRef": {
+                    "value": "[variables('mgmtSubnetRef')]"
                 },
-                "parameters": {
-                    "baseUri": {
-                        "value": "[parameters('baseUri')]"
-                    },
-                    
-                    "networkName": {
-                        "value": "[parameters('networkName')]"
-                    },
-                    "addressPrefixes": {
-                        "value": "[parameters('addressPrefixes')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "subnetPrefix": {
-                        "value": "[parameters('subnetPrefix')]"
-                    }
-                 
-                }
-        
-            }    
+              "vmUserName": {
+                "value": "[parameters('vmUserName')]"
+              },
+              "vmPassword": {
+                "value": "[parameters('vmPassword')]"
+              },
+              "customUri": {
+                "value": "[parameters('customUri')]"
+
+              }
+            }
+          }
+                  
         }
 
     ],

@@ -1,22 +1,24 @@
-# SAP HANA ARM Installation
-This ARM template is used to install SAP HANA on a single VM running SUSE SLES. It uses the Azure SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [DSC for Linux](https://github.com/Azure/azure-linux-extensions/tree/master/DSC) and the [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/master/CustomScript) for the installation and configuration of the machine.
 
+# SAP HANA ARM Installation
+This ARM template is used to install SAP HANA on a single VM running SUSE SLES 12 SP 2 or Red Hat Enterprise Linux . It uses the Azure SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/master/CustomScript) for the installation and configuration of the machine.
+
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fclaudhg9%2Fsaptest%2Fswap-test%2Fazuredeploy.json)
 ## Machine Info
 The template current deploys HANA on a one of the machines listed in the table below with the noted disk configuration.  The deployment takes advantage of Managed Disks, for more information on Managed Disks or the sizes of the noted disks can be found on [this](https://docs.microsoft.com/en-us/azure/storage/storage-managed-disks-overview#pricing-and-billing) page.
 
 Machine Size | RAM | Data and Log Disks | /hana/shared | /root | /usr/sap | hana/backup
 ------------ | --- | ------------------ | ------------ | ----- | -------- | -----------
-E16 | 128 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S10
-E32 | 128 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S20
+E16 | 128 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S15
+E32 | 256 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S20
 E64 | 432 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
 GS5 | 448 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
 M64s | 1TB | 2 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S30
-M64ms | 1.7TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 3 x S30
-M128S | 2TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 3 x S30
+M64ms | 1.7TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S40
+M128S | 2TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S40
 M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
 
 ## Installation Media
-Installation media for SAP HANA should be downloaded and place in the SapBits folder. This location will be automatically be uploaded to Azure Storage upon deployment.  Specifically you need to download SAP package 51052325, which should consist of four files:
+Installation media for SAP HANA should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/claudhg9/saptest/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052325, which should consist of four files:
 ```
 51052325_part1.exe
 51052325_part2.rar
@@ -24,41 +26,76 @@ Installation media for SAP HANA should be downloaded and place in the SapBits fo
 51052325_part4.rar
 ```
 
-To perform this download, go to http://support.sap.com, and log on with your credentials.  You should see a screen that looks like this:
-[!image](./media/)
-
-
-
-You can check the integrity of these files by using the md5sum program, and the md5 hash values are stored in the file md5sums.  This command will check all the deployment files:
-```
-md5sum -c md5sums
+Addtionally, if you wish to install a HANA Jumpbox with HANA Studio enabled, create a SAP_HANA_STUDIO folder under your SapBits folder and place the following packages:
 ```
 
-## Configure the Solution
-To customize the Azure environment that is deployed, you can edit the `azuredeploy.parameters` file, which contains the network names, IP addresses and virtual machine names that will be deployed in the next step.
+IMC_STUDIO2_212_2-80000323.SAR
+sapcar.exe
+serverjre-9.0.1_windows-x64_bin.tar.gz
 
-To customize the HAHA deployment, you can edit the `SapBits/hdbinst.cfg` - you can change various options such as the SID name and passwords.  **Please do not change the line**:
 ```
-hostname=REPLACE-WITH-HOSTNAME
-```
-because this gets filled in automatically when you do the deployment.
+
+The Server Java Runtime Environment bits can be downloaded [here](http://www.oracle.com/technetwork/java/javase/downloads/server-jre9-downloads-3848530.html).
+
+There should be a folder inside your storage account container called SapBits:
+
+![SapBits Image](https://github.com/claudhg9/saptest/blob/master/media/Structure1.png)
+
+The following files should be present inside the SapBits folder:
+
+![HANA Image](https://github.com/claudhg9/saptest/blob/master/media/Structure2.png)
+
+Additionally if you plan on installing the HANA Jumpbox, you should create a folder under the SapBits folder and add the following files:
+![HANA Studio Image](https://github.com/claudhg9/saptest/blob/master/media/Structure3.png)
 
 ## Deploy the Solution
-The solution must be run from PowerShell on Windows that is logged into Azure. *The Powershell script takes advantage of some PowerShell functions that are not available in the cross-platform PowerShell yet.* It assumes you have logged in and selected the subscription to which you would like to deploy to. If this is not the case run `Login-AzureRmAccount` to get logged in. Once logged in, the current subscription should be displayed. If a different subscription is necessary, run `Get-AzureRmSubscription` to list the subscriptions and then `Select-AzureRmSubscription -SubscriptionName "YOURSUBNAME"` to select the subscription where the solution is to be deployed.
+### Deploy from the Portal
 
-The ARM template should be deployed using the `Deploy-AzureResourceGroup.ps1` file. The solution uses the `azuredeploy.parameters.json` file to set the deployment parameters like Resource Group name, location, and VM size. The solution can be deployed in any location with the available sku. **We will be adding additional SKUs that will drive the available deployment locations.** For more information on Sku availability can be found on the [Azure website](https://azure.microsoft.com/en-us/pricing/details/cloud-services/).
+To deploy from the portal using a graphic interface you can use the [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fclaudhg9%2Fsaptest%2Fmaster%2Fazuredeploy.json) button to bring up the template in your subscription and fill out the parameters.
+
+### Deploy from Powershell
 
 ```powershell
-./Deploy-AzureResourceGroup.ps1 -UploadArtifacts
+New-AzureRmResourceGroup -Name HANADeploymentRG -Location "Central US"
+New-AzureRmResourceGroupDeployment -Name HANADeployment -ResourceGroupName HANADeploymentRG `
+  -TemplateUri https://raw.githubusercontent.com/claudhg9/saptest/master-subnet/azuredeploy.json `
+  -VMName HANAtestVM -HANAJumpbox yes -CustomURI https://yourBlobName.blob.core.windows.net/yourContainerName -VMPassword AweS0me@PW
 ```
 
-If the files are already uploaded to the staging directory, running the `./Deploy-AzureResourceGroup.ps1` with no switch will skip the upload process.
+### Deploy from CLI
+```
+az login
 
-## Desired State Configuraiton
-This installation takes advantage of [Azure Automation Desired State Configuration](https://azure.microsoft.com/en-us/blog/what-why-how-azure-automation-desired-state-configuration/) to manage the configuration and installation of HANA. Once the Powershell script runs successfully you should have the HANA VM deployed in your subscription, as well as an Azure Automation Account. Please allow up to 30 minutes after the Powershell script ends for DSC to configure HANA. You can check the progress in your Azure Subscription, navigate to DSC Nodes under the Automation Account and find the Virtual Machine. The first consistency check is expected to fail, as the DSC script includes a reboot. Once the node shows as "Consistent" the installation is complete.
+az group create --name HANADeploymentRG --location "Central US"
+az group deployment create \
+    --name HANADeployment \
+    --resource-group HANADeploymentRG \
+    --template-uri "https://raw.githubusercontent.com/claudhg9/saptest/master-subnet/azuredeploy.json" \
+    --parameters VMName=HANAtestVM HANAJumpbox=yes CustomURI=https://yourBlobName.blob.core.windows.net/yourContainerName VMPassword=AweS0me@PW
+```
+## Monitoring
 
-## Troubleshooting
+For your deployment to be supported by SAP the Azure Enhanced Monitoring Extension must be enabled on the Virtual Machine. Please refer to the following [blog post](https://blogs.msdn.microsoft.com/saponsqlserver/2016/05/16/new-azure-powershell-cmdlets-for-azure-enhanced-monitoring/) for more information on how to enable it.
 
-## Code of Conduct
-Code of Conduct
-This project has adopted the Microsoft Open Source Code of Conduct. For more information see the Code of Conduct FAQ or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Parameters
+
+Parameter name | Required | Description | Default Value | Allowed Values
+-------------- | -------- | ----------- | ------------- | --------------
+VMName |Yes |Name of the HANA Virtual Machine. | None | No restrictions
+HANAJumpbox |Yes |Defines whether to create a Windows Server with HANA Studio installed. | None | No Restrictions
+VMSize |No |Defines the size of the Azure VM for the HANA server. | Standard_GS5 | Standard_GS5, Standard_M64s, Standard_M64ms, Standard_M128s, Standard_M128ms, Standard_E16s_v3, Standard_E32s_v3, Standard_E64s_v3 | No restrictions
+NetworkName |No |Name of the Azure VNET to be provisioned | ra-hana-vnet | No restrictions
+addressPrefixes |No |Address prefix for the Azure VNET to be provisioned | 10.0.0.0/16 | No restrictions
+HANASubnetName |No | Name of the subnet where the HANA server will be provisioned | SAPDataSubnet | No restrictions
+HANASubnetPrefix |No |Subnet prefix of the subnet where the HANA server will be provisioned | 10.0.5.0/24 | No restrictions
+ManagementSubnetName |No | Name of the subnet where the HANA jumpbox will be provisioned | SAPMgmtSubnet | No restrictions
+ManagementSubnetPrefix |No |Subnet prefix of the subnet where the HANA jumpbox will be provisioned | 10.0.6.0/24 | No restrictions
+CustomURI | Yes | URI where the SAP bits are stored for Azure use the URI up to the container, excluding the SAPBtis folder | None | No restrictions
+VMUserName | No | Username for both the HANA server and the HANA jumpbox | testuser | No restrictions
+VMPassword | Yes | Password for the user defined above | None | No restrictions
+OperatingSystem | No | Linux distribution to use for the HANA server | SLES for SAP 12 SP2 | SLES for SAP 12 SP2, RHEL 7.2 for SAP HANA
+HANASID | No | HANA System ID | H10 | No restrictions
+HANANumber | No | SAP HANA Instance Number | 00 | No restrictions
+ExistingNetworkResourceGroup | No | This gives you the option to deploy the VMs to an existing VNET in a different Resource Group. The value provided should match the name of the existing Resource Group. To deploy the VNET in the same Resource Group the value should be set to "no" | no | No restrictions
+IPAllocationMethod | no | Lets you choose between Static and Dynamic IP Allocation | Dynamic | Dynamic, Static
+StaticIP | No | Allows you to choose the specific IP to be assgined to the HANA server. If the allocation method is Dynamic this parameter will be ignored | 10.0.5.6 | No restrictions
