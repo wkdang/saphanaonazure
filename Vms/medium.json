@@ -342,7 +342,7 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                       "fileUris": [
-                        "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/scripts/medium.sh"
+                        "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/swap/scripts/medium.sh"
                       ],
                         "commandToExecute": "[concat('sh medium.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
                     }
