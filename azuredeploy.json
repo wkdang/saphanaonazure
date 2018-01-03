@@ -194,7 +194,7 @@
           { 
             "condition": "[or(or(equals(variables('vmSize'),'Standard_E16s_v3'),equals(variables('vmSize'),'Standard_E32s_v3')), or(equals(variables('vmSize'),'Standard_E64s_v3'),equals(variables('vmSize'),'Standard_GS5')))]",
             "apiVersion": "2016-09-01",
-            "name": "SmallLinkedTemplate",
+            "name": "concat('SmallLinkedTemplate', parameters('VMName'))]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
@@ -244,7 +244,7 @@
         {
             "condition": "[equals(variables('vmSize'),'Standard_M64s')]",
             "apiVersion": "2016-09-01",
-            "name": "MediumLinkedTemplate",
+            "name":"concat('MediumLinkedTemplate', parameters('VMName'))]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
@@ -294,7 +294,7 @@
         {
             "condition": "[or(equals(variables('vmSize'),'Standard_M64ms'),equals(variables('vmSize'),'Standard_M128s'))]",
             "apiVersion": "2016-09-01",
-            "name": "LargeLinkedTemplate",
+            "name": "concat('LargeLinkedTemplate', parameters('VMName'))]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
@@ -344,7 +344,7 @@
         {
             "condition": "[equals(variables('vmSize'), 'Standard_M128ms')]",
             "apiVersion": "2016-09-01",
-            "name": "extralargeLinkedTemplate",
+            "name": "concat('extraLargeLinkedTemplate', parameters('VMName'))]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
