@@ -1,8 +1,8 @@
 
 # SAP HANA ARM Installation
-This ARM template is used to install SAP HANA on a single VM running SUSE SLES 12 SP 2. It uses the Azure SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/swap/CustomScript) for the installation and configuration of the machine.
+This ARM template is used to install SAP HANA on a single VM running SUSE SLES 12 SP 2. It uses the Azure SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/master/CustomScript) for the installation and configuration of the machine.
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureCAT-GSI%2FSAP-HANA-ARM%2Fswap%2Fazuredeploy.json)
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureCAT-GSI%2FSAP-HANA-ARM%2Fmaster%2Fazuredeploy.json)
 ## Machine Info
 The template current deploys HANA on a one of the machines listed in the table below with the noted disk configuration.  The deployment takes advantage of Managed Disks, for more information on Managed Disks or the sizes of the noted disks can be found on [this](https://docs.microsoft.com/en-us/azure/storage/storage-managed-disks-overview#pricing-and-billing) page.
 
@@ -18,7 +18,7 @@ M128S | 2TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S40
 M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
 
 ## Installation Media
-Installation media for SAP HANA should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/swap/UploadToAzure.md)  Specifically you need to download SAP package 51052325, which should consist of four files:
+Installation media for SAP HANA should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052325, which should consist of four files:
 ```
 51052325_part1.exe
 51052325_part2.rar
@@ -39,26 +39,26 @@ The Server Java Runtime Environment bits can be downloaded [here](http://www.ora
 
 There should be a folder inside your storage account container called SapBits:
 
-![SapBits Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/swap/media/Structure1.png)
+![SapBits Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/Structure1.png)
 
 The following files should be present inside the SapBits folder:
 
-![HANA Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/swap/media/Structure2.png)
+![HANA Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/Structure2.png)
 
 Additionally if you plan on installing the HANA Jumpbox, you should create a folder under the SapBits folder and add the following files:
-![HANA Studio Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/swap/media/Structure3.png)
+![HANA Studio Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/Structure3.png)
 
 ## Deploy the Solution
 ### Deploy from the Portal
 
-To deploy from the portal using a graphic interface you can use the [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureCAT-GSI%2FSAP-HANA-ARM%2Fswap%2Fazuredeploy.json) button to bring up the template in your subscription and fill out the parameters.
+To deploy from the portal using a graphic interface you can use the [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureCAT-GSI%2FSAP-HANA-ARM%2Fmaster%2Fazuredeploy.json) button to bring up the template in your subscription and fill out the parameters.
 
 ### Deploy from Powershell
 
 ```powershell
 New-AzureRmResourceGroup -Name HANADeploymentRG -Location "Central US"
 New-AzureRmResourceGroupDeployment -Name HANADeployment -ResourceGroupName HANADeploymentRG `
-  -TemplateUri https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/swap/azuredeploy.json `
+  -TemplateUri https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/azuredeploy.json `
   -VMName HANAtestVM -HANAJumpbox yes -CustomURI https://yourBlobName.blob.core.windows.net/yourContainerName -VMPassword AweS0me@PW
 ```
 
@@ -70,7 +70,7 @@ az group create --name HANADeploymentRG --location "Central US"
 az group deployment create \
     --name HANADeployment \
     --resource-group HANADeploymentRG \
-    --template-uri "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/swap/azuredeploy.json" \
+    --template-uri "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/azuredeploy.json" \
     --parameters VMName=HANAtestVM HANAJumpbox=yes CustomURI=https://yourBlobName.blob.core.windows.net/yourContainerName VMPassword=AweS0me@PW
 ```
 ## Monitoring
