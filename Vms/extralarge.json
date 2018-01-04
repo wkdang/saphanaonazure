@@ -491,7 +491,7 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                       "fileUris": [
-                        "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/swap/scripts/extraLarge.sh"
+                        "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/scripts/extraLarge.sh"
                       ],
                         "commandToExecute": "[concat('sh extraLarge.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
                     }
