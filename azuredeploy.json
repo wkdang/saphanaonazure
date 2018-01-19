@@ -4,6 +4,7 @@
     "parameters": {
         "VMName": {
             "type": "string",
+            "maxLength": 13,
             "metadata": {
                 "description": "VM Name"
             }
