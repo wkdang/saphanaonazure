@@ -34,6 +34,7 @@ sudo ./install.sh
 
 sudo zypper se -t pattern
 sudo zypper in -t pattern sap-hana
+sudo saptune solution apply HANA
 
 # step2
 echo $Uri >> /tmp/url.txt
