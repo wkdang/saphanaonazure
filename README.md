@@ -99,3 +99,23 @@ HANANumber | No | SAP HANA Instance Number | 00 | No restrictions
 ExistingNetworkResourceGroup | No | This gives you the option to deploy the VMs to an existing VNET in a different Resource Group. The value provided should match the name of the existing Resource Group. To deploy the VNET in the same Resource Group the value should be set to "no" | no | No restrictions
 IPAllocationMethod | no | Lets you choose between Static and Dynamic IP Allocation | Dynamic | Dynamic, Static
 StaticIP | No | Allows you to choose the specific IP to be assgined to the HANA server. If the allocation method is Dynamic this parameter will be ignored | 10.0.5.6 | No restrictions
+
+##Known issues
+###When clicking on Deploy to Azure you get redirected to an empty directory
+![Directories](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/directories.png)
+
+The only way to get around this is to save the template to your own template library. Click on "Create a Resource" and choose "Template Deployment". Click "Create".
+
+![Directories2](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/directories2.png)
+
+Select the option of "Build your own template in the editor"
+
+![Directories3](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/directories3.png)
+
+Copy the contents from the azuredeploy.json [file](https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/azuredeploy.json) and paste them into the template editor, click Save.
+
+![Directories4](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/directories4.png)
+
+The template is now available in your template library. Changes made to the github repo will not be replicated, make sure to update your template when changes to the azuredeploy.json file are made.
+
+
