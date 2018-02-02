@@ -6,7 +6,7 @@
             "value": "testVm"
         },
         "HANAJumpbox": {
-            "value": "yes",
+            "value": "yes"
         },
         "VMSize": {
             "value": "Standard_GS5 (448 GB, Certified)"
