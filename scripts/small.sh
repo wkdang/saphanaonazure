@@ -110,7 +110,7 @@ echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part2.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part3.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
-/usr/bin/wget --quiet "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hdbinst.cfg"
+/usr/bin/wget --quiet "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/hana-cockpit/hdbinst.cfg"
 echo "hana download end" >> /tmp/parameter.txt
 
 date >> /tmp/testdate
