@@ -25,9 +25,11 @@
             "metadata": {
                 "description": "Operating system for HANA Machine"
             },
-            "defaultValue": "SLES for SAP 12 SP2",
-            "allowedValues": [
-                "SLES for SAP 12 SP2",
+            "defaultValue": "SLES for SAP 12 SP3",
+            "allowedValues": 
+	    [
+		"SLES for SAP 12 SP3",
+                "SLES for SAP 12 SP2",			     
                 "RHEL 7.2 for SAP HANA"
             ]
         },
@@ -94,7 +96,7 @@
         "OperatingSystemSpec":{
             "imagePublisher":"[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
             "imageOffer":"[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
-            "sku":"[if (contains(parameters('OperatingSystem'),'12 SP2'),'12-SP2','7.2')]"
+            "sku":"[if (contains(parameters('OperatingSystem'),'12 SP3'),'12-SP3',if (contains(parameters('OperatingSystem'),'12 SP2'),'12-SP2','7.2'))]"
         },
         "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
         "diskConfig_Standard_M64s": {
