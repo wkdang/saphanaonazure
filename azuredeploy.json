@@ -147,16 +147,31 @@
             "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
           },
           "defaultValue": "10.0.5.4"
+        },               
+        "SubscriptionEmail": {
+          "type": "string",
+          "metadata": {
+            "description": "OS Subscription Email for BYOS, blank for PAYG"
+          },
+          "defaultValue": ""
+        },              
+        "SubscriptionID": {
+          "type": "string",
+          "metadata": {
+            "description": "OS Subscription ID for BYOS, blank for PAYG"
+          },
+          "defaultValue": ""
         }               
     },
   "variables": {
     "vmName": "[toLower(parameters('vmName'))]",
-    "smallUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/Vms/small.json",
-    "mediumUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/Vms/medium.json",
-    "largeUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/Vms/large.json",
-    "extralargeUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/Vms/extralarge.json",
-    "hanajbUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/Vms/hanajb.json",
-    "hanaUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hanastudio.ps1",
+    "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/",
+    "smallUri": "[concat(variables('baseUri'),'Vms/small.json')]",
+    "mediumUri": "[concat(variables('baseUri'),'Vms/medium.json')]",
+    "largeUri": "[concat(variables('baseUri'),'Vms/large.json')]",
+    "extralargeUri": "[concat(variables('baseUri'),'Vms/extralarge.json')]",
+    "hanajbUri": "[concat(variables('baseUri'),'Vms/hanajb.json')]",
+    "hanaUri": "[concat(variables('baseUri'),'hanastudio.ps1')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
     "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "mgmtSubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('ManagementSubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('ManagementSubnetName')))]",
@@ -239,6 +254,12 @@
                     },
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
+                    },
+                    "SubscriptionEmail":{
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID":{
+                        "value": "[parameters('SubscriptionID')]"
                     }
                 }
             }
@@ -289,7 +310,13 @@
                     },
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
-                    }
+                    },
+                    "SubscriptionEmail":{
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID":{
+                        "value": "[parameters('SubscriptionID')]"
+                    }		    
                 }
             }
         },
@@ -339,7 +366,13 @@
                     },
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
-                    }
+                    },
+                    "SubscriptionEmail":{
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID":{
+                        "value": "[parameters('SubscriptionID')]"
+                    }		    
                 }
             }
         },
@@ -389,7 +422,13 @@
                     },
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
-                    }
+                    },
+                    "SubscriptionEmail":{
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID":{
+                        "value": "[parameters('SubscriptionID')]"
+                    }		    
                 }
             }
         },

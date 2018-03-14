@@ -4,7 +4,13 @@ HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
 vmSize=$6
+SUBEMAIL=$7
+SUBID=$8
 
+#if needed, register the machine
+if [ "$SUBEMAIL" != "" ]; then
+   SUSEConnect -e $SUBEMAIL -r $SUBID 
+fi
 
 #install hana prereqs
 sudo zypper install -y glibc-2.22-51.6
