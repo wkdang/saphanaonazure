@@ -82,18 +82,33 @@
             "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
           },
           "defaultValue": "10.0.5.4"
-        }    
+        },               
+        "SubscriptionEmail": {
+          "type": "string",
+          "metadata": {
+            "description": "OS Subscription Email for BYOS, blank for PAYG"
+          },
+          "defaultValue": ""
+        },              
+        "SubscriptionID": {
+          "type": "string",
+          "metadata": {
+            "description": "OS Subscription ID for BYOS, blank for PAYG"
+          },
+          "defaultValue": ""
+        }     
     },
     "variables": {
         "api-version": "2017-06-01",
         "api-version-vm": "2017-03-30",
         "vmPassword": "HANA07061992!",
         "mode": "Push",
+	"baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/",		
         "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('vmName'),'-static'),concat(parameters('vmName'),'-dynamic'))]",
         "subnetRef": "[parameters('HANAsubnetRef')]",
         "OperatingSystemSpec":{
             "imagePublisher":"[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
-            "imageOffer":"[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
+            "imageOffer":"[if (contains(parameters('OperatingSystem'),'SLES'),if (contains(parameters('SubscriptionEmail'),'@'),'SLES-SAP-BYOS','SLES-SAP'),'RHEL-SAP-HANA')]",
             "sku":"[if (contains(parameters('OperatingSystem'),'12 SP3'),'12-SP3',if (contains(parameters('OperatingSystem'),'12 SP2'),'12-SP2','7.2'))]"
         },
         "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
@@ -492,9 +507,9 @@
                     "autoUpgradeMinorVersion": true,
                     "settings": {
                       "fileUris": [
-                        "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/scripts/extraLarge.sh"
+			    "[concat(variables('baseUri'),'scripts/extralarge.sh')]"			    
                       ],
-                        "commandToExecute": "[concat('sh extraLarge.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
+                        "commandToExecute": "[concat('sh extraLarge.sh \"', parameters('customUri'), '\" \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"', parameters('SubscriptionEmail'), '" "', parameters('SubscriptionID'),'"')]"
                     }
                 }
             }]
