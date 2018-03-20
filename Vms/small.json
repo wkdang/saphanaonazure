@@ -96,7 +96,14 @@
             "description": "OS Subscription ID for BYOS, blank for PAYG"
           },
           "defaultValue": ""
-        } 
+        },
+        "SMTUri":{
+          "type": "string",
+          "metadata":{
+            "description": "SMT Uri, blank for none"
+          },
+          "DefaultValue": ""
+        }
     },
     "variables": {
         "api-version": "2017-06-01",
@@ -298,35 +305,35 @@
           "dataDisks": [
             {
               "lun": 0,
-              "createOption": "attach",
+              "createOption": "Attach",
               "managedDisk": {
                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-shared'))]"
               }
             },
             {
               "lun": 1,
-              "createOption": "attach",
+              "createOption": "Attach",
               "managedDisk": {
                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-sap'))]"
               }
             },
             {
               "lun": 2,
-              "createOption": "attach",
+              "createOption": "Attach",
               "managedDisk": {
                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup1'))]"
               }
             },
             {
               "lun": 3,
-              "createOption": "attach",
+              "createOption": "Attach",
               "managedDisk": {
                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data1'))]"
               }
             },
             {
               "lun": 4,
-              "createOption": "attach",
+              "createOption": "Attach",
               "managedDisk": {
                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]"
               }
@@ -360,7 +367,7 @@
                 "fileUris": [
                   "[concat(variables('baseUri'),'scripts/small.sh')]"
                 ],
-                "commandToExecute": "[concat('sh small.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\"')]"
+                "commandToExecute": "[concat('sh small.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\"  \"', parameters('SMTUri'),'\"'')]"
               }
             }
           }

@@ -96,7 +96,14 @@
             "description": "OS Subscription ID for BYOS, blank for PAYG"
           },
           "defaultValue": ""
-        }     
+        },
+        "SMTUri":{
+            "type": "string",
+            "metadata":{
+              "description": "SMT Uri, blank for none"
+            },
+            "DefaultValue": ""
+        }        
     },
     "variables": {
         "api-version": "2017-06-01",
@@ -403,84 +410,84 @@
                     },
                     "dataDisks": [{
                         "lun": 0,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-shared'))]"
                         }
                     },
                     {
                         "lun": 1,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-sap'))]"
                         }
                     },
                     {
                         "lun": 2,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup1'))]"
                         }
                     },
                     {
                         "lun": 3,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup2'))]"
                         }
                     },
                     {
                         "lun": 4,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup3'))]"
                         }
                     },
                     {
                         "lun": 5,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup4'))]"
                         }
                     },
                     {
                         "lun": 6,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup5'))]"
                         }
                     },
                     {
                         "lun": 7,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data1'))]"
                         }
                     },
                     {
                         "lun": 8,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]"
                         }
                     },
                     {
                         "lun": 9,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data3'))]"
                         }
                     },
                     {
                         "lun": 10,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data4'))]"
                         }
                     },
                     {
                         "lun": 11,
-                        "createOption": "attach",
+                        "createOption": "Attach",
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data5'))]"
                         }
@@ -509,7 +516,8 @@
                       "fileUris": [
 			    "[concat(variables('baseUri'),'scripts/extralarge.sh')]"			    
                       ],
-                        "commandToExecute": "[concat('sh extraLarge.sh \"', parameters('customUri'), '\" \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"', parameters('SubscriptionEmail'), '" "', parameters('SubscriptionID'),'"')]"
+                        "commandToExecute": "[concat('sh extraLarge.sh \"', parameters('customUri'), '\" \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"', parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"'')]"
+                        
                     }
                 }
             }]
