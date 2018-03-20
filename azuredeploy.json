@@ -161,7 +161,14 @@
             "description": "OS Subscription ID for BYOS, blank for PAYG"
           },
           "defaultValue": ""
-        }               
+        },
+        "SMTUri": {
+            "type": "string",
+            "metadata": {
+              "description": "SMT URI, blank for none"
+            },
+            "defaultValue": ""
+          }                               
     },
   "variables": {
     "vmName": "[toLower(parameters('vmName'))]",
@@ -260,6 +267,9 @@
                     },
                     "SubscriptionID":{
                         "value": "[parameters('SubscriptionID')]"
+                    },
+                    "SMTUri":{
+                        "value": "[parameters('SMTUri')]"
                     }
                 }
             }
@@ -316,7 +326,10 @@
                     },
                     "SubscriptionID":{
                         "value": "[parameters('SubscriptionID')]"
-                    }		    
+                    },
+                    "SMTUri":{
+                        "value": "[parameters('SMTUri')]"
+                    }	    
                 }
             }
         },
@@ -372,7 +385,10 @@
                     },
                     "SubscriptionID":{
                         "value": "[parameters('SubscriptionID')]"
-                    }		    
+                    },
+                    "SMTUri":{
+                        "value": "[parameters('SMTUri')]"
+                    }	    
                 }
             }
         },
@@ -428,7 +444,10 @@
                     },
                     "SubscriptionID":{
                         "value": "[parameters('SubscriptionID')]"
-                    }		    
+                    },
+                    "SMTUri":{
+                        "value": "[parameters('SMTUri')]"
+                    }	    
                 }
             }
         },

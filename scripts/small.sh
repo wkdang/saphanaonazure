@@ -6,10 +6,15 @@ HANANUMBER=$5
 vmSize=$6
 SUBEMAIL=$7
 SUBID=$8
+SUBURL=$9
 
 #if needed, register the machine
 if [ "$SUBEMAIL" != "" ]; then
-   SUSEConnect -e $SUBEMAIL -r $SUBID 
+  if [ "$SUBURL" != "" ]; then 
+   SUSEConnect -e $SUBEMAIL -r $SUBID --url $SUBURL
+  else 
+   SUSEConnect -e $SUBEMAIL -r $SUBID
+  fi
 fi
 
 #install hana prereqs
@@ -38,8 +43,8 @@ wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
 tar -xf azcopy.tar.gz
 sudo ./install.sh
 
-sudo zypper se -t pattern
-sudo zypper in -t pattern sap-hana
+
+zypper in -t -y pattern sap-hana
 sudo saptune solution apply HANA
 
 # step2
