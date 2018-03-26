@@ -104,14 +104,25 @@
               "description": "SMT Uri, blank for none"
             },
             "DefaultValue": ""
-        }     
+        },
+        "WriteAccelerator": {
+            "type": "string",
+            "metadata": {
+                "description": "Choose whether to use Write Accelerator, only for M series"
+            },
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
+        }
     },
     "variables": {
         "api-version": "2017-06-01",
-        "api-version-vm": "2017-03-30",
+        "api-version-vm": "2017-12-01",
         "vmPassword": "HANA07061992!",
         "mode": "Push",
-	"baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/",	
+        "baseUri": "https://stagea3d54928db62458aad6.blob.core.windows.net/hanatest/SAP-HANA-TEST/",
+	"fooUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/",	
         "nicName": "[if(equals(parameters('IPAllocationMethod'),'Static'),concat(parameters('vmName'),'-static'),concat(parameters('vmName'),'-dynamic'))]",
         "subnetRef": "[parameters('HANAsubnetRef')]",
         "OperatingSystemSpec":{
@@ -123,10 +134,12 @@
         "diskConfig_Standard_M64s": {
             "shared": 1023,
             "sap": 63,
-            "backup": 1023,
+            "backup1": 1023,
             "backup2": 1023,
             "data1": 1023,
-            "data2": 1023
+            "data2": 1023,
+            "log1": 511,
+            "log2": 511               
         }
       },
     "resources": [
@@ -137,6 +150,7 @@
             "name": "[concat(parameters('vmName'),'-dynamic')]",
             "location": "[resourceGroup().location]",
             "properties": {
+              "enableAcceleratedNetworking": true,
               "ipConfigurations": [
                 {
                   "name": "ipconfig1",
@@ -157,6 +171,7 @@
             "name": "[concat(parameters('vmName'),'-static')]",
             "location": "[resourceGroup().location]",
             "properties": {
+              "enableAcceleratedNetworking": true,  
               "ipConfigurations": [
                 {
                   "name": "ipconfig1",
@@ -174,7 +189,7 @@
         {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName'),'-shared')]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS",
@@ -190,7 +205,7 @@
         {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName'),'-sap')]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS",
@@ -206,7 +221,7 @@
         {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName'),'-backup1')]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS",
@@ -216,13 +231,13 @@
                 "creationData": {
                     "createOption": "Empty"
                 },
-                "diskSizeGB": "[variables('diskConfig').backup]"
+                "diskSizeGB": "[variables('diskConfig').backup1]"
             }
         },
         {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName'),'-backup2')]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS",
@@ -238,7 +253,7 @@
         {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName'),'-data1')]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Premium_LRS",
@@ -254,7 +269,7 @@
         {
             "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName'),'-data2')]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Premium_LRS",
@@ -268,6 +283,39 @@
             }
         },
         {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(parameters('vmName'),'-log1')]",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskConfig').log1]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(parameters('vmName'),'-log2')]",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskConfig').log2]"
+            }
+        },
+        
+        {
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[parameters('vmName')]",
@@ -279,7 +327,9 @@
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup1'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup2'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data1'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -341,7 +391,24 @@
                         "managedDisk": {
                             "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]"
                         }
+                    },
+                    {
+                        "lun": 6,
+                        "createOption": "Attach",
+                        "writeAcceleratorEnabled": "[if(equals(parameters('WriteAccelerator'),'yes'), 'true', 'false')]",
+                        "managedDisk": {
+                            "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]"
+                        }
+                    },
+                    {
+                        "lun": 7,
+                        "createOption": "Attach",
+                        "writeAcceleratorEnabled": "[if(equals(parameters('WriteAccelerator'),'yes'), 'true', 'false')]",
+                        "managedDisk": {
+                            "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
+                        }
                     }
+                    
                 ]
             },
                 "networkProfile": {

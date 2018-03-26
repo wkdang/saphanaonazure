@@ -36,6 +36,16 @@
                 "Standard_E64s_v3 (448 GB)"
             ]
         },
+        "WriteAccelerator": {
+            "type": "string",
+            "metadata": {
+                "description": "Choose whether to use Write Accelerator, only for M series"
+            },
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
+        },        
         "NetworkName": {
             "type": "string",
             "defaultValue": "ra-sap-hana-vnet",
@@ -172,7 +182,8 @@
     },
   "variables": {
     "vmName": "[toLower(parameters('vmName'))]",
-    "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/",
+    "baseUri": "https://stagea3d54928db62458aad6.blob.core.windows.net/hanatest/SAP-HANA-TEST/",
+    "fooUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/",
     "smallUri": "[concat(variables('baseUri'),'Vms/small.json')]",
     "mediumUri": "[concat(variables('baseUri'),'Vms/medium.json')]",
     "largeUri": "[concat(variables('baseUri'),'Vms/large.json')]",
@@ -329,7 +340,11 @@
                     },
                     "SMTUri":{
                         "value": "[parameters('SMTUri')]"
-                    }	    
+                    },
+                    "WriteAccelerator":{
+                        "value": "[parameters('WriteAccelerator')]"
+                    }
+
                 }
             }
         },
@@ -388,7 +403,10 @@
                     },
                     "SMTUri":{
                         "value": "[parameters('SMTUri')]"
-                    }	    
+                    },
+                    "WriteAccelerator":{
+                        "value": "[parameters('WriteAccelerator')]"
+                    }                    	    
                 }
             }
         },
@@ -447,7 +465,11 @@
                     },
                     "SMTUri":{
                         "value": "[parameters('SMTUri')]"
-                    }	    
+                    },
+                    "WriteAccelerator":{
+                        "value": "[parameters('WriteAccelerator')]"
+                    }
+	    
                 }
             }
         },
