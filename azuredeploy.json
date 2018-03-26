@@ -41,6 +41,7 @@
             "metadata": {
                 "description": "Choose whether to use Write Accelerator, only for M series"
             },
+            "defaultValue": "no",
             "allowedValues": [
                 "yes",
                 "no"
@@ -115,7 +116,7 @@
             "defaultValue": "SLES for SAP 12 SP3",
             "allowedValues": [
                 "SLES for SAP 12 SP3",
-		"SLES for SAP 12 SP2",
+		        "SLES for SAP 12 SP2",
                 "RHEL 7.2 for SAP HANA"
             ]
         },
