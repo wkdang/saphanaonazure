@@ -155,7 +155,7 @@
       "name": "[concat(parameters('vmName'),'-dynamic')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "enableAcceleratedNetworking": true,
+        "enableAcceleratedNetworking": false,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
@@ -176,7 +176,7 @@
       "name": "[concat(parameters('vmName'),'-static')]",
       "location": "[resourceGroup().location]",
       "properties": {
-        "enableAcceleratedNetworking": true,
+        "enableAcceleratedNetworking": false,
         "ipConfigurations": [
           {
             "name": "ipconfig1",
