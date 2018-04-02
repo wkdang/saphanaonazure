@@ -31,19 +31,6 @@ sudo mkdir /hana/shared
 sudo mkdir /hana/backup
 sudo mkdir /usr/sap
 
-
-# Install .NET Core and AzCopy
-sudo zypper install -y libunwind
-sudo zypper install -y libicu
-curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848824
-sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
-sudo ln -s /opt/dotnet/dotnet /usr/bin
-
-wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
-tar -xf azcopy.tar.gz
-sudo ./install.sh
-
-
 zypper in -t -y pattern sap-hana
 sudo saptune solution apply HANA
 
