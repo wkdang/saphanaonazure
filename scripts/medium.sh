@@ -46,14 +46,18 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
-  pvcreate hanavg $hanavg1lun $hanavg2lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
+  datavg1lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
+  datavg2lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
+  logvg1lun="$(lsscsi $number 0 0 6 | grep -o '.\{9\}$')"
+  logvg2lun="$(lsscsi $number 0 0 7 | grep -o '.\{9\}$')"
+  pvcreate datavg $datavg1lun $datavg2lun
+  vgcreate datavg $datavg1lun $datavg2lun
+  lvcreate -l 1000%FREE -n datalv datavg
+  pvcreate logvg $logvg1lun $logvg2lun
+  vgcreate logvg $logvg1lun $logvg2lun
+  lvcreate -l 100%FREE -n loglv logvg
+  mkfs.xfs /dev/datavg/datalv
+  mkfs.xfs /dev/logvg/loglv
 echo "logicalvols end" >> /tmp/parameter.txt
 
 
@@ -81,8 +85,8 @@ echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
-mount -t xfs /dev/hanavg/datalv /hana/data
-mount -t xfs /dev/hanavg/loglv /hana/log 
+mount -t xfs /dev/datavg/datalv /hana/data
+mount -t xfs /dev/logvg/loglv /hana/log 
 mkdir /hana/data/sapbits
 echo "mounthanashared end" >> /tmp/parameter.txt
 
