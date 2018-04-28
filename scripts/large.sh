@@ -31,9 +31,7 @@ sudo mkdir /hana/shared
 sudo mkdir /hana/backup
 sudo mkdir /usr/sap
 
-
-sudo zypper se -t pattern
-zypper in -t -y pattern sap-hana
+zypper in -t pattern -y sap-hana
 sudo saptune solution apply HANA
 
 # step2
@@ -46,7 +44,6 @@ cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
-
 echo "logicalvols start" >> /tmp/parameter.txt
   hanavg1lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
   hanavg2lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
@@ -138,6 +135,13 @@ sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
 cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
 echo "hana preapre end" >> /tmp/parameter.txt
+
+#put host entry in hosts file using instance metadata api
+VMIPADDR=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/privateIpAddress?api-version=2017-08-01&format=text"`
+VMNAME=`hostname`
+cat >>/etc/hosts <<EOF
+$VMIPADDR $VMNAME
+EOF
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
