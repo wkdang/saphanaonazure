@@ -111,7 +111,7 @@
         "hanaUri": "[concat(variables('baseUri'), '/hanastudio-hsr.ps1')] ",
         "sidlower": "[toLower(parameters('HANASID'))]",
         "avSetNameDB": "[concat(variables('sidlower'), '-avset-db')]",
-        "loadBalancerName": "[concat(variables('sidlower'), 'hanalb')]"[concat('sh allvmsizes-hsr-cluster.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('StaticIP1'),'\"  \"',parameters('StaticIP2'),'\"yes\" \"yes\" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
+        "loadBalancerName": "[concat(variables('sidlower'), 'hanalb')]"
     },
     "resources": [
         {
@@ -126,7 +126,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "uri": "[variables('swUri')]"
+                        "[variables('swUri')]"
                     ],
                     "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('StaticIP1'),'\"  \"',parameters('StaticIP2'),'\"yes\" \"yes\" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
                 }
