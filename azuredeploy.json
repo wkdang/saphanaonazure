@@ -35,18 +35,7 @@
                 "Standard_E32s_v3 (256 GB)",
                 "Standard_E64s_v3 (448 GB)"
             ]
-        },
-        "WriteAccelerator": {
-            "type": "string",
-            "metadata": {
-                "description": "Choose whether to use Write Accelerator, only for M series"
-            },
-            "defaultValue": "no",
-            "allowedValues": [
-                "yes",
-                "no"
-            ]
-        },        
+        },   
         "NetworkName": {
             "type": "string",
             "defaultValue": "ra-sap-hana-vnet",
@@ -340,11 +329,7 @@
                     },
                     "SMTUri":{
                         "value": "[parameters('SMTUri')]"
-                    },
-                    "WriteAccelerator":{
-                        "value": "[parameters('WriteAccelerator')]"
                     }
-
                 }
             }
         },
@@ -403,10 +388,7 @@
                     },
                     "SMTUri":{
                         "value": "[parameters('SMTUri')]"
-                    },
-                    "WriteAccelerator":{
-                        "value": "[parameters('WriteAccelerator')]"
-                    }                    	    
+                    }             	    
                 }
             }
         },
@@ -465,11 +447,7 @@
                     },
                     "SMTUri":{
                         "value": "[parameters('SMTUri')]"
-                    },
-                    "WriteAccelerator":{
-                        "value": "[parameters('WriteAccelerator')]"
                     }
-	    
                 }
             }
         },

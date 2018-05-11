@@ -41,17 +41,6 @@
                 "Standard_E64s_v3 (448 GB)"
             ]
         },
-        "WriteAccelerator": {
-            "type": "string",
-            "metadata": {
-                "description": "Choose whether to use Write Accelerator, only for M series"
-            },
-            "defaultValue": "no",
-            "allowedValues": [
-                "yes",
-                "no"
-            ]
-        },
         "NetworkName": {
             "type": "string",
             "defaultValue": "ra-sap-hana-vnet",

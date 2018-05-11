@@ -103,16 +103,6 @@
                 "description": "SMT Uri, blank for none"
             },
             "DefaultValue": ""
-        },
-        "WriteAccelerator": {
-            "type": "string",
-            "metadata": {
-                "description": "Choose whether to use Write Accelerator, only for M series"
-            },
-            "allowedValues": [
-                "yes",
-                "no"
-            ]
         }
     },
     "variables": {
@@ -393,7 +383,7 @@
                         {
                             "lun": 6,
                             "createOption": "Attach",
-                            "writeAcceleratorEnabled": "[if(equals(parameters('WriteAccelerator'),'yes'), 'true', 'false')]",
+                            "writeAcceleratorEnabled": "true",
                             "managedDisk": {
                                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]"
                             }
@@ -401,7 +391,7 @@
                         {
                             "lun": 7,
                             "createOption": "Attach",
-                            "writeAcceleratorEnabled": "[if(equals(parameters('WriteAccelerator'),'yes'), 'true', 'false')]",
+                            "writeAcceleratorEnabled": "true",
                             "managedDisk": {
                                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
                             }
