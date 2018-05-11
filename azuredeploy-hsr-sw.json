@@ -1,0 +1,153 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VMName1": {
+            "type": "string",
+            "metadata": {
+                "description": "First VM Name"
+            }
+        },
+        "VMName2": {
+            "type": "string",
+            "metadata": {
+                "description": "Second VM Name"
+            }
+        },
+        "customURI": {
+            "type": "string",
+            "metadata": {
+                "description": "URI where SAP bits are uploaded"
+            }
+        },
+        "VMUserName": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machines"
+            },
+            "defaultValue": "testuser"
+        },
+        "VMPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine"
+            }
+        },
+        "HANASID": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA System ID"
+            }, 
+            "defaultValue": "H10"
+        },
+        "HANANumber": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA Instance Number"
+            },
+            "defaultValue": "00"
+        },
+        "StaticIP1": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the first HANA VM when Static IP Allocation Method has been selected"
+            },
+            "defaultValue": "10.0.5.4"
+        },
+        "StaticIP2": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the firssecondt HANA VM when Static IP Allocation Method has been selected"
+            },
+            "defaultValue": "10.0.5.5"
+        },
+        "iSCSIIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the iscsi server"
+            },
+            "defaultValue": "10.0.6.4"
+        },
+        "ILBIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the internal load balancer"
+            },
+            "defaultValue": "10.0.5.10"
+        },
+        "SubscriptionEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "OS Subscription Email for BYOS, blank for PAYG"
+            },
+            "defaultValue": ""
+        },
+        "SubscriptionID": {
+            "type": "string",
+            "metadata": {
+                "description": "OS Subscription ID for BYOS, blank for PAYG"
+            },
+            "defaultValue": ""
+        },
+        "SMTUri": {
+            "type": "string",
+            "metadata": {
+                "description": "SMT URI, blank for none"
+            },
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "vmName1": "[toLower(parameters('vmName1'))]",
+        "vmName2": "[toLower(parameters('vmName2'))]",
+        "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master",
+        "repoUri": "[variables('baseUri')]",
+        "smallUri": "[concat(variables('baseUri'), '/Vms/small-hsr.json')]",
+        "mediumUri": "[concat(variables('baseUri'), '/Vms/medium-hsr.json')]",
+        "largeUri": "[concat(variables('baseUri'), '/Vms/large-hsr.json')]",
+        "extralargeUri": "[concat(variables('baseUri'), '/Vms/extralarge-hsr.json')]",
+        "hanajbUri": "[concat(variables('baseUri'), '/Vms/hanajb-hsr.json')]",
+        "hanaUri": "[concat(variables('baseUri'), '/hanastudio-hsr.ps1')] ",
+        "sidlower": "[toLower(parameters('HANASID'))]",
+        "avSetNameDB": "[concat(variables('sidlower'), '-avset-db')]",
+        "loadBalancerName": "[concat(variables('sidlower'), 'hanalb')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('vmName1'),'/', 'CustomScript')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM/master/scripts/allvmsizes-hsr-cluster.sh"
+                    ],
+                    "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh ', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('StaticIP1'),'\"  \"',parameters('StaticIP2'),'\"yes\" \"yes\" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('vmName2'),'/', 'CustomScript')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM/master/scripts/allvmsizes-hsr-cluster.sh"
+                    ],
+                    "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh ', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('StaticIP2'),'\"  \"',parameters('StaticIP1'),'\"yes\" \"no \" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
+                }
+            }
+        }
+    ]
+}

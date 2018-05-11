@@ -1,0 +1,617 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VMName1": {
+            "type": "string",
+            "metadata": {
+                "description": "First VM Name"
+            }
+        },
+        "VMName2": {
+            "type": "string",
+            "metadata": {
+                "description": "Second VM Name"
+            }
+        },
+        "HANAJumpbox": {
+            "type": "string",
+            "metadata": {
+                "description": "Choose whether to deploy a VM with HANA Studio installed"
+            },
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
+        },
+        "VMSize": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Size"
+            },
+            "defaultValue": "Standard_GS5 (448 GB, Certified)",
+            "allowedValues": [
+                "Standard_GS5 (448 GB, Certified)",
+                "Standard_M64s (1 TB, Certified))",
+                "Standard_M64ms (1.7 TB, Certified))",
+                "Standard_M128s (2 TB, Certified))",
+                "Standard_M128ms (3.8 TB, Certified))",
+                "Standard_E16s_v3 (128 GB)",
+                "Standard_E32s_v3 (256 GB)",
+                "Standard_E64s_v3 (448 GB)"
+            ]
+        },
+        "WriteAccelerator": {
+            "type": "string",
+            "metadata": {
+                "description": "Choose whether to use Write Accelerator, only for M series"
+            },
+            "defaultValue": "no",
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
+        },
+        "NetworkName": {
+            "type": "string",
+            "defaultValue": "ra-sap-hana-vnet",
+            "metadata": {
+                "description": "The HANA VNET"
+            }
+        },
+        "addressPrefixes": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "The HANA VNET prefix"
+            }
+        },
+        "HANASubnetName": {
+            "type": "string",
+            "defaultValue": "SAPDataSubnet",
+            "metadata": {
+                "description": "The data subnet name"
+            }
+        },
+        "HANASubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.5.0/24",
+            "metadata": {
+                "description": "The data subnet prefix"
+            }
+        },
+        "ManagementSubnetName": {
+            "type": "string",
+            "defaultValue": "SAPMgmtSubnet",
+            "metadata": {
+                "description": "The management subnet name"
+            }
+        },
+        "ManagementSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.6.0/24",
+            "metadata": {
+                "description": "The management subnet prefix"
+            }
+        },
+        "customURI": {
+            "type": "string",
+            "metadata": {
+                "description": "URI where SAP bits are uploaded"
+            }
+        },
+        "VMUserName": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machines"
+            },
+            "defaultValue": "testuser"
+        },
+        "VMPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine"
+            }
+        },
+        "OperatingSystem": {
+            "type": "string",
+            "metadata": {
+                "description": "Operating system for HANA Machine"
+            },
+            "defaultValue": "SLES for SAP 12 SP3",
+            "allowedValues": [
+                "SLES for SAP 12 SP3",
+                "SLES for SAP 12 SP2",
+                "RHEL 7.2 for SAP HANA"
+            ]
+        },
+        "HANASID": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA System ID"
+            },
+            "defaultValue": "H10"
+        },
+        "HANANumber": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA Instance Number"
+            },
+            "defaultValue": "00"
+        },
+        "ExistingNetworkResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Type in the name of the Resource Group for an existing network or leave no to use the same one"
+            },
+            "defaultValue": "no"
+        },
+        "IPAllocationMethod": {
+            "type": "string",
+            "allowedValues": [
+                "Dynamic",
+                "Static"
+            ],
+            "metadata": {
+                "description": "IP Allocation Method"
+            },
+            "defaultValue": "Static"
+        },
+        "StaticIP1": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the first HANA VM when Static IP Allocation Method has been selected"
+            },
+            "defaultValue": "10.0.5.4"
+        },
+        "StaticIP2": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the firssecondt HANA VM when Static IP Allocation Method has been selected"
+            },
+            "defaultValue": "10.0.5.5"
+        },
+        "iSCSIIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the iscsi server"
+            },
+            "defaultValue": "10.0.6.4"
+        },
+        "ILBIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the internal load balancer"
+            },
+            "defaultValue": "10.0.5.10"
+        },
+        "SubscriptionEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "OS Subscription Email for BYOS, blank for PAYG"
+            },
+            "defaultValue": ""
+        },
+        "SubscriptionID": {
+            "type": "string",
+            "metadata": {
+                "description": "OS Subscription ID for BYOS, blank for PAYG"
+            },
+            "defaultValue": ""
+        },
+        "SMTUri": {
+            "type": "string",
+            "metadata": {
+                "description": "SMT URI, blank for none"
+            },
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "vmName1": "[toLower(parameters('vmName1'))]",
+        "vmName2": "[toLower(parameters('vmName2'))]",
+        "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master",
+        "repoUri": "[variables('baseUri')]",
+        "smallUri": "[concat(variables('baseUri'), '/Vms/small-hsr.json')]",
+        "mediumUri": "[concat(variables('baseUri'), '/Vms/medium-hsr.json')]",
+        "largeUri": "[concat(variables('baseUri'), '/Vms/large-hsr.json')]",
+        "extralargeUri": "[concat(variables('baseUri'), '/Vms/extralarge-hsr.json')]",
+        "hanajbUri": "[concat(variables('baseUri'), '/Vms/hanajb-hsr.json')]",
+        "hanaUri": "[concat(variables('baseUri'), '/hanastudio-hsr.ps1')] ",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
+        "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
+        "mgmtSubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('ManagementSubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('ManagementSubnetName')))]",
+        "vmSizeArray": "[split(parameters('vmSize'),' ')]",
+        "vmSize": "[variables('vmSizeArray')[0]]",
+        "sidlower": "[toLower(parameters('HANASID'))]",
+        "avSetNameDB": "[concat(variables('sidlower'), '-avset-db')]",
+        "loadBalancerName": "[concat(variables('sidlower'), 'hanalb')]",
+        "vmSizes": {
+            "Standard_GS5 (448 GB, Certified)": {
+                "templateuri": "small-hsr.json"
+            },
+            "Standard_M64s (1 TB, Certified))": {
+                "templateuri": "medium-hsr.json"
+            },
+            "Standard_M64ms (1.7 TB, Certified))": {
+                "templateuri": "large-hsr.json"
+            },
+            "Standard_M128s (2 TB, Certified))": {
+                "templateuri": "large-hsr.json"
+            },
+            "Standard_M128ms (3.8 TB, Certified))": {
+                "templateuri": "extralarge-hsr.json"
+            },
+            "Standard_E16s_v3 (128 GB)": {
+                "templateuri": "small-hsr.json"
+            },
+            "Standard_E32s_v3 (256 GB)": {
+                "templateuri": "small-hsr.json"
+            },
+            "Standard_E64s_v3 (448 GB)": {
+                "templateuri": "small-hsr.json"
+            }
+        },
+        "mytemplatevar": "[variables('vmSizes')[parameters('VMSize')].templateuri]",
+        "mytemplateuri": "[concat(variables('baseUri'), '/Vms/',variables('mytemplatevar'))]"
+    },
+    "resources": [
+        {
+            "condition": "[equals(parameters('ExistingNetworkResourceGroup'), 'no')]",
+            "apiVersion": "2016-09-01",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('NetworkName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('addressPrefixes')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('HANASubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('HANASubnetPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('ManagementSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('avSetNameDB')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 20
+            }
+        },
+        {
+            "type": "Microsoft.Network/loadBalancers",
+            "sku": {
+                "name": "Basic",
+                "tier": "Regional"
+            },
+            "name": "[variables('loadBalancerName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancerFrontEnd",
+                        "properties": {
+                            "privateIPAddress": "[parameters('ILBIP')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[variables('HANAsubnetRef')]"
+                            }
+                        }
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "hana-lb-30313",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/frontendIpConfigurations/LoadBalancerFrontend')]"
+                            },
+                            "frontendPort": 30313,
+                            "backendPort": 30313,
+                            "enableFloatingIP": true,
+                            "idleTimeoutInMinutes": 30,
+                            "protocol": "Tcp",
+                            "loadDistribution": "Default",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName')), '/backendAddressPools/BackendPool1')]"
+                            },
+                            "probe": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/probes/lbprobe')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "hana-lb-30315",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/frontendIpConfigurations/LoadBalancerFrontend')]"
+                            },
+                            "frontendPort": 30315,
+                            "backendPort": 30315,
+                            "enableFloatingIP": true,
+                            "idleTimeoutInMinutes": 30,
+                            "protocol": "Tcp",
+                            "loadDistribution": "Default",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName')), '/backendAddressPools/BackendPool1')]"
+                            },
+                            "probe": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/probes/lbprobe')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "hana-lb-30317",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/frontendIpConfigurations/LoadBalancerFrontend')]"
+                            },
+                            "frontendPort": 30317,
+                            "backendPort": 30317,
+                            "enableFloatingIP": true,
+                            "idleTimeoutInMinutes": 30,
+                            "protocol": "Tcp",
+                            "loadDistribution": "Default",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName')), '/backendAddressPools/BackendPool1')]"
+                            },
+                            "probe": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/probes/lbprobe')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "hana-lb-7630",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/frontendIpConfigurations/LoadBalancerFrontend')]"
+                            },
+                            "frontendPort": 7630,
+                            "backendPort": 7630,
+                            "enableFloatingIP": true,
+                            "idleTimeoutInMinutes": 30,
+                            "protocol": "Tcp",
+                            "loadDistribution": "Default",
+                            "disableOutboundSnat": false,
+                            "backendAddressPool": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('loadBalancerName')), '/backendAddressPools/BackendPool1')]"
+                            },
+                            "probe": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/probes/lbprobe')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "BackendPool1"
+                    }
+                ],
+                "probes": [
+                    {
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 62503,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        },
+                        "name": "lbprobe"
+                    }
+                ],
+                "inboundNatRules": [],
+                "outboundNatRules": [],
+                "inboundNatPools": []
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetNameDB'))]"
+            ]
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "[concat('SmallLinkedTemplate', parameters('VMName1'))]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetNameDB'))]",
+                "[resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('mytemplateuri')]"
+                },
+                "debugSetting": {
+                    "detailLevel": "requestContent, responseContent"
+                },
+                "parameters": {
+                    "vmName1": {
+                        "value": "[parameters('vmName1')]"
+                    },
+                    "vmName2": {
+                        "value": "[parameters('vmName2')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
+                    },
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
+                    },
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
+                    },
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
+                    },
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod": {
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP1": {
+                        "value": "[parameters('StaticIP1')]"
+                    },
+                    "StaticIP2": {
+                        "value": "[parameters('StaticIP2')]"
+                    },
+                    "HSRINST": {
+                        "value": "yes"
+                    },
+                    "ISPRIMARY": {
+                        "value": "yes"
+                    },
+                    "repoUri": {
+                        "value": "[variables('repoUri')]"
+                    },
+                    "ISCSIIP": {
+                        "value": "[parameters('iSCSIIP')]"
+                    },
+                    "loadBalancerName": {
+                        "value": "[variables('loadBalancerName')]"
+                    },
+                    "LBIP": {
+                        "value": "[parameters('ILBIP')]"
+                    },
+                    "SubscriptionEmail": {
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID": {
+                        "value": "[parameters('SubscriptionID')]"
+                    },
+                    "SMTUri": {
+                        "value": "[parameters('SMTUri')]"
+                    },
+                    "avSetObj": {
+                        "value": {
+                            "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetNameDB'))]"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "[concat('SmallLinkedTemplate', parameters('VMName2'))]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetNameDB'))]",
+                "[resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('mytemplateuri')]"
+                },
+                "parameters": {
+                    "vmName1": {
+                        "value": "[parameters('vmName2')]"
+                    },
+                    "vmName2": {
+                        "value": "[parameters('vmName1')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
+                    },
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
+                    },
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
+                    },
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
+                    },
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod": {
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP1": {
+                        "value": "[parameters('StaticIP2')]"
+                    },
+                    "StaticIP2": {
+                        "value": "[parameters('StaticIP1')]"
+                    },
+                    "HSRINST": {
+                        "value": "yes"
+                    },
+                    "ISPRIMARY": {
+                        "value": "no"
+                    },
+                    "repoUri": {
+                        "value": "[variables('repoUri')]"
+                    },
+                    "ISCSIIP": {
+                        "value": "10.0.6.4"
+                    },
+                    "loadBalancerName": {
+                        "value": "[variables('loadBalancerName')]"
+                    },
+                    "LBIP": {
+                        "value": "[parameters('ILBIP')]"
+                    },
+                    "SubscriptionEmail": {
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID": {
+                        "value": "[parameters('SubscriptionID')]"
+                    },
+                    "SMTUri": {
+                        "value": "[parameters('SMTUri')]"
+                    },
+                    "avSetObj": {
+                        "value": {
+                            "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('avSetNameDB'))]"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

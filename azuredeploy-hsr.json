@@ -1,0 +1,341 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VMName1": {
+            "type": "string",
+            "metadata": {
+                "description": "First VM Name"
+            }
+        },
+        "VMName2": {
+            "type": "string",
+            "metadata": {
+                "description": "Second VM Name"
+            }
+        },
+        "HANAJumpbox": {
+            "type": "string",
+            "metadata": {
+                "description": "Choose whether to deploy a VM with HANA Studio installed"
+            },
+            "allowedValues": [
+                "yes",
+                "no"
+            ]
+        },
+        "VMSize": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Size"
+            },
+            "defaultValue": "Standard_GS5 (448 GB, Certified)",
+            "allowedValues": [
+                "Standard_GS5 (448 GB, Certified)",
+                "Standard_M64s (1 TB)",
+                "Standard_M64ms (1.7 TB)",
+                "Standard_M128s (2 TB)",
+                "Standard_M128ms (3.8 TB)",
+                "Standard_E16s_v3 (128 GB)",
+                "Standard_E32s_v3 (256 GB)",
+                "Standard_E64s_v3 (448 GB)"
+            ]
+        },
+        "NetworkName": {
+            "type": "string",
+            "defaultValue": "ra-sap-hana-vnet",
+            "metadata": {
+                "description": "The HANA VNET"
+            }
+        },
+        "addressPrefixes": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "The HANA VNET prefix"
+            }
+        },
+        "HANASubnetName": {
+            "type": "string",
+            "defaultValue": "SAPDataSubnet",
+            "metadata": {
+                "description": "The data subnet name"
+            }
+        },
+        "HANASubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.5.0/24",
+            "metadata": {
+                "description": "The data subnet prefix"
+            }
+        },
+        "ManagementSubnetName": {
+            "type": "string",
+            "defaultValue": "SAPMgmtSubnet",
+            "metadata": {
+                "description": "The management subnet name"
+            }
+        },
+        "ManagementSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.6.0/24",
+            "metadata": {
+                "description": "The management subnet prefix"
+            }
+        },
+        "customURI": {
+            "type": "string",
+            "metadata": {
+                "description": "URI where SAP bits are uploaded"
+            }
+        },
+        "VMUserName": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machines"
+            },
+            "defaultValue": "testuser"
+        },
+        "VMPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine"
+            }
+        },
+        "OperatingSystem": {
+            "type": "string",
+            "metadata": {
+                "description": "Operating system for HANA Machine"
+            },
+            "defaultValue": "SLES for SAP 12 SP2",
+            "allowedValues": [
+                "SLES for SAP 12 SP2",
+                "RHEL 7.2 for SAP HANA"
+            ]
+        },
+        "HANASID": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA System ID"
+            },
+            "defaultValue": "H10"
+        },
+        "HANANumber": {
+            "type": "string",
+            "metadata": {
+                "description": "SAP HANA Instance Number"
+            },
+            "defaultValue": "00"
+        },
+        "ExistingNetworkResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Type in the name of the Resource Group for an existing network or leave no to use the same one"
+            },
+            "defaultValue": "no"
+        },
+        "IPAllocationMethod": {
+            "type": "string",
+            "allowedValues": [
+                "Dynamic",
+                "Static"
+            ],
+            "metadata": {
+                "description": "IP Allocation Method"
+            },
+            "defaultValue": "Static"
+        },
+        "StaticIP1": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the first HANA VM when Static IP Allocation Method has been selected"
+            },
+            "defaultValue": "10.0.5.4"
+        },
+        "StaticIP2": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the firssecondt HANA VM when Static IP Allocation Method has been selected"
+            },
+            "defaultValue": "10.0.5.5"
+        },
+        "iSCSIIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the iscsi server"
+            },
+            "defaultValue": "10.0.6.4"
+        },
+        "ILBIP": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for the internal load balancer"
+            },
+            "defaultValue": "10.0.5.10"
+        },
+
+        "SubscriptionEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "OS Subscription Email for BYOS, blank for PAYG"
+            },
+            "defaultValue": ""
+        },
+        "SubscriptionID": {
+            "type": "string",
+            "metadata": {
+                "description": "OS Subscription ID for BYOS, blank for PAYG"
+            },
+            "defaultValue": ""
+        },
+        "SMTUri": {
+            "type": "string",
+            "metadata": {
+                "description": "SMT URI, blank for none"
+            },
+            "defaultValue": ""
+        }   
+    },
+    "variables": {
+        "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master",
+        "repoUri": "[variables('baseUri')]",
+        "infraUri": "[concat(variables('baseUri'), '/azuredeploy-hsr-infra.json')]",
+        "swUri": "[concat(variables('baseUri'), '/azuredeploy-hsr-sw.json')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-09-01",
+            "name": "azuredeployhsrinfra",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('infraUri')]"
+                },
+                "debugSetting": {
+                    "detailLevel": "requestContent, responseContent"
+                },
+                "parameters": {
+                    "VMName1": {
+                        "value": "[parameters('VMName1')]"
+                    },
+                    "VMName2": {
+                        "value": "[parameters('VMName2')]"
+                    },
+                    "HANAJumpbox": {
+                        "value": "[parameters('HANAJumpbox')]"
+                    },
+                    "VMSize": {
+                        "value": "[parameters('VMSize')]"
+                    },
+                    "NetworkName": {
+                        "value": "[parameters('NetworkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "HANASubnetName": {
+                        "value": "[parameters('HANASubnetName')]"
+                    },
+                    "HANASubnetPrefix": {
+                        "value": "[parameters('HANASubnetPrefix')]"
+                    },
+                    "ManagementSubnetName": {
+                        "value": "[parameters('ManagementSubnetName')]"
+                    },
+                    "ManagementSubnetPrefix": {
+                        "value": "[parameters('ManagementSubnetPrefix')]"
+                    },
+                    "customURI": {
+                        "value": "[parameters('customURI')]"
+                    },
+                    "VMUserName": {
+                        "value": "[parameters('VMUserName')]"
+                    },
+                    "VMPassword": {
+                        "value": "[parameters('VMPassword')]"
+                    },
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
+                    },
+                    "HANASID": {
+                        "value": "[parameters('HANASID')]"
+                    },
+                    "HANANumber": {
+                        "value": "[parameters('HANANumber')]"
+                    },
+                    "ExistingNetworkResourceGroup": {
+                        "value": "[parameters('ExistingNetworkResourceGroup')]"
+                    },
+                    "IPAllocationMethod": {
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP1": {
+                        "value": "[parameters('StaticIP1')]"
+                    },
+                    "StaticIP2": {
+                        "value": "[parameters('StaticIP2')]"
+                    },
+                    "iSCSIIP": {
+                        "value": "[parameters('iSCSIIP')]"
+                    },
+                    "ILBIP": {
+                        "value": "[parameters('ILBIP')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "azuredeployhsrsw",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": ["azuredeployhsrinfra"],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('swUri')]"
+                },
+                "debugSetting": {
+                    "detailLevel": "requestContent, responseContent"
+                },
+                "parameters": {
+                    "VMName1": {
+                        "value": "[parameters('VMName1')]"
+                    },
+                    "VMName2": {
+                        "value": "[parameters('VMName2')]"
+                    },
+                    "customURI": {
+                        "value": "[parameters('customURI')]"
+                    },
+                    "VMUserName": {
+                        "value": "[parameters('VMUserName')]"
+                    },
+                    "VMPassword": {
+                        "value": "[parameters('VMPassword')]"
+                    },
+                    "HANASID": {
+                        "value": "[parameters('HANASID')]"
+                    },
+                    "HANANumber": {
+                        "value": "[parameters('HANANumber')]"
+                    },
+                    "StaticIP1": {
+                        "value": "[parameters('StaticIP1')]"
+                    },
+                    "StaticIP2": {
+                        "value": "[parameters('StaticIP2')]"
+                    },
+                    "iSCSIIP": {
+                        "value": "[parameters('iSCSIIP')]"
+                    },
+                    "ILBIP": {
+                        "value": "[parameters('ILBIP')]"
+                    }
+                }
+            }
+        }	
+    ],
+    "outputs": {}
+}
