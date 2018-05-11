@@ -101,6 +101,7 @@
         "vmName1": "[toLower(parameters('vmName1'))]",
         "vmName2": "[toLower(parameters('vmName2'))]",
         "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master",
+        "swUri": "[concat(variables('baseUri'), '/allvmsizes-hsr-cluster.sh')]",
         "repoUri": "[variables('baseUri')]",
         "smallUri": "[concat(variables('baseUri'), '/Vms/small-hsr.json')]",
         "mediumUri": "[concat(variables('baseUri'), '/Vms/medium-hsr.json')]",
@@ -110,7 +111,7 @@
         "hanaUri": "[concat(variables('baseUri'), '/hanastudio-hsr.ps1')] ",
         "sidlower": "[toLower(parameters('HANASID'))]",
         "avSetNameDB": "[concat(variables('sidlower'), '-avset-db')]",
-        "loadBalancerName": "[concat(variables('sidlower'), 'hanalb')]"
+        "loadBalancerName": "[concat(variables('sidlower'), 'hanalb')]"[concat('sh allvmsizes-hsr-cluster.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('StaticIP1'),'\"  \"',parameters('StaticIP2'),'\"yes\" \"yes\" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
     },
     "resources": [
         {
@@ -125,9 +126,9 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM/master/scripts/allvmsizes-hsr-cluster.sh"
+                        "uri": "[variables('swUri')]"
                     ],
-                    "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh ', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('StaticIP1'),'\"  \"',parameters('StaticIP2'),'\"yes\" \"yes\" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
+                    "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('StaticIP1'),'\"  \"',parameters('StaticIP2'),'\"yes\" \"yes\" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
                 }
             }
         },
@@ -143,9 +144,9 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM/master/scripts/allvmsizes-hsr-cluster.sh"
+                        "uri": "[variables('swUri')]"
                     ],
-                    "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh ', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('StaticIP2'),'\"  \"',parameters('StaticIP1'),'\"yes\" \"no \" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
+                    "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('StaticIP2'),'\"  \"',parameters('StaticIP1'),'\"yes\" \"no \" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
                 }
             }
         }
