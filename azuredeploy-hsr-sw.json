@@ -144,7 +144,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "uri": "[variables('swUri')]"
+                        "[variables('swUri')]"
                     ],
                     "commandToExecute": "[concat('sh allvmsizes-hsr-cluster.sh \"', parameters('customUri'), '\"  \"' , parameters('vmUserName'), '\"  \"', parameters('vmPassword'),'\"  \"', parameters('HANASID'), '\"  \"', parameters('HANANUMBER'),'\"  \"',parameters('vmName2'),'\"  \"',parameters('vmName1'),'\"  \"',parameters('StaticIP2'),'\"  \"',parameters('StaticIP1'),'\"yes\" \"no \" \"',variables('repoUri'),'\" \"',parameters('ISCSIIP'),'\" \"',parameters('ILBIP'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\" \"', parameters('SMTUri'),'\"')]"
                 }
