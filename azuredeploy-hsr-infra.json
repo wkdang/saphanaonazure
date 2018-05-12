@@ -219,16 +219,16 @@
             "Standard_GS5 (448 GB, Certified)": {
                 "templateuri": "small-hsr.json"
             },
-            "Standard_M64s (1 TB, Certified))": {
+            "Standard_M64s (1 TB, Certified)": {
                 "templateuri": "medium-hsr.json"
             },
-            "Standard_M64ms (1.7 TB, Certified))": {
+            "Standard_M64ms (1.7 TB, Certified)": {
                 "templateuri": "large-hsr.json"
             },
-            "Standard_M128s (2 TB, Certified))": {
+            "Standard_M128s (2 TB, Certified)": {
                 "templateuri": "large-hsr.json"
             },
-            "Standard_M128ms (3.8 TB, Certified))": {
+            "Standard_M128ms (3.8 TB, Certified)": {
                 "templateuri": "extralarge-hsr.json"
             },
             "Standard_E16s_v3 (128 GB)": {
