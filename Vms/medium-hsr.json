@@ -346,7 +346,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(parameters('vmName'),'-log1')]",
+            "name": "[concat(parameters('vmName1'),'-log1')]",
             "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -362,7 +362,7 @@
         },
         {
             "type": "Microsoft.Compute/disks",
-            "name": "[concat(parameters('vmName'),'-log2')]",
+            "name": "[concat(parameters('vmName1'),'-log2')]",
             "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
             "sku": {
@@ -389,8 +389,8 @@
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-backup2'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data1'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data2'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-log1'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-log2'))]"
             ],
             "properties": {
                 "availabilitySet": "[variables('internalAVSetObj')]",
@@ -460,7 +460,7 @@
                             "createOption": "Attach",
                             "writeAcceleratorEnabled": "true",
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-log1'))]"
                             }
                         },
                         {
@@ -468,7 +468,7 @@
                             "createOption": "Attach",
                             "writeAcceleratorEnabled": "true",
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-log2'))]"
                             }
                         }
                     ]
