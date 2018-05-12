@@ -101,7 +101,7 @@
         "vmName1": "[toLower(parameters('vmName1'))]",
         "vmName2": "[toLower(parameters('vmName2'))]",
         "baseUri": "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master",
-        "swUri": "[concat(variables('baseUri'), '/allvmsizes-hsr-cluster.sh')]",
+        "swUri": "[concat(variables('baseUri'), '/scripts/allvmsizes-hsr-cluster.sh')]",
         "repoUri": "[variables('baseUri')]",
         "smallUri": "[concat(variables('baseUri'), '/Vms/small-hsr.json')]",
         "mediumUri": "[concat(variables('baseUri'), '/Vms/medium-hsr.json')]",
