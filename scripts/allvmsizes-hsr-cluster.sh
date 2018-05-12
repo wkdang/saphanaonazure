@@ -45,12 +45,15 @@ SUBID=$1
 shift
 SUBURL=$1
 
+#get the VM size via the instance api
+VMSIZE=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2017-08-01&format=text"`
+
 
 HANASIDU="${HANASID^^}"
 HANASIDL="${HANASID,,}"
 
 HANAADMIN="$HANASIDL"adm
-echo "HANAADMIN:" $HANAADMIN
+echo "HANAADMIN:" $HANAADMIN >>/tmp/variables.txt
 
 echo "small.sh receiving:"
 echo "URI:" $URI >> /tmp/variables.txt
@@ -310,8 +313,6 @@ EOF
 }
 
 
-#get the VM size via the instance api
-VMSIZE=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2017-08-01&format=text"`
 
 #install hana prereqs
 zypper install -y glibc-2.22-51.6
