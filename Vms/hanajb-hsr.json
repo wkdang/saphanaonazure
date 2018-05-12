@@ -28,40 +28,22 @@
                 "description": "Uri for SAP Bits"
             }
         },
-        "StaticIP1": {
+        "vmName": {
             "type": "string",
             "metadata": {
-                "description": "Static IP 1"
-            }
-        },
-        "StaticIP2": {
-            "type": "string",
-            "metadata": {
-                "description": "Static IP 2"
-            }
-        },
-        "vmName1": {
-            "type": "string",
-            "metadata": {
-                "description": "VM Name 1"
-            }
-        },
-        "vmName2": {
-            "type": "string",
-            "metadata": {
-                "description": "VM Name 2"
-            }
+                "description": "VM Name"
+            },
+            "defaultValue": "hanajb"            
         }
     },
     "variables": {
         "subnetRef": "[parameters('mgmtSubnetRef')]",
-        "vmName": "hanajb",
         "vNicName": "hanajbnic",
         "PIPName": "hanajbpip",
         "vhdStorageAccountName": "[uniqueString(resourceGroup().id, 'storage')]",
         "scriptFolder": ".",
         "scriptFileName": "hanastudio.ps1",
-        "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'),' -vmname1 ', parameters('vmName1'), ' -vmname2 ', parameters('vmname2'), ' -ipaddress1 ', parameters('StaticIP1'), ' -ipaddress2 ', parameters('StaticIP2'))]",
+        "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'))]",
         "fileuri": "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM-HSR/master/hanastudio.ps1"
     },
     "resources": [
@@ -124,7 +106,7 @@
                     "vmSize": "Standard_D1_v2"
                 },
                 "osProfile": {
-                    "computerName": "[variables('vmName')]",
+                    "computerName": "[parameters('vmName')]",
                     "adminUsername": "[parameters('vmUserName')]",
                     "adminPassword": "[parameters('vmPassword')]"
                 },
@@ -159,7 +141,7 @@
                     "apiVersion": "2015-06-15",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[variables('vmName')]"
+                        "[parameters('vmName')]"
                     ],
                     "tags": {
                         "displayName": "hanastudio"
