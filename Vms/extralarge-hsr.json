@@ -447,6 +447,38 @@
             }
         },
         {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(parameters('vmName1'),'-log1')]",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskConfig').log1]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(parameters('vmName1'),'-log2')]",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskConfig').log2]"
+            }
+        },
+        {
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[parameters('vmName1')]",
