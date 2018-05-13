@@ -421,6 +421,35 @@
             ]
         },
         {
+            "condition": "[equals(parameters('HanaJumpbox'),'yes')]",
+            "apiVersion": "2016-09-01",
+            "name": "HANAjbLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('hanajbUri')]"
+                },
+                "parameters": {
+                    "mgmtSubnetRef": {
+                        "value": "[variables('mgmtSubnetRef')]"
+                    },
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    }
+                }
+            }
+        },
+        {
             "apiVersion": "2016-09-01",
             "name": "[concat('SmallLinkedTemplate', parameters('VMName1'))]",
             "type": "Microsoft.Resources/deployments",
