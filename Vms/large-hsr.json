@@ -208,7 +208,8 @@
             "data3": 1023,
             "log1": 511,
             "log2": 511
-        }
+        },
+        "internalAVSetObj": "[parameters('avSetObj')]"
     },
     "resources": [
         {
