@@ -33,18 +33,43 @@
             "metadata": {
                 "description": "VM Name"
             },
-            "defaultValue": "hanajb"            
+            "defaultValue": "hanajb"
+        },
+        "StaticIP1": {
+            "type": "string",
+            "metadata": {
+                "description": "Static IP 1"
+            }
+        },
+        "StaticIP2": {
+            "type": "string",
+            "metadata": {
+                "description": "Static IP 2"
+            }
+        },
+        "vmName1": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Name 1"
+            }
+        },
+        "vmName2": {
+            "type": "string",
+            "metadata": {
+                "description": "VM Name 2"
+            }
         }
     },
     "variables": {
         "subnetRef": "[parameters('mgmtSubnetRef')]",
+        "vmName": "hanajb",
         "vNicName": "hanajbnic",
         "PIPName": "hanajbpip",
         "vhdStorageAccountName": "[uniqueString(resourceGroup().id, 'storage')]",
         "scriptFolder": ".",
         "scriptFileName": "hanastudio.ps1",
-        "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'))]",
-        "fileuri": "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM-HSR/master/hanastudio-hsr.ps1"
+        "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'),' -vmname1 ', parameters('vmName1'), ' -vmname2 ', parameters('vmname2'), ' -ipaddress1 ', parameters('StaticIP1'), ' -ipaddress2 ', parameters('StaticIP2'))]",
+        "fileuri": "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM-HSR/master/hanastudio.ps1"
     },
     "resources": [
         {
@@ -95,7 +120,7 @@
         {
             "apiVersion": "2016-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[parameters('vmName')]",
+            "name": "[variables('vmName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[variables('vhdStorageAccountName')]",
@@ -106,7 +131,7 @@
                     "vmSize": "Standard_D1_v2"
                 },
                 "osProfile": {
-                    "computerName": "[parameters('vmName')]",
+                    "computerName": "[variables('vmName')]",
                     "adminUsername": "[parameters('vmUserName')]",
                     "adminPassword": "[parameters('vmPassword')]"
                 },
@@ -141,7 +166,7 @@
                     "apiVersion": "2015-06-15",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[parameters('vmName')]"
+                        "[variables('vmName')]"
                     ],
                     "tags": {
                         "displayName": "hanastudio"
@@ -155,7 +180,7 @@
                             "fileUris": [
                                 "[variables('fileuri')]"
                             ],
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio-hsr.ps1', variables('scriptParameters'))]"
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio.ps1', variables('scriptParameters'))]"
                         },
                         "protectedSettings": {}
                     }

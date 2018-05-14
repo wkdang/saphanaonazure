@@ -445,6 +445,18 @@
                     },
                     "customUri": {
                         "value": "[parameters('customUri')]"
+                    },
+                    "StaticIP1": {
+                        "value": "[parameters('StaticIP1')]"
+                    },
+                    "StaticIP2": {
+                        "value": "[parameters('StaticIP2')]"
+                    },
+                    "vmName1": {
+                        "value": "[parameters('vmName1')]"
+                    },
+                    "vmName2": {
+                        "value": "[parameters('vmName2')]"
                     }
                 }
             }
