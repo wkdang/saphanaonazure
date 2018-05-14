@@ -12,8 +12,7 @@ E32 | 256 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S20
 E64 | 432 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
 GS5 | 448 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
 
-
-For the M series servers, this template now uses the [Write Accelerator](https://docs.microsoft.com/azure/virtual-machines/linux/how-to-enable-write-accelerator) feature for the Log disks.  For this reason, the log devices are separated out from the data disks:
+For the M series servers, this template uses the [Write Accelerator](https://docs.microsoft.com/azure/virtual-machines/linux/how-to-enable-write-accelerator) feature for the Log disks.  For this reason, the log devices are separated out from the data disks:
 
 Machine Size | RAM | Data Disks | Log disks| /hana/shared | /root | /usr/sap | hana/backup
 ------------ | --- | ------------------ | ------------------ |------------ | ----- | -------- | -----------
@@ -108,7 +107,7 @@ Existing Network Resource Group | No | This gives you the option to deploy the V
 IP Allocation Method | no | Lets you choose between Static and Dynamic IP Allocation | Dynamic | Dynamic, Static
 StaticIP 1 | No | Allows you to choose the specific IP to be assgined to the first HANA server. If the allocation method is Dynamic this | 10.0.5.5 | No restrictions
 StaticIP 2 | No | Allows you to choose the specific IP to be assgined to the second HANA server. If the allocation method is Dynamic this parameter will be ignored | 10.0.5.6 | No restrictions
-iSCSIIP 1 | No | Allows you to choose the specific IP to be used for the iSCSI server. If you are using the jumpbox for the iSCSI server, this can be left as the default.| 10.0.6.4 | No restrictions
+iSCSIIP | No | Allows you to choose the specific IP to be used for the iSCSI server. If you are using the jumpbox for the iSCSI server, this can be left as the default.| 10.0.6.4 | No restrictions
 ILBIP| No | Allows you to choose the specific IP to be used for the internal load balancer. | 10.0.5.10 | No restrictions
 Subscription Email | No | OS subscription email for BYOS. Leave blank for pay-as-you-go OS image. |  | No restrictions
 Subscription ID | No | OS ID or password for BYOS. Leave blank for pay-as-you-go OS image. |  | No restrictions
