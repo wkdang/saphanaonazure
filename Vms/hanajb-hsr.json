@@ -44,7 +44,7 @@
         "scriptFolder": ".",
         "scriptFileName": "hanastudio.ps1",
         "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'))]",
-        "fileuri": "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM-HSR/master/hanastudio.ps1"
+        "fileuri": "https://raw.githubusercontent.com/rsponholtz/SAP-HANA-ARM-HSR/master/hanastudio-hsr.ps1"
     },
     "resources": [
         {
