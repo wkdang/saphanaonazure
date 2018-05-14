@@ -50,7 +50,11 @@ $iqn2 = "IQN:iqn.1991-05.com.microsoft:hanajb-hsrtarget-target:"+$vmname2
 $ip1 ="IPAddress:"+$ipaddress1
 $ip2 ="IPAddress:"+$ipaddress2
 New-IscsiVirtualDisk -Path c:\pacemaker\lun.vhdx -Size 1GB
+Start-Sleep 5
 New-IscsiServerTarget -TargetName HSRTarget -InitiatorId @($ip1,$ip2,$iqn1,$iqn2)
+Start-Sleep 5
 Add-IscsiVirtualDiskTargetMapping -TargetName HSRTarget -Path C:\pacemaker\lun.vhdx
+Start-Sleep 5
 Enable-WindowsOptionalFeature -Online -Featurename MultipathIO -NoRestart
+Start-Sleep 5
 Restart-Computer -Force
