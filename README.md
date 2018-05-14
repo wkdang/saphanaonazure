@@ -1,9 +1,11 @@
 # SAP HANA ARM Installation
-This ARM template is used to install SAP HANA on a single VM running SUSE SLES 12 SP 3 or SLES 12 SP 2. It uses the Azure SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/master/CustomScript) for the installation and configuration of the machine. This should be used only for demonstration and sandbox environments. This is not a production deployment.
+This ARM template is used to install SAP HANA on a single VM running SUSE SLES 12 SP 3 or SLES 12 SP 2.  For documentation on deploying a cluster of linux machines running HANA System Replication and Linux High Availability Extension, please see documentation here: [cluster deployment](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/master/README-HSR.md). 
+
+This template uses the Linux SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/master/CustomScript) for the installation and configuration of the machine. This should be used only for demonstration and sandbox environments. This is not a production deployment.
 
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureCAT-GSI%2FSAP-HANA-ARM%2Fmaster%2Fazuredeploy.json)
 ## Machine Info
-The template current deploys HANA on a one of the machines listed in the table below with the noted disk configuration.  The deployment takes advantage of Managed Disks, for more information on Managed Disks or the sizes of the noted disks can be found on [this](https://docs.microsoft.com/en-us/azure/storage/storage-managed-disks-overview#pricing-and-billing) page.
+The template current deploys HANA on one of the machines listed in the table below with the noted disk configuration.  The deployment takes advantage of Managed Disks, for more information on Managed Disks or the sizes of the noted disks can be found on [this](https://docs.microsoft.com/en-us/azure/storage/storage-managed-disks-overview#pricing-and-billing) page.
 
 Machine Size | RAM | Data and Log Disks | /hana/shared | /root | /usr/sap | hana/backup
 ------------ | --- | ------------------ | ------------ | ----- | -------- | -----------
@@ -11,10 +13,15 @@ E16 | 128 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S15
 E32 | 256 GB | 2 x P20 | 1 x S20 | 1 x S6 | 1 x S6 | 1 x S20
 E64 | 432 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
 GS5 | 448 GB | 2 x P20 | 1 x S20 | 1 x P6 | 1 x S6 | 1 x S30
-M64s | 1TB | 2 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S30
-M64ms | 1.7TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S40
-M128S | 2TB | 3 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 2 x S40
-M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
+
+For the M series servers, this template now uses the [Write Accelerator](https://docs.microsoft.com/azure/virtual-machines/linux/how-to-enable-write-accelerator) feature for the Log disks.  For this reason, the log devices are separated out from the data disks:
+
+Machine Size | RAM | Data Disks | Log disks| /hana/shared | /root | /usr/sap | hana/backup
+------------ | --- | ------------------ | ------------------ |------------ | ----- | -------- | -----------
+M64s | 1TB | 4 x P20 | 2 x P20 | 1 x P30 | 1 x P6 | 1 x P6 | 2 x P30
+M64ms | 1.7TB | 3 x P30 | 2 x P20 | 1 x P30 | 1 x P6 | 1 x P6 | 2 x P30
+M128S | 2TB | 3 x P30 | 2 x P20 | 1 x P30 | 1 x P6 | 1 x P6 | 2 x P40
+M128ms | 3.8TB | 5 x P30 | 2 x P20 | 1 x P30 | 1 x P6 | 1 x P6 | 5 x P50
 
 ## Installation Media
 Installation media for SAP HANA should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052325, which should consist of four files:
@@ -25,7 +32,7 @@ Installation media for SAP HANA should be downloaded and placed in the SapBits f
 51052325_part4.rar
 ```
 
-Addtionally, if you wish to install a HANA Jumpbox with HANA Studio enabled, create a SAP_HANA_STUDIO folder under your SapBits folder and place the following packages:
+Addtionally, if you wish to install a Windows-based Jumpbox with HANA Studio enabled, create a SAP_HANA_STUDIO folder under your SapBits folder and place the following packages:
 ```
 
 IMC_STUDIO2_212_2-80000323.SAR

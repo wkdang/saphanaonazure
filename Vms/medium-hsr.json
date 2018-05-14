@@ -190,7 +190,7 @@
         "diskConfig_Standard_M64s": {
             "shared": 1023,
             "sap": 63,
-            "backup": 1023,
+            "backup1": 1023,
             "backup2": 1023,
             "data1": 1023,
             "data2": 1023,
