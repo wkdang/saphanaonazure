@@ -155,7 +155,7 @@
                             "fileUris": [
                                 "[variables('fileuri')]"
                             ],
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio.ps1', variables('scriptParameters'))]"
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio-hsr.ps1', variables('scriptParameters'))]"
                         },
                         "protectedSettings": {}
                     }
