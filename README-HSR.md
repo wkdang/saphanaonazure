@@ -113,8 +113,8 @@ Subscription Email | No | OS subscription email for BYOS. Leave blank for pay-as
 Subscription ID | No | OS ID or password for BYOS. Leave blank for pay-as-you-go OS image. |  | No restrictions
 SMT Uri | No | The URI to a subscription management server if used, blank otherwise |  | No restrictions
 
-##Known issues
-###When clicking on Deploy to Azure you get redirected to an empty directory
+## Known issues
+### When clicking on Deploy to Azure you get redirected to an empty directory
 ![Directories](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/directories.png)
 
 The only way to get around this is to save the template to your own template library. Click on "Create a Resource" and choose "Template Deployment". Click "Create".
