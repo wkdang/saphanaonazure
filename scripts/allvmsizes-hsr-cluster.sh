@@ -93,6 +93,8 @@ mkdir /hana/shared
 mkdir /hana/backup
 mkdir /usr/sap
 
+zypper in -t pattern -y sap-hana
+sudo saptune solution apply HANA
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 if [ $VMSIZE == "Standard_E16s_v3" ] || [ "$VMSIZE" == "Standard_E32s_v3" ] || [ "$VMSIZE" == "Standard_E64s_v3" ] || [ "$VMSIZE" == "Standard_GS5" ] ; then
