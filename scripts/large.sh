@@ -61,7 +61,7 @@ echo "logicalvols start" >> /tmp/parameter.txt
   lvcreate -l 100%FREE -n sharedlv sharedvg 
  
 #usr volume creation
-  usrsapvglun="/dev/disk/azure/scsi1/lun1)"
+  usrsapvglun="/dev/disk/azure/scsi1/lun1"
   vgcreate usrsapvg $usrsapvglun
   lvcreate -l 100%FREE -n usrsaplv usrsapvg
 
@@ -76,17 +76,17 @@ echo "logicalvols start" >> /tmp/parameter.txt
   datavg2lun="/dev/disk/azure/scsi1/lun5"
   datavg3lun="/dev/disk/azure/scsi1/lun6"
   vgcreate datavg $datavg1lun $datavg2lun $datavg3lun 
-  $PHYSVOLUMES=3
-  $STRIPESIZE=64
-  lvcreate –W y -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+  PHYSVOLUMES=3
+  STRIPESIZE=64
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
 
 #log volume creation
   logvg1lun="/dev/disk/azure/scsi1/lun7"
   logvg2lun="/dev/disk/azure/scsi1/lun8"
   vgcreate logvg $logvg1lun $logvg2lun
-  $PHYSVOLUMES=2
-  $STRIPESIZE=32
-  lvcreate –W y -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+  PHYSVOLUMES=2
+  STRIPESIZE=32
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
 
 
 echo "logicalvols end" >> /tmp/parameter.txt
