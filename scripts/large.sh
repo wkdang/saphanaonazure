@@ -61,7 +61,7 @@ echo "logicalvols start" >> /tmp/parameter.txt
   lvcreate -l 100%FREE -n sharedlv sharedvg 
  
 #usr volume creation
-  usrsapvglun="/dev/disk/azure/scsi1/lun1)"
+  usrsapvglun="/dev/disk/azure/scsi1/lun1"
   vgcreate usrsapvg $usrsapvglun
   lvcreate -l 100%FREE -n usrsaplv usrsapvg
 
