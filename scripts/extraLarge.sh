@@ -39,43 +39,63 @@ echo $Uri >> /tmp/url.txt
 
 cp -f /etc/waagent.conf /etc/waagent.conf.orig
 sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
-sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=294912/g"
+sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=20480/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 
-number="$(lsscsi [*] 0 0 4| cut -c2)"
+# this assumes that 5 disks are attached at lun 0 through 4
+echo "Creating partitions and physical volumes"
+sudo pvcreate /dev/disk/azure/scsi1/lun0   
+sudo pvcreate /dev/disk/azure/scsi1/lun1
+sudo pvcreate /dev/disk/azure/scsi1/lun2
+sudo pvcreate /dev/disk/azure/scsi1/lun3
+sudo pvcreate /dev/disk/azure/scsi1/lun4
+sudo pvcreate /dev/disk/azure/scsi1/lun5
+sudo pvcreate /dev/disk/azure/scsi1/lun6
+sudo pvcreate /dev/disk/azure/scsi1/lun7
+sudo pvcreate /dev/disk/azure/scsi1/lun8
+sudo pvcreate /dev/disk/azure/scsi1/lun9
+sudo pvcreate /dev/disk/azure/scsi1/lun10
+
 echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 7 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 8 | grep -o '.\{9\}$')"
-  hanavg3lun="$(lsscsi $number 0 0 9 | grep -o '.\{9\}$')"
-  hanavg4lun="$(lsscsi $number 0 0 10 | grep -o '.\{9\}$')"
-  hanavg5lun="$(lsscsi $number 0 0 11 | grep -o '.\{9\}$')"
-  pvcreate $hanavg1lun $hanavg2lun $hanavg3lun $hanavg4lun $hanavg5lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun $hanavg3lun $hanavg4lun $hanavg5lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
-echo "logicalvols end" >> /tmp/parameter.txt
-
-
-#!/bin/bash
-echo "logicalvols2 start" >> /tmp/parameter.txt
-  sharedvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"
-  usrsapvglun="$(lsscsi $number 0 0 1 | grep -o '.\{9\}$')"
-  backupvglun1="$(lsscsi $number 0 0 2 | grep -o '.\{9\}$')"
-  backupvglun2="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
-  backupvglun3="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  backupvglun4="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
-  backupvglun5="$(lsscsi $number 0 0 6 | grep -o '.\{9\}$')"
-  pvcreate $backupvglun1 $backupvglun2 $backupvglun3 $backupvglun4 $backupvglun5 $sharedvglun $usrsapvglun
-  vgcreate backupvg $backupvglun1 $backupvglun2 $backupvglun3 $backupvglun4 $backupvglun5
+#shared volume creation
+  sharedvglun="/dev/disk/azure/scsi1/lun0"
   vgcreate sharedvg $sharedvglun
-  vgcreate usrsapvg $usrsapvglun
   lvcreate -l 100%FREE -n sharedlv sharedvg 
+ 
+#usr volume creation
+  usrsapvglun="/dev/disk/azure/scsi1/lun1)"
+  vgcreate usrsapvg $usrsapvglun
+  lvcreate -l 100%FREE -n usrsaplv usrsapvg
+
+#backup volume creation
+  backupvg1lun="/dev/disk/azure/scsi1/lun2"
+  backupvg2lun="/dev/disk/azure/scsi1/lun3"
+  vgcreate backupvg $backupvg1lun $backupvg2lun
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+
+#data volume creation
+  datavg1lun="/dev/disk/azure/scsi1/lun4"
+  datavg2lun="/dev/disk/azure/scsi1/lun5"
+  datavg3lun="/dev/disk/azure/scsi1/lun6"
+  datavg4lun="/dev/disk/azure/scsi1/lun7"
+  datavg5lun="/dev/disk/azure/scsi1/lun8"
+  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun $datavg4lun $datavg5lun
+  $PHYSVOLUMES=4
+  $STRIPESIZE=64
+  lvcreate –W y -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+
+#log volume creation
+  logvg1lun="/dev/disk/azure/scsi1/lun9"
+  logvg2lun="/dev/disk/azure/scsi1/lun10"
+  vgcreate logvg $logvg1lun $logvg2lun
+  $PHYSVOLUMES=2
+  $STRIPESIZE=32
+  lvcreate –W y -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+
+  mkfs.xfs /dev/datavg/datalv
+  mkfs.xfs /dev/logvg/loglv
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
