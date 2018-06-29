@@ -97,6 +97,13 @@ echo "logicalvols end" >> /tmp/parameter.txt
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
 
+mount -t xfs /dev/sharedvg/sharedlv /hana/shared
+mount -t xfs /dev/backupvg/backuplv /hana/backup 
+mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
+mount -t xfs /dev/datavg/datalv /hana/data
+mount -t xfs /dev/logvg/loglv /hana/log 
+mkdir /hana/data/sapbits
+
 echo "mounthanashared end" >> /tmp/parameter.txt
 
 echo "write to fstab start" >> /tmp/parameter.txt
