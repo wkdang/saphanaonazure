@@ -304,8 +304,8 @@ quorum {
         # Enable and configure quorum subsystem (default: off)
         # see also corosync.conf.5 and votequorum.5
         provider: corosync_votequorum
-        expected_votes: 1
-        two_node: 0
+        expected_votes: 2
+        two_node: 1
 }
 EOF
 
