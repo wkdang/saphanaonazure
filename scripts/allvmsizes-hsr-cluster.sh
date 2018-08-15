@@ -93,152 +93,221 @@ mkdir /hana/shared
 mkdir /hana/backup
 mkdir /usr/sap
 
-number="$(lsscsi [*] 0 0 4| cut -c2)"
-if [ $VMSIZE == "Standard_E16s_v3" ] || [ "$VMSIZE" == "Standard_E32s_v3" ] || [ "$VMSIZE" == "Standard_E64s_v3" ] || [ "$VMSIZE" == "Standard_GS5" ] ; then
-echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  pvcreate $hanavg1lun $hanavg2lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
-echo "logicalvols end" >> /tmp/parameter.txt
+# this assumes that 5 disks are attached at lun 0 through 4
+echo "Creating partitions and physical volumes"
+pvcreate -ff -y /dev/disk/azure/scsi1/lun0   
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun1
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun2
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun3
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun4
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun5
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun6
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun7
 
-#!/bin/bash
-echo "logicalvols2 start" >> /tmp/parameter.txt
-  sharedvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"
-  usrsapvglun="$(lsscsi $number 0 0 1 | grep -o '.\{9\}$')"
-  backupvglun="$(lsscsi $number 0 0 2 | grep -o '.\{9\}$')"
-  pvcreate $backupvglun $sharedvglun $usrsapvglun
-  vgcreate backupvg $backupvglun
+if [ $VMSIZE == "Standard_E16s_v3" ] || [ "$VMSIZE" == "Standard_E32s_v3" ] || [ "$VMSIZE" == "Standard_E64s_v3" ] || [ "$VMSIZE" == "Standard_GS5" ] || [ "$VMSIZE" == "Standard_M32ts" ] || [ "$VMSIZE" == "Standard_M32ls" ] || [ "$VMSIZE" == "Standard_M64ls" ] || [ $VMSIZE == "Standard_DS14_v2" ] ; then
+echo "logicalvols start" >> /tmp/parameter.txt
+#shared volume creation
+  sharedvglun="/dev/disk/azure/scsi1/lun0"
   vgcreate sharedvg $sharedvglun
-  vgcreate usrsapvg $usrsapvglun 
   lvcreate -l 100%FREE -n sharedlv sharedvg 
+ 
+#usr volume creation
+  usrsapvglun="/dev/disk/azure/scsi1/lun1"
+  vgcreate usrsapvg $usrsapvglun
+  lvcreate -l 100%FREE -n usrsaplv usrsapvg
+
+#backup volume creation
+  backupvglun="/dev/disk/azure/scsi1/lun2"
+  vgcreate backupvg $backupvglun
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+
+#data volume creation
+  datavg1lun="/dev/disk/azure/scsi1/lun3"
+  datavg2lun="/dev/disk/azure/scsi1/lun4"
+  datavg3lun="/dev/disk/azure/scsi1/lun5"
+  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun
+  PHYSVOLUMES=3
+  STRIPESIZE=64
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+
+#log volume creation
+  logvg1lun="/dev/disk/azure/scsi1/lun6"
+  logvg2lun="/dev/disk/azure/scsi1/lun7"
+  vgcreate logvg $logvg1lun $logvg2lun
+  PHYSVOLUMES=2
+  STRIPESIZE=32
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+
+  mkfs.xfs /dev/datavg/datalv
+  mkfs.xfs /dev/logvg/loglv
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
-echo "logicalvols2 end" >> /tmp/parameter.txt
+echo "logicalvols end" >> /tmp/parameter.txt
 fi
 
 if [ $VMSIZE == "Standard_M64s" ]; then
+
+# this assumes that 6 disks are attached at lun 0 through 5
+echo "Creating partitions and physical volumes"
+pvcreate -ff -y /dev/disk/azure/scsi1/lun8
+pvcreate -ff -y /dev/disk/azure/scsi1/lun9
+
 echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
-  pvcreate hanavg $hanavg1lun $hanavg2lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
-echo "logicalvols end" >> /tmp/parameter.txt
-
-
-#!/bin/bash
-echo "logicalvols2 start" >> /tmp/parameter.txt
-  sharedvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"
-  usrsapvglun="$(lsscsi $number 0 0 1 | grep -o '.\{9\}$')"
-  backupvglun1="$(lsscsi $number 0 0 2 | grep -o '.\{9\}$')"
-  backupvglun2="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
-  pvcreate $backupvglun1 $backupvglun2 $sharedvglun $usrsapvglun
-  vgcreate backupvg $backupvglun1 $backupvglun2
+#shared volume creation
+  sharedvglun="/dev/disk/azure/scsi1/lun0"
   vgcreate sharedvg $sharedvglun
-  vgcreate usrsapvg $usrsapvglun 
   lvcreate -l 100%FREE -n sharedlv sharedvg 
+ 
+#usr volume creation
+  usrsapvglun="/dev/disk/azure/scsi1/lun1"
+  vgcreate usrsapvg $usrsapvglun
+  lvcreate -l 100%FREE -n usrsaplv usrsapvg
+
+#backup volume creation
+  backupvg1lun="/dev/disk/azure/scsi1/lun2"
+  backupvg2lun="/dev/disk/azure/scsi1/lun3"
+  vgcreate backupvg $backupvg1lun $backupvg2lun
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+
+#data volume creation
+  datavg1lun="/dev/disk/azure/scsi1/lun4"
+  datavg2lun="/dev/disk/azure/scsi1/lun5"
+  datavg3lun="/dev/disk/azure/scsi1/lun6"
+  datavg4lun="/dev/disk/azure/scsi1/lun7"
+  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun $datavg4lun
+  PHYSVOLUMES=4
+  STRIPESIZE=64
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+
+#log volume creation
+  logvg1lun="/dev/disk/azure/scsi1/lun8"
+  logvg2lun="/dev/disk/azure/scsi1/lun9"
+  vgcreate logvg $logvg1lun $logvg2lun
+  PHYSVOLUMES=2
+  STRIPESIZE=32
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+
+
+  mkfs.xfs /dev/datavg/datalv
+  mkfs.xfs /dev/logvg/loglv
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
-echo "logicalvols2 end" >> /tmp/parameter.txt
+echo "logicalvols end" >> /tmp/parameter.txt
 fi
 
 if [ $VMSIZE == "Standard_M64ms" ] || [ $VMSIZE == "Standard_M128s" ]; then
+
+# this assumes that 6 disks are attached at lun 0 through 9
+echo "Creating partitions and physical volumes"
+pvcreate  -ff -y /dev/disk/azure/scsi1/lun8
+
 echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
-  hanavg3lun="$(lsscsi $number 0 0 6 | grep -o '.\{9\}$')"
-  pvcreate $hanavg1lun $hanavg2lun $hanavg3lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun $hanavg3lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
-echo "logicalvols end" >> /tmp/parameter.txt
-
-
-#!/bin/bash
-echo "logicalvols2 start" >> /tmp/parameter.txt
-  sharedvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"
-  usrsapvglun="$(lsscsi $number 0 0 1 | grep -o '.\{9\}$')"
-  backupvglun1="$(lsscsi $number 0 0 2 | grep -o '.\{9\}$')"
-  backupvglun2="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
-  pvcreate $backupvglun1 $backupvglun2 $sharedvglun $usrsapvglun
-  vgcreate backupvg $backupvglun1 $backupvglun2
+#shared volume creation
+  sharedvglun="/dev/disk/azure/scsi1/lun0"
   vgcreate sharedvg $sharedvglun
-  vgcreate usrsapvg $usrsapvglun
   lvcreate -l 100%FREE -n sharedlv sharedvg 
+ 
+#usr volume creation
+  usrsapvglun="/dev/disk/azure/scsi1/lun1"
+  vgcreate usrsapvg $usrsapvglun
+  lvcreate -l 100%FREE -n usrsaplv usrsapvg
+
+#backup volume creation
+  backupvg1lun="/dev/disk/azure/scsi1/lun2"
+  backupvg2lun="/dev/disk/azure/scsi1/lun3"
+  vgcreate backupvg $backupvg1lun $backupvg2lun
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+
+#data volume creation
+  datavg1lun="/dev/disk/azure/scsi1/lun4"
+  datavg2lun="/dev/disk/azure/scsi1/lun5"
+  datavg3lun="/dev/disk/azure/scsi1/lun6"
+  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun 
+  PHYSVOLUMES=3
+  STRIPESIZE=64
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+
+#log volume creation
+  logvg1lun="/dev/disk/azure/scsi1/lun7"
+  logvg2lun="/dev/disk/azure/scsi1/lun8"
+  vgcreate logvg $logvg1lun $logvg2lun
+  PHYSVOLUMES=2
+  STRIPESIZE=32
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+
+
+  mkfs.xfs /dev/datavg/datalv
+  mkfs.xfs /dev/logvg/loglv
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
-echo "logicalvols2 end" >> /tmp/parameter.txt
+echo "logicalvols end" >> /tmp/parameter.txt
 fi
 
 if [ $VMSIZE == "Standard_M128ms" ]; then
+
+# this assumes that 6 disks are attached at lun 0 through 5
+echo "Creating partitions and physical volumes"
+pvcreate  -ff -y /dev/disk/azure/scsi1/lun8
+pvcreate  -ff -y /dev/disk/azure/scsi1/lun9
+pvcreate  -ff -y /dev/disk/azure/scsi1/lun10
+
 echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 7 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 8 | grep -o '.\{9\}$')"
-  hanavg3lun="$(lsscsi $number 0 0 9 | grep -o '.\{9\}$')"
-  hanavg4lun="$(lsscsi $number 0 0 10 | grep -o '.\{9\}$')"
-  hanavg5lun="$(lsscsi $number 0 0 11 | grep -o '.\{9\}$')"
-  pvcreate $hanavg1lun $hanavg2lun $hanavg3lun $hanavg4lun $hanavg5lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun $hanavg3lun $hanavg4lun $hanavg5lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
-echo "logicalvols end" >> /tmp/parameter.txt
-
-
-#!/bin/bash
-echo "logicalvols2 start" >> /tmp/parameter.txt
-  sharedvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"
-  usrsapvglun="$(lsscsi $number 0 0 1 | grep -o '.\{9\}$')"
-  backupvglun1="$(lsscsi $number 0 0 2 | grep -o '.\{9\}$')"
-  backupvglun2="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
-  backupvglun3="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  backupvglun4="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
-  backupvglun5="$(lsscsi $number 0 0 6 | grep -o '.\{9\}$')"
-  pvcreate $backupvglun1 $backupvglun2 $backupvglun3 $backupvglun4 $backupvglun5 $sharedvglun $usrsapvglun
-  vgcreate backupvg $backupvglun1 $backupvglun2 $backupvglun3 $backupvglun4 $backupvglun5
+#shared volume creation
+  sharedvglun="/dev/disk/azure/scsi1/lun0"
   vgcreate sharedvg $sharedvglun
-  vgcreate usrsapvg $usrsapvglun
   lvcreate -l 100%FREE -n sharedlv sharedvg 
+ 
+#usr volume creation
+  usrsapvglun="/dev/disk/azure/scsi1/lun1"
+  vgcreate usrsapvg $usrsapvglun
+  lvcreate -l 100%FREE -n usrsaplv usrsapvg
+
+#backup volume creation
+  backupvg1lun="/dev/disk/azure/scsi1/lun2"
+  backupvg2lun="/dev/disk/azure/scsi1/lun3"
+  vgcreate backupvg $backupvg1lun $backupvg2lun
   lvcreate -l 100%FREE -n backuplv backupvg 
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg 
+
+#data volume creation
+  datavg1lun="/dev/disk/azure/scsi1/lun4"
+  datavg2lun="/dev/disk/azure/scsi1/lun5"
+  datavg3lun="/dev/disk/azure/scsi1/lun6"
+  datavg4lun="/dev/disk/azure/scsi1/lun7"
+  datavg5lun="/dev/disk/azure/scsi1/lun8"
+  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun $datavg4lun $datavg5lun
+  PHYSVOLUMES=4
+  STRIPESIZE=64
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+
+#log volume creation
+  logvg1lun="/dev/disk/azure/scsi1/lun9"
+  logvg2lun="/dev/disk/azure/scsi1/lun10"
+  vgcreate logvg $logvg1lun $logvg2lun
+  PHYSVOLUMES=2
+  STRIPESIZE=32
+  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+
+  mkfs.xfs /dev/datavg/datalv
+  mkfs.xfs /dev/logvg/loglv
   mkfs -t xfs /dev/sharedvg/sharedlv 
   mkfs -t xfs /dev/backupvg/backuplv 
   mkfs -t xfs /dev/usrsapvg/usrsaplv
-echo "logicalvols2 end" >> /tmp/parameter.txt
 fi
 #!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
-mount -t xfs /dev/hanavg/datalv /hana/data
-mount -t xfs /dev/hanavg/loglv /hana/log 
-mkdir /hana/data/sapbits
+mount -t xfs /dev/datavg/datalv /hana/data
+mount -t xfs /dev/logvg/loglv /hana/log 
 echo "mounthanashared end" >> /tmp/parameter.txt
 
 echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/mapper/hanavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/datavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
@@ -335,6 +404,7 @@ sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 # we may be able to restart the waagent and get the swap configured immediately
+service waagent restart
 
 cat >>/etc/hosts <<EOF
 $VMIPADDR $VMNAME
