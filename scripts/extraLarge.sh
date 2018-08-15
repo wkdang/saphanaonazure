@@ -18,18 +18,18 @@ if [ "$SUBEMAIL" != "" ]; then
 fi
 
 #install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
-sudo zypper install -y unrar
-sudo zypper install -y sapconf
-sudo zypper install -y saptune
-sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /hana
-sudo mkdir /hana/data
-sudo mkdir /hana/log
-sudo mkdir /hana/shared
-sudo mkdir /hana/backup
-sudo mkdir /usr/sap
+zypper install -y glibc-2.22-51.6
+zypper install -y systemd-228-142.1
+zypper install -y unrar
+zypper install -y sapconf
+zypper install -y saptune
+mkdir /etc/systemd/login.conf.d
+mkdir /hana
+mkdir /hana/data
+mkdir /hana/log
+mkdir /hana/shared
+mkdir /hana/backup
+mkdir /usr/sap
 
 zypper in -t pattern -y sap-hana
 saptune solution apply HANA
@@ -47,17 +47,17 @@ service waagent restart
 
 # this assumes that 5 disks are attached at lun 0 through 4
 echo "Creating partitions and physical volumes"
-sudo pvcreate /dev/disk/azure/scsi1/lun0   
-sudo pvcreate /dev/disk/azure/scsi1/lun1
-sudo pvcreate /dev/disk/azure/scsi1/lun2
-sudo pvcreate /dev/disk/azure/scsi1/lun3
-sudo pvcreate /dev/disk/azure/scsi1/lun4
-sudo pvcreate /dev/disk/azure/scsi1/lun5
-sudo pvcreate /dev/disk/azure/scsi1/lun6
-sudo pvcreate /dev/disk/azure/scsi1/lun7
-sudo pvcreate /dev/disk/azure/scsi1/lun8
-sudo pvcreate /dev/disk/azure/scsi1/lun9
-sudo pvcreate /dev/disk/azure/scsi1/lun10
+pvcreate /dev/disk/azure/scsi1/lun0   
+pvcreate /dev/disk/azure/scsi1/lun1
+pvcreate /dev/disk/azure/scsi1/lun2
+pvcreate /dev/disk/azure/scsi1/lun3
+pvcreate /dev/disk/azure/scsi1/lun4
+pvcreate /dev/disk/azure/scsi1/lun5
+pvcreate /dev/disk/azure/scsi1/lun6
+pvcreate /dev/disk/azure/scsi1/lun7
+pvcreate /dev/disk/azure/scsi1/lun8
+pvcreate /dev/disk/azure/scsi1/lun9
+pvcreate /dev/disk/azure/scsi1/lun10
 
 echo "logicalvols start" >> /tmp/parameter.txt
 #shared volume creation
