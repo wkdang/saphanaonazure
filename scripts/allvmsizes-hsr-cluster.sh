@@ -345,10 +345,10 @@ EOF
 cd /hana/data/sapbits
 echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $URI/SapBits/md5sums
-/usr/bin/wget --quiet $URI/SapBits/51052325_part1.exe
-/usr/bin/wget --quiet $URI/SapBits/51052325_part2.rar
-/usr/bin/wget --quiet $URI/SapBits/51052325_part3.rar
-/usr/bin/wget --quiet $URI/SapBits/51052325_part4.rar
+/usr/bin/wget --quiet $URI/SapBits/51053061_part1.exe
+/usr/bin/wget --quiet $URI/SapBits/51053061_part2.rar
+/usr/bin/wget --quiet $URI/SapBits/51053061_part3.rar
+/usr/bin/wget --quiet $URI/SapBits/51053061_part4.rar
 /usr/bin/wget --quiet "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hdbinst.cfg"
 echo "hana download end" >> /tmp/parameter.txt
 
@@ -358,7 +358,7 @@ cd /hana/data/sapbits
 echo "hana unrar start" >> /tmp/parameter.txt
 #!/bin/bash
 cd /hana/data/sapbits
-unrar x 51052325_part1.exe
+unrar x 51053061_part1.exe
 echo "hana unrar end" >> /tmp/parameter.txt
 
 echo "hana prepare start" >> /tmp/parameter.txt
@@ -381,8 +381,8 @@ echo "hana preapre end" >> /tmp/parameter.txt
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
-cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+cd /hana/data/sapbits/51053061/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/data/sapbits/51053061/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 echo "install hana end" >> /tmp/hanacomplete.txt
 
