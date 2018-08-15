@@ -32,7 +32,8 @@ sudo mkdir /hana/backup
 sudo mkdir /usr/sap
 
 zypper in -t pattern -y sap-hana
-sudo saptune solution apply HANA
+saptune solution apply HANA
+saptune daemon start
 
 # step2
 echo $Uri >> /tmp/url.txt
