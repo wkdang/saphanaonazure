@@ -45,7 +45,9 @@ sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
 sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=2048/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
-service waagent restart
+
+#don't restart waagent, as this will kill the custom script.
+#service waagent restart
 
 # this assumes that 5 disks are attached at lun 0 through 4
 echo "Creating partitions and physical volumes" >>/tmp/parameter.txt
