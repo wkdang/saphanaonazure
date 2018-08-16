@@ -1,3 +1,5 @@
+set -x
+
 Uri=$1
 HANAUSR=$2
 HANAPWD=$3
@@ -46,7 +48,7 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 service waagent restart
 
 # this assumes that 5 disks are attached at lun 0 through 4
-echo "Creating partitions and physical volumes"
+echo "Creating partitions and physical volumes" >>/tmp/parameter.txt
 pvcreate /dev/disk/azure/scsi1/lun0   
 pvcreate /dev/disk/azure/scsi1/lun1
 pvcreate /dev/disk/azure/scsi1/lun2
