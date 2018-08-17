@@ -42,7 +42,9 @@ sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
 sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
-service waagent restart
+#do not restart waagent, as it stops the custom script extension
+#service waagent restart
+
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 
