@@ -1,3 +1,5 @@
+set -x
+
 Uri=$1
 HANAUSR=$2
 HANAPWD=$3
