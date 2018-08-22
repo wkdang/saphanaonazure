@@ -370,7 +370,7 @@
             },
             "properties": {
                 "platformFaultDomainCount": 2,
-                "platformUpdateDomainCount": 20
+                "platformUpdateDomainCount": 5
             }
         },
         {
