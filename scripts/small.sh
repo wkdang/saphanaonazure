@@ -20,28 +20,29 @@ if [ "$SUBEMAIL" != "" ]; then
 fi
 
 #install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
-sudo zypper install -y unrar
-sudo zypper install -y sapconf
-sudo zypper install -y saptune
-sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir /hana
-sudo mkdir /hana/data
-sudo mkdir /hana/log
-sudo mkdir /hana/shared
-sudo mkdir /hana/backup
-sudo mkdir /usr/sap
+zypper install -y glibc-2.22-51.6
+zypper install -y systemd-228-142.1
+zypper install -y unrar
+zypper install -y sapconf
+zypper install -y saptune
+mkdir /etc/systemd/login.conf.d
+mkdir /hana
+mkdir /hana/data
+mkdir /hana/log
+mkdir /hana/shared
+mkdir /hana/backup
+mkdir /usr/sap
 
 zypper in -t pattern -y sap-hana
-sudo saptune solution apply HANA
+saptune solution apply HANA
+saptune daemon start
 
 # step2
 echo $Uri >> /tmp/url.txt
 
 cp -f /etc/waagent.conf /etc/waagent.conf.orig
 sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
-sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
+sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=2048/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 #do not restart waagent, as it stops the custom script extension
