@@ -83,6 +83,13 @@
             },
             "defaultValue": "10.0.5.4"
         },
+        "AvailSetName": {
+            "type": "string",
+            "metadata": {
+              "description": "This is the name of the availability set to deploy the machine in"
+            },
+            "defaultValue": ""
+          },            
         "SubscriptionEmail": {
             "type": "string",
             "metadata": {
@@ -354,6 +361,19 @@
             }
         },
         {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('AvailSetName')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 20
+            }
+        },
+        {
             "apiVersion": "[variables('api-version-vm')]",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[parameters('vmName')]",
@@ -370,9 +390,13 @@
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data4'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data5'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]",
-                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailSetName'))]"
             ],
             "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailSetName'))]"
+                  },                
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
                 },
