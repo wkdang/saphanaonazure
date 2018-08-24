@@ -2,6 +2,18 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "HanaVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Version of HANA"
+            },
+            "defaultValue": "SAP HANA Platform Edition 2.0 SPS02 (51052325)",
+            "allowedValues": [
+                "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030",
+                "SAP HANA Platform Edition 2.0 SPS02 (51052325)",
+                "SAP HANA Platform Edition 2.0 SPS03 rev30 (51053061)"
+            ]
+        },   
         "VMName": {
             "type": "string",
             "maxLength": 13,
@@ -153,7 +165,7 @@
           "metadata": {
             "description": "This is the name of the availability set to deploy the machine in"
           },
-          "defaultValue": ""
+          "defaultValue": "hana-avail"
         },                    
         "SubscriptionEmail": {
           "type": "string",
@@ -236,6 +248,9 @@
                     "uri": "[variables('smallUri')]"
                 },
                 "parameters": {
+                    "HanaVersion": {
+                        "value": "[parameters('HanaVersion')]"
+                    },               
                     "vmName": {
                         "value": "[parameters('vmName')]"
                     },
@@ -298,6 +313,10 @@
                     "uri": "[variables('mediumUri')]"
                 },
                 "parameters": {
+                    "HanaVersion": {
+                        "value": "[parameters('HanaVersion')]"
+                    },   
+
                     "vmName": {
                         "value": "[parameters('vmName')]"
                     },
@@ -360,6 +379,9 @@
                     "uri": "[variables('largeUri')]"
                 },
                 "parameters": {
+                    "HanaVersion": {
+                        "value": "[parameters('HanaVersion')]"
+                    },   
                     "vmName": {
                         "value": "[parameters('vmName')]"
                     },
@@ -422,6 +444,9 @@
                     "uri": "[variables('extralargeUri')]"
                 },
                 "parameters": {
+                    "HanaVersion": {
+                        "value": "[parameters('HanaVersion')]"
+                    },   
                     "vmName": {
                         "value": "[parameters('vmName')]"
                     },
