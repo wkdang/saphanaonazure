@@ -2,6 +2,18 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "HanaVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Version of HANA"
+            },
+            "defaultValue": "SAP HANA Platform Edition 2.0 SPS02 (51052325)",
+            "allowedValues": [
+                "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030",
+                "SAP HANA Platform Edition 2.0 SPS02 (51052325)",
+                "SAP HANA Platform Edition 2.0 SPS03 rev30 (51053061)"
+            ]
+        },   
         "vmName": {
             "type": "string",
             "metadata": {
@@ -484,7 +496,7 @@
                             "fileUris": [
                                 "[concat(variables('baseUri'),'scripts/large.sh')]"
                             ],
-                            "commandToExecute": "[concat('sh large.sh \"', parameters('customUri'), '\" \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"', parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\"  \"', parameters('SMTUri'),'\"')]"
+                            "commandToExecute": "[concat('sh large.sh \"', parameters('customUri'), '\" \"' , parameters('HanaVersion'), '\" \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"', parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\"  \"', parameters('SMTUri'),'\"')]"
                         }
                     }
                 }
