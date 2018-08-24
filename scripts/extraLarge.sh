@@ -1,14 +1,15 @@
 set -x
 
-Uri=$1
-HANAUSR=$2
-HANAPWD=$3
-HANASID=$4
-HANANUMBER=$5
-vmSize=$6
-SUBEMAIL=$7
-SUBID=$8
-SUBURL=$9
+Uri=${1}
+HANAVER=${2}
+HANAUSR=${3}
+HANAPWD=${4}
+HANASID=${5}
+HANANUMBER=${6}
+vmSize=${7}
+SUBEMAIL=${8}
+SUBID=${9}
+SUBURL=${10}
 
 #if needed, register the machine
 if [ "$SUBEMAIL" != "" ]; then
@@ -132,14 +133,33 @@ fi
 
 
 
+
+if [ $HANAVER = "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030)" ]
+then 
+  hanapackage="51052030"
+else
+  if [ $HANAVER = "SAP HANA Platform Edition 2.0 SPS02 (51052325)" ]
+  then 
+    hanapackage="51052325"
+  else
+    if [ $HANAVER = "SAP HANA Platform Edition 2.0 SPS03 rev30 (51053061)" ]
+    then 
+      hanapackage="51052325"
+    else
+      hanapackage="51052325"
+    fi
+  fi
+fi
+
+
 #!/bin/bash
 cd /hana/data/sapbits
 echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/md5sums
-/usr/bin/wget --quiet $Uri/SapBits/51053061_part1.exe
-/usr/bin/wget --quiet $Uri/SapBits/51053061_part2.rar
-/usr/bin/wget --quiet $Uri/SapBits/51053061_part3.rar
-/usr/bin/wget --quiet $Uri/SapBits/51053061_part4.rar
+/usr/bin/wget --quiet $Uri/SapBits/${hanapackage}_part1.exe
+/usr/bin/wget --quiet $Uri/SapBits/${hanapackage}_part2.rar
+/usr/bin/wget --quiet $Uri/SapBits/${hanapackage}_part3.rar
+/usr/bin/wget --quiet $Uri/SapBits/${hanapackage}_part4.rar
 /usr/bin/wget --quiet "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hdbinst.cfg"
 echo "hana download end" >> /tmp/parameter.txt
 
@@ -149,7 +169,7 @@ cd /hana/data/sapbits
 echo "hana unrar start" >> /tmp/parameter.txt
 #!/bin/bash
 cd /hana/data/sapbits
-unrar x 51053061_part1.exe
+unrar x ${hanapackage}_part1.exe
 echo "hana unrar end" >> /tmp/parameter.txt
 
 echo "hana prepare start" >> /tmp/parameter.txt
@@ -159,7 +179,7 @@ cd /hana/data/sapbits
 cd /hana/data/sapbits
 myhost=`hostname`
 sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51053061/g"
+sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/${hanapackage}/g"
 sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/AweS0me@PW/$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
@@ -176,6 +196,6 @@ EOF
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
-cd /hana/data/sapbits/51053061/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51053061/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+cd /hana/data/sapbits/${hanapackage}/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/data/sapbits/${hanapackage}/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
