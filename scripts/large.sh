@@ -127,19 +127,22 @@ fi
 
 
 
-
-if [ $HANAVER = "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030)" ]
-then 
+HANAVER=${HANAVER^^}
+if [ "${HANAVER}" = "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030)" ]
+then
   hanapackage="51052030"
 else
-  if [ $HANAVER = "SAP HANA Platform Edition 2.0 SPS02 (51052325)" ]
-  then 
+  echo "not 51052030"
+  if [ "$HANAVER" = "SAP HANA PLATFORM EDITION 2.0 SPS02 (51052325)" ]
+  then
     hanapackage="51052325"
   else
-    if [ $HANAVER = "SAP HANA Platform Edition 2.0 SPS03 rev30 (51053061)" ]
-    then 
-      hanapackage="51052325"
+  echo "not 51052325"
+    if [ "$HANAVER" = "SAP HANA PLATFORM EDITION 2.0 SPS03 REV30 (51053061)" ]
+    then
+      hanapackage="51053061"
     else
+      echo "not 51053061, default to 51052325"
       hanapackage="51052325"
     fi
   fi
