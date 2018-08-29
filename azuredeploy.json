@@ -11,7 +11,7 @@
             "allowedValues": [
                 "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030)",
                 "SAP HANA Platform Edition 2.0 SPS02 (51052325)",
-                "SAP HANA Platform Edition 2.0 SPS03 rev30 (51053061)"
+                "SAP HANA Platform Edition 2.0 SPS03 REV30 (51053061)"
             ]
         },   
         "VMName": {
