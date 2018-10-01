@@ -403,7 +403,7 @@
                             "fileUris": [
                                 "[concat(variables('baseUri'),'scripts/small.sh')]"
                             ],
-                            "commandToExecute": "[concat('sh small.sh \"', parameters('customUri'), '\" \"' , parameters('HanaVersion'), '\"  \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\"  \"', parameters('SMTUri'),'\"')]"
+                            "commandToExecute": "[concat('sh allvmsizes.sh \"', parameters('customUri'), '\" \"' , parameters('HanaVersion'), '\"  \"' , parameters('vmUserName'), '\" \"', parameters('vmPassword'),'\" \"', parameters('HANASID'), '\" \"', parameters('HANANUMBER'), '\" \"', parameters('vmSize'), '\" \"',parameters('SubscriptionEmail'), '\" \"', parameters('SubscriptionID'),'\"  \"', parameters('SMTUri'),'\"')]"
                         }
                     }
                 }
