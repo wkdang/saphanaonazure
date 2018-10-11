@@ -194,6 +194,8 @@
             "backup2": 1023,
             "data1": 1023,
             "data2": 1023,
+            "data3": 1023,
+            "data4": 1023,
             "log1": 511,
             "log2": 511
         },
@@ -346,6 +348,38 @@
         },
         {
             "type": "Microsoft.Compute/disks",
+            "name": "[concat(parameters('vmName1'),'-data3')]",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskConfig').data3]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/disks",
+            "name": "[concat(parameters('vmName1'),'-data4')]",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "properties": {
+                "creationData": {
+                    "createOption": "Empty"
+                },
+                "diskSizeGB": "[variables('diskConfig').data4]"
+            }
+        },       
+        {
+            "type": "Microsoft.Compute/disks",
             "name": "[concat(parameters('vmName1'),'-log1')]",
             "apiVersion": "2018-04-01",
             "location": "[resourceGroup().location]",
@@ -389,6 +423,8 @@
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-backup2'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data1'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data2'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data3'))]",
+                "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data4'))]",                                
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-log1'))]",
                 "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-log2'))]"
             ],
@@ -457,6 +493,20 @@
                         },
                         {
                             "lun": 6,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data3'))]"
+                            }
+                        },
+                        {
+                            "lun": 7,
+                            "createOption": "attach",
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName1'),'-data4'))]"
+                            }
+                        },
+                        {
+                            "lun": 8,
                             "createOption": "Attach",
                             "writeAcceleratorEnabled": "true",
                             "managedDisk": {
@@ -464,7 +514,7 @@
                             }
                         },
                         {
-                            "lun": 7,
+                            "lun": 9,
                             "createOption": "Attach",
                             "writeAcceleratorEnabled": "true",
                             "managedDisk": {
