@@ -89,6 +89,7 @@ echo "logicalvols start" >> /tmp/parameter.txt
   STRIPESIZE=64
   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 70%FREE -n datalv datavg
   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv datavg
+  mount -t xfs /dev/datavg/loglv /hana/log 
   echo "/dev/mapper/datavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 
   mkfs.xfs /dev/datavg/datalv
@@ -100,7 +101,7 @@ echo "logicalvols end" >> /tmp/parameter.txt
 fi
 
 if [ $VMSIZE == "Standard_M64s" ]; then
-  #this is the medium size VM
+  #this is the medium size
   # this assumes that 6 disks are attached at lun 0 through 5
   echo "Creating partitions and physical volumes"
   pvcreate -ff -y  /dev/disk/azure/scsi1/lun6
@@ -142,6 +143,7 @@ if [ $VMSIZE == "Standard_M64s" ]; then
   PHYSVOLUMES=2
   STRIPESIZE=32
   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+  mount -t xfs /dev/logvg/loglv /hana/log 
 echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 
   mkfs.xfs /dev/datavg/datalv
@@ -193,6 +195,7 @@ if [ $VMSIZE == "Standard_M64ms" ] || [ $VMSIZE == "Standard_M128s" ]; then
   PHYSVOLUMES=2
   STRIPESIZE=32
   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+  mount -t xfs /dev/logvg/loglv /hana/log   
 echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 
   mkfs.xfs /dev/datavg/datalv
@@ -248,6 +251,7 @@ if [ $VMSIZE == "Standard_M128ms" ]; then
   PHYSVOLUMES=2
   STRIPESIZE=32
   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+  mount -t xfs /dev/logvg/loglv /hana/log 
   echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 
   mkfs.xfs /dev/datavg/datalv
@@ -263,7 +267,6 @@ mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
 mount -t xfs /dev/datavg/datalv /hana/data
-mount -t xfs /dev/logvg/loglv /hana/log 
 echo "mounthanashared end" >> /tmp/parameter.txt
 
 echo "write to fstab start" >> /tmp/parameter.txt
