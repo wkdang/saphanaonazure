@@ -494,6 +494,70 @@
                         "value": "[parameters('SMTUri')]"
                     }
                 }
+            },
+        {
+            "condition": "[equals(variables('vmSize'), 'Standard_M208ms_v2')]",
+            "apiVersion": "2016-09-01",
+            "name": "[concat('superLargeLinkedTemplate', parameters('VMName'))]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+              ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('extralargeUri')]"
+                },
+                "parameters": {
+                    "HanaVersion": {
+                        "value": "[parameters('HanaVersion')]"
+                    },   
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "customUri": {
+                        "value": "[parameters('customUri')]"
+                    },
+                    "HANAsubnetRef": {
+                        "value": "[variables('HANAsubnetRef')]"
+                    },
+                    "OperatingSystem": {
+                        "value": "[parameters('OperatingSystem')]"
+                    },
+                    "vmUserName": {
+                        "value": "[parameters('vmUserName')]"
+                    },
+                    "vmPassword": {
+                        "value": "[parameters('vmPassword')]"
+                    },
+                    "hanaSid": {
+                        "value": "[parameters('hanaSid')]"
+                    },
+                    "hanaNumber": {
+                        "value": "[parameters('hanaNumber')]"
+                    },
+                    "vmSize": {
+                        "value": "[variables('vmSize')]"
+                    },
+                    "IPAllocationMethod":{
+                        "value": "[parameters('IPAllocationMethod')]"
+                    },
+                    "StaticIP":{
+                        "value": "[parameters('StaticIP')]"
+                    },
+                    "AvailSetName": {
+                        "value": "[parameters('AvailSetName')]"
+                      },                             
+                    "SubscriptionEmail":{
+                        "value": "[parameters('SubscriptionEmail')]"
+                    },
+                    "SubscriptionID":{
+                        "value": "[parameters('SubscriptionID')]"
+                    },
+                    "SMTUri":{
+                        "value": "[parameters('SMTUri')]"
+                    }
+                }
             }
         },
         {
