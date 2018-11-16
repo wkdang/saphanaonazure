@@ -197,6 +197,7 @@
     "mediumUri": "[concat(variables('baseUri'),'Vms/medium.json')]",
     "largeUri": "[concat(variables('baseUri'),'Vms/large.json')]",
     "extralargeUri": "[concat(variables('baseUri'),'Vms/extralarge.json')]",
+    "superlargeUri": "[concat(variables('baseUri'),'Vms/superlarge.json')]",	  
     "hanajbUri": "[concat(variables('baseUri'),'Vms/hanajb.json')]",
     "hanaUri": "[concat(variables('baseUri'),'hanastudio.ps1')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
@@ -507,7 +508,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('extralargeUri')]"
+                    "uri": "[variables('superlargeUri')]"
                 },
                 "parameters": {
                     "HanaVersion": {
