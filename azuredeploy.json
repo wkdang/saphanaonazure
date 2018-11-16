@@ -494,7 +494,8 @@
                         "value": "[parameters('SMTUri')]"
                     }
                 }
-            },
+	    }
+           },
         {
             "condition": "[equals(variables('vmSize'), 'Standard_M208ms_v2')]",
             "apiVersion": "2016-09-01",
