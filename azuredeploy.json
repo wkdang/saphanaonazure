@@ -43,6 +43,7 @@
                 "Standard_M64ms (1.7 TB, Certified)",
                 "Standard_M128s (2 TB, Certified)",
                 "Standard_M128ms (3.8 TB, Certified)",
+	        "Standard_M208ms_v2",
                 "Standard_E16s_v3 (128 GB)",
                 "Standard_E32s_v3 (256 GB)",
                 "Standard_E64s_v3 (448 GB)"
