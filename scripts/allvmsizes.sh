@@ -18,7 +18,11 @@ echo $5 >> /tmp/parameter.txt
 echo $6 >> /tmp/parameter.txt
 echo $7 >> /tmp/parameter.txt
 
+sed -i -e "s/Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers
+	sudo mkdir -p /hana/{data,log,shared,backup}
+	sudo mkdir /usr/sap
 
+	
 #get the VM size via the instance api
 VMSIZE=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2017-08-01&format=text"`
 
@@ -100,12 +104,7 @@ else
 	sudo zypper se -t pattern
 	sudo zypper --non-interactive in -t pattern sap-hana 
 fi
-mkdir /hana
-mkdir /hana/data
-mkdir /hana/log
-mkdir /hana/shared
-mkdir /hana/backup
-mkdir /usr/sap
+
 
 # step2
 echo $Uri >> /tmp/url.txt
