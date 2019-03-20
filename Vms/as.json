@@ -147,23 +147,14 @@
       "sku": "[if (contains(parameters('OperatingSystem'),'12-SP2'),'12-SP2','7.5')]"
     },
     "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
-    "diskConfig_Standard_E2s_v3": {
+    "diskConfig_Standard_D2s_v3": {
       "data1": 127
     },
-    "diskConfig_Standard_E4s_v3": {
+    "diskConfig_Standard_D8s_v3": {
       "data1": 127
     },
-    "diskConfig_Standard_E8s_v3": {
+    "diskConfig_Standard_D64s_v3": {
       "data1": 127
-    },
-    "diskConfig_Standard_E16s_v3": {
-      "data1": 255
-    },
-    "diskConfig_Standard_E32s_v3": {
-      "data1": 255
-    },
-    "diskConfig_Standard_E64s_v3": {
-      "data1": 511
     }
   },
   "resources": [
@@ -202,7 +193,7 @@
         "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'), '-IPPublic')]"
       ],
       "properties": {
-        "enableAcceleratedNetworking": true,
+        "enableAcceleratedNetworking": false,
         "ipConfigurations": [
           {
             "name": "[concat(parameters('vmName'),'-ipcfg')]",
@@ -230,7 +221,7 @@
         "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'), '-IPPublic')]"
       ],
       "properties": {
-        "enableAcceleratedNetworking": true,
+        "enableAcceleratedNetworking": false,
         "ipConfigurations": [
           {
             "name": "[concat(parameters('vmName'),'-ipcfg')]",
