@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 Uri=$1
 HANAUSR=$2
@@ -8,7 +8,7 @@ HANASID=$4
 HANANUMBER=$5
 HANAVERS=$6
 OS=$7
-vmSize=$8
+VMSIZE=$8
 
 echo $1 >> /tmp/parameter.txt
 echo $2 >> /tmp/parameter.txt
@@ -25,7 +25,7 @@ sed -i -e "s/Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers
 
 	
 #get the VM size via the instance api
-VMSIZE=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2017-08-01&format=text"`
+#VMSIZE=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2017-08-01&format=text"`
 echo $VMSIZE >> /tmp/parameter.txt
 
 if [ "$7" == "RHEL" ]; then
