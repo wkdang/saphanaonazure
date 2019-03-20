@@ -126,7 +126,7 @@ sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun3
 sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun4
 sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun5
 
-if [ $VMSIZE == "Standard_M128ms" || [ $VMSIZE == "Standard_M208ms_v2" ]; then
+if [ $VMSIZE == "Standard_M128ms" ] || [ $VMSIZE == "Standard_M208ms_v2" ]; then
 
   # this assumes that 6 disks are attached at lun 0 through 5
   echo "Creating partitions and physical volumes"
