@@ -270,4 +270,4 @@ echo "install hana 1.0 end" >> /tmp/parameter.txt
 
 
 fi
-shutdown -r 1
+#shutdown -r 1
