@@ -370,7 +370,7 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
-                "https://raw.githubusercontent.com/wkdang/verbaudet/master/scripts/as.sh"
+                "https://raw.githubusercontent.com/wkdang/STMicro/master/scripts/as.sh"
               ],
               "commandToExecute": "[concat('sh as.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVERS'), ' ', parameters('OperatingSystem'))]"
             }
