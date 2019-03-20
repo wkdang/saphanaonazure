@@ -112,6 +112,15 @@ cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
 #sed -i -e "s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g" -e "s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g" /etc/waagent.conf
 
+# this assumes that 5 disks are attached at lun 0 through 4
+echo "Creating partitions and physical volumes"
+pvcreate -ff -y /dev/disk/azure/scsi1/lun0   
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun1
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun2
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun3
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun4
+pvcreate -ff -y  /dev/disk/azure/scsi1/lun5
+
 if [ $VMSIZE == "Standard_M128ms" || [ $VMSIZE == "Standard_M208ms_v2" ]; then
 
   # this assumes that 6 disks are attached at lun 0 through 5
