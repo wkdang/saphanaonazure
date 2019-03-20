@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -e
+set -e
 
 Uri=$1
 HANAUSR=$2
@@ -17,6 +17,7 @@ echo $4 >> /tmp/parameter.txt
 echo $5 >> /tmp/parameter.txt
 echo $6 >> /tmp/parameter.txt
 echo $7 >> /tmp/parameter.txt
+echo $8 >> /tmp/parameter.txt
 
 sed -i -e "s/Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers
 	sudo mkdir -p /hana/{data,log,shared,backup}
@@ -25,7 +26,7 @@ sed -i -e "s/Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers
 	
 #get the VM size via the instance api
 VMSIZE=`curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/vmSize?api-version=2017-08-01&format=text"`
-
+echo $VMSIZE >> /tmp/parameter.txt
 
 if [ "$7" == "RHEL" ]; then
 	echo "Start REHL prerequisite" >> /tmp/parameter.txt
