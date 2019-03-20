@@ -26,14 +26,11 @@
       "metadata": {
         "description": "VM Size"
       },
-      "defaultValue": "Standard_E2s_v3 (16 GB)",
+      "defaultValue": "Standard_D2s_v3 (8 GB)",
       "allowedValues": [
-        "Standard_E2s_v3 (16 GB)",
-        "Standard_E4s_v3 (32 GB)",
-        "Standard_E8s_v3 (64 GB)",
-        "Standard_E16s_v3 (128 GB)",
-        "Standard_E32s_v3 (256 GB)",
-        "Standard_E64s_v3 (448 GB)"
+        "Standard_D2s_v3 (8 GB)",
+        "Standard_D8s_v3 (32 GB)",
+        "Standard_D64s_v3 (256 GB)"
       ]
     },
     "AvailSetName": {
@@ -203,12 +200,12 @@
   },
   "variables": {
     "vmName": "[toLower(parameters('vmName'))]",
-    "smallUri": "https://raw.githubusercontent.com/wkdang/verbaudet/master/Vms/as.json",
-    "mediumUri": "https://raw.githubusercontent.com/wkdang/verbaudet/master/Vms/medium.json",
-    "largeUri": "https://raw.githubusercontent.com/wkdang/verbaudet/master/Vms/large.json",
-    "extralargeUri": "https://raw.githubusercontent.com/wkdang/verbaudet/master/Vms/extralarge.json",
-    "hanajbUri": "https://raw.githubusercontent.com/wkdang/verbaudet/master/Vms/hanajb.json",
-    "hanaUri": "https://raw.githubusercontent.com/wkdang/verbaudet/master/hanastudio.ps1",
+    "smallUri": "https://raw.githubusercontent.com/wkdang/STMicro/master/Vms/as.json",
+    "mediumUri": "https://raw.githubusercontent.com/wkdang/STMicro/master/Vms/medium.json",
+    "largeUri": "https://raw.githubusercontent.com/wkdang/STMicro/master/Vms/large.json",
+    "extralargeUri": "https://raw.githubusercontent.com/wkdang/STMicro/master/Vms/extralarge.json",
+    "hanajbUri": "https://raw.githubusercontent.com/wkdang/STMicro/master/Vms/hanajb.json",
+    "hanaUri": "https://raw.githubusercontent.com/wkdang/STMicro/master/hanastudio.ps1",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',parameters('NetworkName'))]",
     "HANAsubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('HANASubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('HANASubnetName')))]",
     "mgmtSubnetRef": "[if (equals(parameters('ExistingNetworkResourceGroup'), 'no') , concat(variables('vnetID'),'/subnets/',parameters('ManagementSubnetName')),concat(resourceId(parameters('ExistingNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('NetworkName')), '/subnets/',parameters('ManagementSubnetName')))]",
@@ -408,7 +405,7 @@
         }
       },
       {
-        "condition": "[or(or(equals(variables('vmSize'),'Standard_E16s_v3'),equals(variables('vmSize'),'Standard_E2s_v3')), or(equals(variables('vmSize'),'Standard_E4s_v3'),equals(variables('vmSize'),'Standard_E8s_v3')))]",
+        "condition": "[or(or(equals(variables('vmSize'),'Standard_D2s_v3'),equals(variables('vmSize'),'Standard_D8s_v3')), or(equals(variables('vmSize'),'Standard_D64s_v3'),equals(variables('vmSize'),'Standard_E8s_v3')))]",
         "apiVersion": "2016-09-01",
         "name": "[concat('SmallLinkedTemplate', parameters('VMName'))]",
         "type": "Microsoft.Resources/deployments",
