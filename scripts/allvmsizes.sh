@@ -100,7 +100,12 @@ else
 	sudo zypper se -t pattern
 	sudo zypper --non-interactive in -t pattern sap-hana 
 fi
-
+mkdir /hana
+mkdir /hana/data
+mkdir /hana/log
+mkdir /hana/shared
+mkdir /hana/backup
+mkdir /usr/sap
 
 # step2
 echo $Uri >> /tmp/url.txt
@@ -114,74 +119,74 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 
 # this assumes that 5 disks are attached at lun 0 through 4
 echo "Creating partitions and physical volumes"
-pvcreate -ff -y /dev/disk/azure/scsi1/lun0   
-pvcreate -ff -y  /dev/disk/azure/scsi1/lun1
-pvcreate -ff -y  /dev/disk/azure/scsi1/lun2
-pvcreate -ff -y  /dev/disk/azure/scsi1/lun3
-pvcreate -ff -y  /dev/disk/azure/scsi1/lun4
-pvcreate -ff -y  /dev/disk/azure/scsi1/lun5
+sudo pvcreate -ff -y /dev/disk/azure/scsi1/lun0   
+sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun1
+sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun2
+sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun3
+sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun4
+sudo pvcreate -ff -y  /dev/disk/azure/scsi1/lun5
 
 if [ $VMSIZE == "Standard_M128ms" || [ $VMSIZE == "Standard_M208ms_v2" ]; then
 
   # this assumes that 6 disks are attached at lun 0 through 5
   echo "Creating partitions and physical volumes"
-  pvcreate -ff -y  /dev/disk/azure/scsi1/lun6
-  pvcreate -ff -y  /dev/disk/azure/scsi1/lun7
-  pvcreate  -ff -y /dev/disk/azure/scsi1/lun8
-  pvcreate  -ff -y /dev/disk/azure/scsi1/lun9
-  pvcreate  -ff -y /dev/disk/azure/scsi1/lun10
+sudo   pvcreate -ff -y  /dev/disk/azure/scsi1/lun6
+sudo   pvcreate -ff -y  /dev/disk/azure/scsi1/lun7
+sudo   pvcreate  -ff -y /dev/disk/azure/scsi1/lun8
+sudo   pvcreate  -ff -y /dev/disk/azure/scsi1/lun9
+sudo   pvcreate  -ff -y /dev/disk/azure/scsi1/lun10
 
   echo "logicalvols start" >> /tmp/parameter.txt
   #shared volume creation
-  sharedvglun="/dev/disk/azure/scsi1/lun0"
-  vgcreate sharedvg $sharedvglun
-  lvcreate -l 100%FREE -n sharedlv sharedvg 
+sudo sharedvglun="/dev/disk/azure/scsi1/lun0"
+sudo vgcreate sharedvg $sharedvglun
+sudo lvcreate -l 100%FREE -n sharedlv sharedvg 
  
   #usr volume creation
-  usrsapvglun="/dev/disk/azure/scsi1/lun1"
-  vgcreate usrsapvg $usrsapvglun
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg
+sudo   usrsapvglun="/dev/disk/azure/scsi1/lun1"
+sudo   vgcreate usrsapvg $usrsapvglun
+sudo   lvcreate -l 100%FREE -n usrsaplv usrsapvg
 
   #backup volume creation
-  backupvg1lun="/dev/disk/azure/scsi1/lun2"
-  backupvg2lun="/dev/disk/azure/scsi1/lun3"
-  vgcreate backupvg $backupvg1lun $backupvg2lun
-  lvcreate -l 100%FREE -n backuplv backupvg 
+sudo   backupvg1lun="/dev/disk/azure/scsi1/lun2"
+sudo   backupvg2lun="/dev/disk/azure/scsi1/lun3"
+sudo   vgcreate backupvg $backupvg1lun $backupvg2lun
+sudo   lvcreate -l 100%FREE -n backuplv backupvg 
 
   #data volume creation
-  datavg1lun="/dev/disk/azure/scsi1/lun4"
-  datavg2lun="/dev/disk/azure/scsi1/lun5"
-  datavg3lun="/dev/disk/azure/scsi1/lun6"
-  datavg4lun="/dev/disk/azure/scsi1/lun7"
-  datavg5lun="/dev/disk/azure/scsi1/lun8"
-  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun $datavg4lun $datavg5lun
-  PHYSVOLUMES=4
-  STRIPESIZE=64
-  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+sudo   datavg1lun="/dev/disk/azure/scsi1/lun4"
+sudo   datavg2lun="/dev/disk/azure/scsi1/lun5"
+sudo   datavg3lun="/dev/disk/azure/scsi1/lun6"
+sudo   datavg4lun="/dev/disk/azure/scsi1/lun7"
+sudo   datavg5lun="/dev/disk/azure/scsi1/lun8"
+sudo   vgcreate datavg $datavg1lun $datavg2lun $datavg3lun $datavg4lun $datavg5lun
+sudo   PHYSVOLUMES=4
+sudo   STRIPESIZE=64
+sudo   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
 
   #log volume creation
-  logvg1lun="/dev/disk/azure/scsi1/lun9"
-  logvg2lun="/dev/disk/azure/scsi1/lun10"
-  vgcreate logvg $logvg1lun $logvg2lun
-  PHYSVOLUMES=2
-  STRIPESIZE=32
-  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
-  mount -t xfs /dev/logvg/loglv /hana/log 
+sudo   logvg1lun="/dev/disk/azure/scsi1/lun9"
+sudo   logvg2lun="/dev/disk/azure/scsi1/lun10"
+sudo   vgcreate logvg $logvg1lun $logvg2lun
+sudo   PHYSVOLUMES=2
+sudo   STRIPESIZE=32
+sudo   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
+sudo   mount -t xfs /dev/logvg/loglv /hana/log 
   echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 
-  mkfs.xfs /dev/datavg/datalv
-  mkfs.xfs /dev/logvg/loglv
-  mkfs -t xfs /dev/sharedvg/sharedlv 
-  mkfs -t xfs /dev/backupvg/backuplv 
-  mkfs -t xfs /dev/usrsapvg/usrsaplv
+sudo   mkfs.xfs /dev/datavg/datalv
+sudo   mkfs.xfs /dev/logvg/loglv
+sudo   mkfs -t xfs /dev/sharedvg/sharedlv 
+sudo   mkfs -t xfs /dev/backupvg/backuplv 
+sudo   mkfs -t xfs /dev/usrsapvg/usrsaplv
 fi
 
 #!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
-mount -t xfs /dev/sharedvg/sharedlv /hana/shared
-mount -t xfs /dev/backupvg/backuplv /hana/backup 
-mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
-mount -t xfs /dev/datavg/datalv /hana/data
+sudo mount -t xfs /dev/sharedvg/sharedlv /hana/shared
+sudo mount -t xfs /dev/backupvg/backuplv /hana/backup 
+sudo mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
+sudo mount -t xfs /dev/datavg/datalv /hana/data
 echo "mounthanashared end" >> /tmp/parameter.txt
 
 echo "write to fstab start" >> /tmp/parameter.txt
@@ -192,18 +197,18 @@ echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
 if [ ! -d "/mnt/resource/sapbits" ]; then
-  mkdir -p "/mnt/resource/sapbits"
+sudo   mkdir -p "/mnt/resource/sapbits"
 fi
 
 if [ "$6" == "2.0" ]; then
   cd /mnt/resource/sapbits
   echo "hana 2.0 download start" >> /tmp/parameter.txt
-  /usr/bin/wget --quiet $Uri/SapBits/md5sums
-  /usr/bin/wget --quiet $Uri/SapBits/51053381_part1.exe
-  /usr/bin/wget --quiet $Uri/SapBits/51053381_part2.rar
-  /usr/bin/wget --quiet $Uri/SapBits/51053381_part3.rar
-  /usr/bin/wget --quiet $Uri/SapBits/51053381_part4.rar
-  /usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst1.cfg"
+sudo   /usr/bin/wget --quiet $Uri/SapBits/md5sums
+sudo   /usr/bin/wget --quiet $Uri/SapBits/51053381_part1.exe
+sudo   /usr/bin/wget --quiet $Uri/SapBits/51053381_part2.rar
+sudo   /usr/bin/wget --quiet $Uri/SapBits/51053381_part3.rar
+sudo   /usr/bin/wget --quiet $Uri/SapBits/51053381_part4.rar
+sudo   /usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst1.cfg"
   echo "hana 2.0 download end" >> /tmp/parameter.txt
 
   date >> /tmp/testdate
@@ -211,29 +216,29 @@ if [ "$6" == "2.0" ]; then
 
   echo "hana 2.0 unrar start" >> /tmp/parameter.txt
   cd /mnt/resource/sapbits
-  unrar x 51053381_part1.exe
+sudo   unrar x 51053381_part1.exe
   echo "hana 2.0 unrar end" >> /tmp/parameter.txt
 
   echo "hana 2.0 prepare start" >> /tmp/parameter.txt
   cd /mnt/resource/sapbits
 
   cd /mnt/resource/sapbits
-  myhost=`hostname`
-  sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-  sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51053381/g"
-  sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
+sudo   myhost=`hostname`
+sudo   sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
+sudo   sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51053381/g"
+sudo   sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
   #sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
-  sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
-  sedcmd5="s/sid=H10/sid=$HANASID/g"
-  sedcmd6="s/number=00/number=$HANANUMBER/g"
+sudo   sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
+sudo   sedcmd5="s/sid=H10/sid=$HANASID/g"
+sudo   sedcmd6="s/number=00/number=$HANANUMBER/g"
   #cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-  cp -f /mnt/resource/sapbits/hdbinst1.cfg /mnt/resource/sapbits/hdbinst-local.cfg
-  sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /mnt/resource/sapbits/hdbinst-local.cfg
+sudo   cp -f /mnt/resource/sapbits/hdbinst1.cfg /mnt/resource/sapbits/hdbinst-local.cfg
+sudo   sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /mnt/resource/sapbits/hdbinst-local.cfg
   echo "hana 2.0 prepare end" >> /tmp/parameter.txt
 
   echo "install hana 2.0 start" >> /tmp/parameter.txt
-  cd /mnt/resource/sapbits/51053381/DATA_UNITS/HDB_LCM_LINUX_X86_64
-  /mnt/resource/sapbits/51053381/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /mnt/resource/sapbits/hdbinst-local.cfg
+sudo   cd /mnt/resource/sapbits/51053381/DATA_UNITS/HDB_LCM_LINUX_X86_64
+sudo   /mnt/resource/sapbits/51053381/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /mnt/resource/sapbits/hdbinst-local.cfg
   echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
   echo "install hana 2.0 end" >> /tmp/parameter.txt
 
