@@ -411,22 +411,6 @@
     },
     {
       "type": "Microsoft.Compute/disks",
-      "name": "[concat(parameters('vmName'),'-data3')]",
-      "apiVersion": "[variables('api-version-vm')]",
-      "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "Premium_LRS",
-        "tier": "Premium"
-      },
-      "properties": {
-        "creationData": {
-          "createOption": "Empty"
-        },
-        "diskSizeGB": "[variables('diskConfig').data3]"
-      }
-    },
-    {
-      "type": "Microsoft.Compute/disks",
       "name": "[concat(parameters('vmName'),'-data4')]",
       "apiVersion": "2018-04-01",
       "location": "[resourceGroup().location]",
@@ -516,6 +500,10 @@
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data1'))]",
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]",
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data3'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data4'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data5'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', parameters('AvailSetName'))]"
 
       ],
