@@ -236,7 +236,7 @@ sudo   unrar x 51053381_part1.exe
   cd /mnt/resource/sapbits
    myhost=`hostname`
    sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-   sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/mnt\/ressource\/sapbits\/51053381/g"
+   sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/mnt\/resource\/sapbits\/51053381/g"
    sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
   #sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
    sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
