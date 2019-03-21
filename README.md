@@ -11,7 +11,7 @@ Deploy Appl Server
 
 
 Deploy SAP Router
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy_saprouter.j
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy_saprouter.json)
 
 
 ## Machine Info
