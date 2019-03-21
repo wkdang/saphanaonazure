@@ -188,7 +188,7 @@
     "diskConfig_Standard_E16s_v3": {
       "shared": 511,
       "sap": 63,
-      "backup": 255,
+      "backup1": 255,
       "data1": 511,
       "data2": 511,
       "data3": 511
@@ -196,7 +196,7 @@
     "diskConfig_Standard_E32s_v3": {
       "shared": 511,
       "sap": 63,
-      "backup": 511,
+      "backup1": 511,
       "data1": 511,
       "data2": 511,
       "data3": 511
@@ -204,7 +204,7 @@
     "diskConfig_Standard_E64s_v3": {
       "shared": 511,
       "sap": 63,
-      "backup": 1023,
+      "backup1": 1023,
       "data1": 511,
       "data2": 511,
       "data3": 511
@@ -212,7 +212,7 @@
     "diskConfig_Standard_E8s_v3": {
       "shared": 511,
       "sap": 63,
-      "backup": 255,
+      "backup1": 255,
       "data1": 511,
       "data2": 511,
       "data3": 511
