@@ -2,6 +2,19 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
   "parameters": {
+    "HanaVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Version of HANA"
+      },
+      "defaultValue": "SAP HANA PLATFORM EDITION 2.0 SPS03 REV33 (51053381)",
+      "allowedValues": [
+        "SAP HANA PLATFORM EDITION 2.0 SPS01 REV 10 (51052030)",
+        "SAP HANA PLATFORM EDITION 2.0 SPS02 (51052325)",
+        "SAP HANA PLATFORM EDITION 2.0 SPS03 REV30 (51053061)",
+        "SAP HANA PLATFORM EDITION 2.0 SPS03 REV33 (51053381)"
+      ]
+    },
     "VMName": {
       "type": "string",
       "defaultValue": "sapahanaarm",
