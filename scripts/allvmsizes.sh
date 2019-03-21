@@ -137,23 +137,28 @@ sudo   pvcreate  -ff -y /dev/disk/azure/scsi1/lun8
 sudo   pvcreate  -ff -y /dev/disk/azure/scsi1/lun9
 sudo   pvcreate  -ff -y /dev/disk/azure/scsi1/lun10
 
-  echo "logicalvols start" >> /tmp/parameter.txt
+  echo "shared logicalvols start" >> /tmp/parameter.txt
   #shared volume creation
 sudo sharedvglun="/dev/disk/azure/scsi1/lun0"
 sudo vgcreate sharedvg $sharedvglun
 sudo lvcreate -l 100%FREE -n sharedlv sharedvg 
- 
+  echo "usr logicalvols stop" >> /tmp/parameter.txt 
   #usr volume creation
+  echo "backup logicalvols start" >> /tmp/parameter.txt
 sudo   usrsapvglun="/dev/disk/azure/scsi1/lun1"
 sudo   vgcreate usrsapvg $usrsapvglun
 sudo   lvcreate -l 100%FREE -n usrsaplv usrsapvg
+echo "usr logicalvols stop" >> /tmp/parameter.txt
 
+echo "backup logicalvols start" >> /tmp/parameter.txt
   #backup volume creation
 sudo   backupvg1lun="/dev/disk/azure/scsi1/lun2"
 sudo   backupvg2lun="/dev/disk/azure/scsi1/lun3"
 sudo   vgcreate backupvg $backupvg1lun $backupvg2lun
 sudo   lvcreate -l 100%FREE -n backuplv backupvg 
+echo "backup logicalvols stop" >> /tmp/parameter.txt
 
+echo "data logicalvols start" >> /tmp/parameter.txt
   #data volume creation
 sudo   datavg1lun="/dev/disk/azure/scsi1/lun4"
 sudo   datavg2lun="/dev/disk/azure/scsi1/lun5"
@@ -164,7 +169,9 @@ sudo   vgcreate datavg $datavg1lun $datavg2lun $datavg3lun $datavg4lun $datavg5l
 sudo   PHYSVOLUMES=4
 sudo   STRIPESIZE=64
 sudo   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
+echo "data logicalvols stop" >> /tmp/parameter.txt
 
+echo "log logicalvols start" >> /tmp/parameter.txt
   #log volume creation
 sudo   logvg1lun="/dev/disk/azure/scsi1/lun9"
 sudo   logvg2lun="/dev/disk/azure/scsi1/lun10"
@@ -174,12 +181,15 @@ sudo   STRIPESIZE=32
 sudo   lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
 sudo   mount -t xfs /dev/logvg/loglv /hana/log 
   echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
+echo "backup logicalvols start" >> /tmp/parameter.txt
 
+echo "start mkfs" >> /tmp/parameter.txt
 sudo   mkfs.xfs /dev/datavg/datalv
 sudo   mkfs.xfs /dev/logvg/loglv
 sudo   mkfs -t xfs /dev/sharedvg/sharedlv 
 sudo   mkfs -t xfs /dev/backupvg/backuplv 
 sudo   mkfs -t xfs /dev/usrsapvg/usrsaplv
+echo "stop mkfs" >> /tmp/parameter.txt
 fi
 
 #!/bin/bash
