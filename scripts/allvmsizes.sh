@@ -34,7 +34,7 @@ if [ "$7" == "RHEL" ]; then
 	yum -y install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
 	yum -y install compat-sap-c++-6
 	sudo mkdir -p /hana/{data,log,shared,backup}
-	sudo mkdir /usr/sap
+			sudo mkdir /usr/sap
 	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
 	yum -y install tuned-profiles-sap-hana
 	systemctl start tuned
@@ -236,7 +236,7 @@ sudo   unrar x 51053381_part1.exe
   cd /mnt/resource/sapbits
    myhost=`hostname`
    sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-   sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51053381/g"
+   sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/mnt\/ressource\/sapbits\/51053381/g"
    sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
   #sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
    sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
