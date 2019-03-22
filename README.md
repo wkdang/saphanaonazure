@@ -1,21 +1,26 @@
-# SAP HANA ARM Installation
-This ARM template is used to install SAP HANA on a single VM running SUSE SLES 12 SP 3 or SLES 12 SP 2.  For documentation on deploying a cluster of linux machines running HANA System Replication and Linux High Availability Extension, please see documentation here: [cluster deployment](https://github.com/wkdang/STMicro/blob/master/README-HSR.md). 
+# SAP ARM Installation for ST Micro
 
-This template uses the Linux SKU for SAP. **We will be adding additional SKUs and Linux flavors in future Versions.** The template takes advantage of [Custom Script Extensions](https://github.com/Azure/azure-linux-extensions/tree/master/CustomScript) for the installation and configuration of the machine. This should be used only for demonstration and sandbox environments. This is not a production deployment.
+Template to deploy the POC infra 
 
-Deploy SAP HANA
+Deploy S4HANA and Solution Manager (SAP HANA)
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy.json)
 
-Deploy Appl Server
+Deploy Appl Server (AS)
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy_as.json)
 
 
-Deploy SAP Router
+Deploy SAP Router, Web  dispatcher, ASCS
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy_saprouter.json)
 
 
+
+
+
+
+
+
 ## Machine Info
-The template currently deploys HANA on one of the machines listed in the table below with the noted disk configuration.  The deployment takes advantage of Managed Disks, for more information on Managed Disks or the sizes of the noted disks can be found on [this](https://docs.microsoft.com/en-us/azure/storage/storage-managed-disks-overview#pricing-and-billing) page.
+The template currently deploys HANA VM, and for non HANA, VM will be come with OS only
 
 Machine Size | RAM | Data and Log Disks | /hana/shared | /root | /usr/sap | hana/backup
 ------------ | --- | ------------------ | ------------ | ----- | -------- | -----------
