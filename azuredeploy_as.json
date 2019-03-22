@@ -30,7 +30,7 @@
       "allowedValues": [
         "Standard_D2s_v3 (8 GB)",
         "Standard_D8s_v3 (32 GB)",
-        "Standard_D64s_v3 (256 GB)"
+        "Standard_E64s_v3 (256 GB)"
       ]
     },
     "AvailSetName": {
@@ -43,42 +43,42 @@
     },
     "NetworkName": {
       "type": "string",
-      "defaultValue": "ra-sap-hana-vnet",
+      "defaultValue": "st-sandbox-azure-vnet-SAP-HANA",
       "metadata": {
         "description": "The HANA VNET"
       }
     },
     "addressPrefixes": {
       "type": "string",
-      "defaultValue": "10.0.0.0/16",
+      "defaultValue": "10.27.40.0/24",
       "metadata": {
         "description": "The HANA VNET prefix"
       }
     },
     "HANASubnetName": {
       "type": "string",
-      "defaultValue": "SAPDataSubnet",
+      "defaultValue": "st-sandbox-azure-subnet-SAP-HANA",
       "metadata": {
         "description": "The data subnet name"
       }
     },
     "HANASubnetPrefix": {
       "type": "string",
-      "defaultValue": "10.0.5.0/24",
+      "defaultValue": "10.27.40.0/27",
       "metadata": {
         "description": "The data subnet prefix"
       }
     },
     "ManagementSubnetName": {
       "type": "string",
-      "defaultValue": "SAPMgmtSubnet",
+      "defaultValue": "st-sandbox-azure-subnet-SAP-HANA-mgmt",
       "metadata": {
         "description": "The management subnet name"
       }
     },
     "ManagementSubnetPrefix": {
       "type": "string",
-      "defaultValue": "10.0.6.0/24",
+      "defaultValue": "10.27.40.32/27",
       "metadata": {
         "description": "The management subnet prefix"
       }
@@ -405,7 +405,7 @@
         }
       },
       {
-        "condition": "[or(or(equals(variables('vmSize'),'Standard_D2s_v3'),equals(variables('vmSize'),'Standard_D8s_v3')), or(equals(variables('vmSize'),'Standard_D64s_v3'),equals(variables('vmSize'),'Standard_E8s_v3')))]",
+        "condition": "[or(or(equals(variables('vmSize'),'Standard_D2s_v3'),equals(variables('vmSize'),'Standard_D8s_v3')), or(equals(variables('vmSize'),'Standard_E64s_v3'),equals(variables('vmSize'),'Standard_E8s_v3')))]",
         "apiVersion": "2016-09-01",
         "name": "[concat('SmallLinkedTemplate', parameters('VMName'))]",
         "type": "Microsoft.Resources/deployments",
