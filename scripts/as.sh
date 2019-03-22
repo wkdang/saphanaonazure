@@ -122,7 +122,7 @@ echo "logicalvols end" >> /tmp/parameter.txt
 echo "mounthanashared start" >> /tmp/parameter.txt
 
 mount -t xfs /dev/datavg/datalv /usr/sap
-ount -t cifs //saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/sapbitslocal/ -o vers=3.0,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==,dir_mode=0777,file_mode=0777,sec=ntlmssp
+#mount -t cifs //saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/sapbitslocal/ -o vers=3.0,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==,dir_mode=0777,file_mode=0777,sec=ntlmssp
 mkdir -p /hana/data/sapbits
 echo "mounthanashared end" >> /tmp/parameter.txt
 
