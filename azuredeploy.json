@@ -565,6 +565,7 @@
             "value": "[parameters('StaticIP')]"
           }
         }
+        }
       },
 
       {
