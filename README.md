@@ -1,21 +1,9 @@
-# SAP ARM Installation for ST Micro
+# SAP ARM Installation for Meteo Protect (http://www.meteoprotect.com/en/)
 
-Template to deploy the POC infra 
+Template to deploy the SAP HANA infra 
 
-Deploy S4HANA and Solution Manager (SAP HANA)
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy.json)
-
-Deploy Appl Server (AS)
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy_as.json)
-
-
-Deploy SAP Router, Web  dispatcher, ASCS
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy_saprouter.json)
-
-
-
-
-
+Deploy SAP HANA
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2Fmeteoprotect%2Fmaster%2Fazuredeploy.json)
 
 
 
@@ -39,7 +27,7 @@ M128S | 2TB | 3 x P30 | 2 x P20 | 1 x P30 | 1 x P6 | 1 x P6 | 2 x P40
 M128ms | 3.8TB | 5 x P30 | 2 x P20 | 1 x P30 | 1 x P6 | 1 x P6 | 5 x P50
 
 ## Installation Media
-Installation media for SAP HANA should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/wkdang/STMicro/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51053061, which should consist of four files:
+Installation media for SAP HANA should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/wkdang/meteoprotect/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51053061, which should consist of four files:
 ```
 51053061_part1.exe
 51053061_part2.rar
@@ -62,26 +50,26 @@ The Server Java Runtime Environment bits can be downloaded [here](http://www.ora
 
 There should be a folder inside your storage account container called SapBits:
 
-![SapBits Image](https://github.com/wkdang/STMicro/blob/master/media/Structure1.png)
+![SapBits Image](https://github.com/wkdang/meteoprotect/blob/master/media/Structure1.png)
 
 The following files should be present inside the SapBits folder:
 
-![HANA Image](https://github.com/wkdang/STMicro/blob/master/media/Structure2.png)
+![HANA Image](https://github.com/wkdang/meteoprotect/blob/master/media/Structure2.png)
 
 Additionally if you plan on installing the HANA Jumpbox, you should create a folder under the SapBits folder and add the following files:
-![HANA Studio Image](https://github.com/wkdang/STMicro/blob/master/media/Structure3.png)
+![HANA Studio Image](https://github.com/wkdang/meteoprotect/blob/master/media/Structure3.png)
 
 ## Deploy the Solution
 ### Deploy from the Portal
 
-To deploy from the portal using a graphic interface you can use the [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2FSTMicro%2Fmaster%2Fazuredeploy.json) button to bring up the template in your subscription and fill out the parameters.
+To deploy from the portal using a graphic interface you can use the [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwkdang%2Fmeteoprotect%2Fmaster%2Fazuredeploy.json) button to bring up the template in your subscription and fill out the parameters.
 
 ### Deploy from Powershell
 
 ```powershell
 New-AzureRmResourceGroup -Name HANADeploymentRG -Location "Central US"
 New-AzureRmResourceGroupDeployment -Name HANADeployment -ResourceGroupName HANADeploymentRG `
-  -TemplateUri https://raw.githubusercontent.com/wkdang/STMicro/master/azuredeploy.json `
+  -TemplateUri https://raw.githubusercontent.com/wkdang/meteoprotect/master/azuredeploy.json `
   -VMName HANAtestVM -HANAJumpbox yes -CustomURI https://yourBlobName.blob.core.windows.net/yourContainerName -VMPassword AweS0me@PW
 ```
 
@@ -93,7 +81,7 @@ az group create --name HANADeploymentRG --location "Central US"
 az group deployment create \
     --name HANADeployment \
     --resource-group HANADeploymentRG \
-    --template-uri "https://raw.githubusercontent.com/wkdang/STMicro/master/azuredeploy.json" \
+    --template-uri "https://raw.githubusercontent.com/wkdang/meteoprotect/master/azuredeploy.json" \
     --parameters VMName=HANAtestVM HANAJumpbox=yes CustomURI=https://yourBlobName.blob.core.windows.net/yourContainerName VMPassword=AweS0me@PW
 ```
 ## Monitoring
@@ -129,19 +117,19 @@ SMT Uri | No | The URI to a subscription management server if used, blank otherw
 
 ## Known issues
 ### When clicking on Deploy to Azure you get redirected to an empty directory
-![Directories](https://github.com/wkdang/STMicro/blob/master/media/directories.png)
+![Directories](https://github.com/wkdang/meteoprotect/blob/master/media/directories.png)
 
 The only way to get around this is to save the template to your own template library. Click on "Create a Resource" and choose "Template Deployment". Click "Create".
 
-![Directories2](https://github.com/wkdang/STMicro/blob/master/media/directories2.png)
+![Directories2](https://github.com/wkdang/meteoprotect/blob/master/media/directories2.png)
 
 Select the option of "Build your own template in the editor"
 
-![Directories3](https://github.com/wkdang/STMicro/blob/master/media/directories3.png)
+![Directories3](https://github.com/wkdang/meteoprotect/blob/master/media/directories3.png)
 
-Copy the contents from the azuredeploy.json [file](https://raw.githubusercontent.com/wkdang/STMicro/master/azuredeploy.json) and paste them into the template editor, click Save.
+Copy the contents from the azuredeploy.json [file](https://raw.githubusercontent.com/wkdang/meteoprotect/master/azuredeploy.json) and paste them into the template editor, click Save.
 
-![Directories4](https://github.com/wkdang/STMicro/blob/master/media/directories4.png)
+![Directories4](https://github.com/wkdang/meteoprotect/blob/master/media/directories4.png)
 
 The template is now available in your template library. Changes made to the github repo will not be replicated, make sure to update your template when changes to the azuredeploy.json file are made.
 
