@@ -39,8 +39,11 @@
       "metadata": {
         "description": "VM Size"
       },
-      "defaultValue": "Standard_M128ms (3.8 TB, Certified)",
+      "defaultValue": "Standard_M32ts (192 GB, Certified)",
       "allowedValues": [
+        "Standard_M32ts (192 GB, Certified)",
+        "Standard_M32ls (256 GB, Certified)",
+        "Standard_M64ls (512 GB, Certified)",
         "Standard_M64s (1 TB, Certified)",
         "Standard_M64ms (1.7 TB, Certified)",
         "Standard_M128s (2 TB, Certified)",
@@ -125,6 +128,18 @@
         "SLES for SAP 12 SP2",
         "RHEL 7.5 for SAP"
       ]
+    },
+    "HANAInst": {
+      "type": "string",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "metadata": {
+        "description": "Installation de SAP HANA après le provisionnement"
+      },
+      "defaultValue": "Yes"
+
     },
     "HANAVers": {
       "type": "string",
