@@ -506,7 +506,7 @@
       }
     },
     {
-      "condition": "[or(or(equals(variables('vmSize'),'Standard_M64s'),equals(variables('vmSize'),'Standard_M32ts')), or(equals(variables('vmSize'),'Standard_M32ls'),equals(variables('vmSize'),'Standard_M64ls')))]",
+      "condition": "[or(equals(variables('vmSize'),'Standard_M32ts'), or(equals(variables('vmSize'),'Standard_M32ls'),equals(variables('vmSize'),'Standard_M64ls')))]",
       "apiVersion": "2016-09-01",
       "name": "[concat('MediumLinkedTemplate', parameters('VMName'))]",
       "type": "Microsoft.Resources/deployments",
