@@ -506,9 +506,9 @@
     },
 
     {
-      "condition": "[equals(variables('vmSize'), 'Standard_M32ts')]",
+      "condition": "[or(equals(variables('vmSize'),'Standard_M32ts'), or(equals(variables('vmSize'),'Standard_M32ls'),equals(variables('vmSize'),'Standard_M64ls')))]",
       "apiVersion": "2016-09-01",
-      "name": "[concat('extraLargeLinkedTemplate', parameters('VMName'))]",
+      "name": "[concat('smallcertLinkedTemplate', parameters('VMName'))]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
