@@ -1,6 +1,6 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
   "parameters": {
     "HanaVersion": {
       "type": "string",
@@ -39,11 +39,8 @@
       "metadata": {
         "description": "VM Size"
       },
-      "defaultValue": "Standard_M32ts (192 GB, Certified)",
+      "defaultValue": "Standard_M128ms (3.8 TB, Certified)",
       "allowedValues": [
-        "Standard_M32ts (192 GB, Certified)",
-        "Standard_M32ls (256 GB, Certified)",
-        "Standard_M64ls (512 GB, Certified)",
         "Standard_M64s (1 TB, Certified)",
         "Standard_M64ms (1.7 TB, Certified)",
         "Standard_M128s (2 TB, Certified)",
@@ -128,18 +125,6 @@
         "SLES for SAP 12 SP2",
         "RHEL 7.5 for SAP"
       ]
-    },
-    "HANAInst": {
-      "type": "string",
-      "allowedValues": [
-        "Yes",
-        "No"
-      ],
-      "metadata": {
-        "description": "Installation de SAP HANA après le provisionnement"
-      },
-      "defaultValue": "Yes"
-
     },
     "HANAVers": {
       "type": "string",
@@ -238,7 +223,6 @@
     "vmName": "[toLower(parameters('vmName'))]",
     "baseUri": "https://raw.githubusercontent.com/wkdang/meteoprotect/master/",
     "smallUri": "[concat(variables('baseUri'),'Vms/small.json')]",
-    "smallcertUri": "[concat(variables('baseUri'),'Vms/small-certified.json')]",
     "mediumUri": "[concat(variables('baseUri'),'Vms/medium.json')]",
     "largeUri": "[concat(variables('baseUri'),'Vms/large.json')]",
     "extralargeUri": "[concat(variables('baseUri'),'Vms/extralarge.json')]",
@@ -506,7 +490,7 @@
       }
     },
     {
-      "condition": "[or(equals(variables('vmSize'),'Standard_M32ts'), or(equals(variables('vmSize'),'Standard_M32ls'),equals(variables('vmSize'),'Standard_M64ls')))]",
+      "condition": "[equals(variables('vmSize'),'Standard_M64s')]",
       "apiVersion": "2016-09-01",
       "name": "[concat('MediumLinkedTemplate', parameters('VMName'))]",
       "type": "Microsoft.Resources/deployments",
@@ -516,7 +500,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[variables('smallcertUri')]"
+          "uri": "[variables('mediumUri')]"
         },
         "parameters": {
           "vmName": {
@@ -565,229 +549,166 @@
             "value": "[parameters('StaticIP')]"
           }
         }
-      },
-
-
-      {
-        "condition": "[equals(variables('vmSize'),'Standard_M64s')]",
-        "apiVersion": "2016-09-01",
-        "name": "[concat('MediumLinkedTemplate', parameters('VMName'))]",
-        "type": "Microsoft.Resources/deployments",
-        "dependsOn": [
-          "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('mediumUri')]"
+      }
+    },
+    {
+      "condition": "[or(equals(variables('vmSize'),'Standard_M64ms'),equals(variables('vmSize'),'Standard_M128s'))]",
+      "apiVersion": "2016-09-01",
+      "name": "[concat('LargeLinkedTemplate', parameters('VMName'))]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('largeUri')]"
+        },
+        "parameters": {
+          "vmName": {
+            "value": "[parameters('vmName')]"
           },
-          "parameters": {
-            "vmName": {
-              "value": "[parameters('vmName')]"
-            },
-            "customUri": {
-              "value": "[parameters('customUri')]"
-            },
-            "HANAsubnetRef": {
-              "value": "[variables('HANAsubnetRef')]"
-            },
-            "OperatingSystem": {
-              "value": "[parameters('OperatingSystem')]"
-            },
-            "vmUserName": {
-              "value": "[parameters('vmUserName')]"
-            },
-            "vmPassword": {
-              "value": "[parameters('vmPassword')]"
-            },
-            "hanaVers": {
-              "value": "[parameters('hanaVers')]"
-            },
-            "hanaSid": {
-              "value": "[parameters('hanaSid')]"
-            },
-            "hanaNumber": {
-              "value": "[parameters('hanaNumber')]"
-            },
-            "vmSize": {
-              "value": "[variables('vmSize')]"
-            },
-            "IPAllocationMethod": {
-              "value": "[parameters('IPAllocationMethod')]"
-            },
-            "IPPublic": {
-              "value": "[parameters('IPPublic')]"
-            },
-            "DnSName": {
-              "value": "[parameters('DnSName')]"
-            },
-            "AvailSetName": {
-              "value": "[parameters('AvailSetName')]"
-            },
-            "StaticIP": {
-              "value": "[parameters('StaticIP')]"
-            }
+          "customUri": {
+            "value": "[parameters('customUri')]"
+          },
+          "HANAsubnetRef": {
+            "value": "[variables('HANAsubnetRef')]"
+          },
+          "OperatingSystem": {
+            "value": "[parameters('OperatingSystem')]"
+          },
+          "vmUserName": {
+            "value": "[parameters('vmUserName')]"
+          },
+          "vmPassword": {
+            "value": "[parameters('vmPassword')]"
+          },
+          "hanaVers": {
+            "value": "[parameters('hanaVers')]"
+          },
+          "hanaSid": {
+            "value": "[parameters('hanaSid')]"
+          },
+          "hanaNumber": {
+            "value": "[parameters('hanaNumber')]"
+          },
+          "vmSize": {
+            "value": "[variables('vmSize')]"
+          },
+          "IPAllocationMethod": {
+            "value": "[parameters('IPAllocationMethod')]"
+          },
+          "IPPublic": {
+            "value": "[parameters('IPPublic')]"
+          },
+          "DnSName": {
+            "value": "[parameters('DnSName')]"
+          },
+
+          "AvailSetName": {
+            "value": "[parameters('AvailSetName')]"
+          },
+          "StaticIP": {
+            "value": "[parameters('StaticIP')]"
           }
         }
-      },
-      {
-        "condition": "[or(equals(variables('vmSize'),'Standard_M64ms'),equals(variables('vmSize'),'Standard_M128s'))]",
-        "apiVersion": "2016-09-01",
-        "name": "[concat('LargeLinkedTemplate', parameters('VMName'))]",
-        "type": "Microsoft.Resources/deployments",
-        "dependsOn": [
-          "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('largeUri')]"
+      }
+    },
+    {
+      "condition": "[equals(variables('vmSize'), 'Standard_M128ms')]",
+      "apiVersion": "2016-09-01",
+      "name": "[concat('extraLargeLinkedTemplate', parameters('VMName'))]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('extralargeUri')]"
+        },
+        "parameters": {
+          "vmName": {
+            "value": "[parameters('vmName')]"
           },
-          "parameters": {
-            "vmName": {
-              "value": "[parameters('vmName')]"
-            },
-            "customUri": {
-              "value": "[parameters('customUri')]"
-            },
-            "HANAsubnetRef": {
-              "value": "[variables('HANAsubnetRef')]"
-            },
-            "OperatingSystem": {
-              "value": "[parameters('OperatingSystem')]"
-            },
-            "vmUserName": {
-              "value": "[parameters('vmUserName')]"
-            },
-            "vmPassword": {
-              "value": "[parameters('vmPassword')]"
-            },
-            "hanaVers": {
-              "value": "[parameters('hanaVers')]"
-            },
-            "hanaSid": {
-              "value": "[parameters('hanaSid')]"
-            },
-            "hanaNumber": {
-              "value": "[parameters('hanaNumber')]"
-            },
-            "vmSize": {
-              "value": "[variables('vmSize')]"
-            },
-            "IPAllocationMethod": {
-              "value": "[parameters('IPAllocationMethod')]"
-            },
-            "IPPublic": {
-              "value": "[parameters('IPPublic')]"
-            },
-            "DnSName": {
-              "value": "[parameters('DnSName')]"
-            },
-
-            "AvailSetName": {
-              "value": "[parameters('AvailSetName')]"
-            },
-            "StaticIP": {
-              "value": "[parameters('StaticIP')]"
-            }
+          "customUri": {
+            "value": "[parameters('customUri')]"
+          },
+          "HANAsubnetRef": {
+            "value": "[variables('HANAsubnetRef')]"
+          },
+          "OperatingSystem": {
+            "value": "[parameters('OperatingSystem')]"
+          },
+          "vmUserName": {
+            "value": "[parameters('vmUserName')]"
+          },
+          "vmPassword": {
+            "value": "[parameters('vmPassword')]"
+          },
+          "hanaVers": {
+            "value": "[parameters('hanaVers')]"
+          },
+          "hanaSid": {
+            "value": "[parameters('hanaSid')]"
+          },
+          "hanaNumber": {
+            "value": "[parameters('hanaNumber')]"
+          },
+          "vmSize": {
+            "value": "[variables('vmSize')]"
+          },
+          "IPAllocationMethod": {
+            "value": "[parameters('IPAllocationMethod')]"
+          },
+          "IPPublic": {
+            "value": "[parameters('IPPublic')]"
+          },
+          "DnSName": {
+            "value": "[parameters('DnSName')]"
+          },
+          "AvailSetName": {
+            "value": "[parameters('AvailSetName')]"
+          },
+          "StaticIP": {
+            "value": "[parameters('StaticIP')]"
           }
         }
-      },
-      {
-        "condition": "[equals(variables('vmSize'), 'Standard_M128ms')]",
-        "apiVersion": "2016-09-01",
-        "name": "[concat('extraLargeLinkedTemplate', parameters('VMName'))]",
-        "type": "Microsoft.Resources/deployments",
-        "dependsOn": [
-          "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('extralargeUri')]"
+      }
+    },
+    {
+      "condition": "[equals(parameters('HanaJumpbox'),'yes')]",
+      "apiVersion": "2016-09-01",
+      "name": "HANAjbLinkedTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('hanajbUri')]"
+        },
+        "parameters": {
+
+          "mgmtSubnetRef": {
+            "value": "[variables('mgmtSubnetRef')]"
           },
-          "parameters": {
-            "vmName": {
-              "value": "[parameters('vmName')]"
-            },
-            "customUri": {
-              "value": "[parameters('customUri')]"
-            },
-            "HANAsubnetRef": {
-              "value": "[variables('HANAsubnetRef')]"
-            },
-            "OperatingSystem": {
-              "value": "[parameters('OperatingSystem')]"
-            },
-            "vmUserName": {
-              "value": "[parameters('vmUserName')]"
-            },
-            "vmPassword": {
-              "value": "[parameters('vmPassword')]"
-            },
-            "hanaVers": {
-              "value": "[parameters('hanaVers')]"
-            },
-            "hanaSid": {
-              "value": "[parameters('hanaSid')]"
-            },
-            "hanaNumber": {
-              "value": "[parameters('hanaNumber')]"
-            },
-            "vmSize": {
-              "value": "[variables('vmSize')]"
-            },
-            "IPAllocationMethod": {
-              "value": "[parameters('IPAllocationMethod')]"
-            },
-            "IPPublic": {
-              "value": "[parameters('IPPublic')]"
-            },
-            "DnSName": {
-              "value": "[parameters('DnSName')]"
-            },
-            "AvailSetName": {
-              "value": "[parameters('AvailSetName')]"
-            },
-            "StaticIP": {
-              "value": "[parameters('StaticIP')]"
-            }
+          "vmUserName": {
+            "value": "[parameters('vmUserName')]"
+          },
+          "vmPassword": {
+            "value": "[parameters('vmPassword')]"
+          },
+          "customUri": {
+            "value": "[parameters('customUri')]"
+
           }
         }
-      },
-      {
-        "condition": "[equals(parameters('HanaJumpbox'),'yes')]",
-        "apiVersion": "2016-09-01",
-        "name": "HANAjbLinkedTemplate",
-        "type": "Microsoft.Resources/deployments",
-        "dependsOn": [
-          "[concat('Microsoft.Network/virtualNetworks/', parameters('NetworkName'))]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('hanajbUri')]"
-          },
-          "parameters": {
+      }
 
-            "mgmtSubnetRef": {
-              "value": "[variables('mgmtSubnetRef')]"
-            },
-            "vmUserName": {
-              "value": "[parameters('vmUserName')]"
-            },
-            "vmPassword": {
-              "value": "[parameters('vmPassword')]"
-            },
-            "customUri": {
-              "value": "[parameters('customUri')]"
-
-            }
-          }
-        }
-
-      },
-
-
-      "outputs": {}
     }
+
+  ],
+  "outputs": {}
+}
