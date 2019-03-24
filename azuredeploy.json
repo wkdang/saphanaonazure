@@ -131,15 +131,14 @@
     },
     "HANAInst": {
       "type": "string",
+      "metadata": {
+        "description": "Do you want to install SAP HANA?"
+      },
+      "defaultValue": "Yes",
       "allowedValues": [
         "Yes",
         "No"
-      ],
-      "metadata": {
-        "description": "Installation de SAP HANA après le provisionnement"
-      },
-      "defaultValue": "Yes"
-
+      ]
     },
     "HANAVers": {
       "type": "string",
