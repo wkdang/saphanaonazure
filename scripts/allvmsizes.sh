@@ -9,7 +9,6 @@ HANANUMBER=$5
 HANAVERS=$6
 OS=$7
 vmSize=$8
-HANAINST=$9
 
 echo $1 >> /tmp/parameter.txt
 echo $2 >> /tmp/parameter.txt
@@ -19,7 +18,6 @@ echo $5 >> /tmp/parameter.txt
 echo $6 >> /tmp/parameter.txt
 echo $7 >> /tmp/parameter.txt
 echo $8 >> /tmp/parameter.txt
-echo $9 >> /tmp/parameter.txt
 
 sed -i -e "s/Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers
 	sudo mkdir -p /hana/{data,log,shared,backup}
@@ -164,55 +162,6 @@ echo "logicalvols start" >> /tmp/parameter.txt
    mkfs -t xfs /dev/sharedvg/sharedlv 
    mkfs -t xfs /dev/backupvg/backuplv 
    mkfs -t xfs /dev/usrsapvg/usrsaplv
-echo "logicalvols end" >> /tmp/parameter.txt
-fi
-
-if [ $VMSIZE == "Standard_M32ts" ] || [ $VMSIZE == "Standard_M32ls" ] || [ $VMSIZE == "Standard_M64ls" ]; then
- # this assumes that 6 disks are attached at lun 0 through 9
-  echo "Creating partitions and physical volumes"
-  pvcreate -ff -y  /dev/disk/azure/scsi1/lun6
-  pvcreate -ff -y  /dev/disk/azure/scsi1/lun7
-
-  echo "logicalvols start" >> /tmp/parameter.txt
-  #shared volume creation
-  sharedvglun="/dev/disk/azure/scsi1/lun0"
-  vgcreate sharedvg $sharedvglun
-  lvcreate -l 100%FREE -n sharedlv sharedvg 
- 
-  #usr volume creation
-  usrsapvglun="/dev/disk/azure/scsi1/lun1"
-  vgcreate usrsapvg $usrsapvglun
-  lvcreate -l 100%FREE -n usrsaplv usrsapvg
-
-  #backup volume creation
-  backupvg1lun="/dev/disk/azure/scsi1/lun2"
-  vgcreate backupvg $backupvg1lun $backupvg2lun
-  lvcreate -l 100%FREE -n backuplv backupvg 
-
-  #data volume creation
-  datavg1lun="/dev/disk/azure/scsi1/lun3"
-  datavg2lun="/dev/disk/azure/scsi1/lun4"
-  datavg3lun="/dev/disk/azure/scsi1/lun5"
-  vgcreate datavg $datavg1lun $datavg2lun $datavg3lun 
-  PHYSVOLUMES=3
-  STRIPESIZE=64
-  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n datalv datavg
-
-  #log volume creation
-  logvg1lun="/dev/disk/azure/scsi1/lun6"
-  logvg2lun="/dev/disk/azure/scsi1/lun7"
-  vgcreate logvg $logvg1lun $logvg2lun
-  PHYSVOLUMES=2
-  STRIPESIZE=32
-  lvcreate -i$PHYSVOLUMES -I$STRIPESIZE -l 100%FREE -n loglv logvg
-  mount -t xfs /dev/logvg/loglv /hana/log   
-echo "/dev/mapper/logvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
-
-  mkfs.xfs /dev/datavg/datalv
-  mkfs.xfs /dev/logvg/loglv
-  mkfs -t xfs /dev/sharedvg/sharedlv 
-  mkfs -t xfs /dev/backupvg/backuplv 
-  mkfs -t xfs /dev/usrsapvg/usrsaplv
 echo "logicalvols end" >> /tmp/parameter.txt
 fi
 
@@ -407,9 +356,6 @@ if [ ! -d "/mnt/resource/sapbits" ]; then
    mkdir -p "/mnt/resource/sapbits"
 fi
 
-if [ "$9" == "No" ]; then
-shutdown -r 1
-else
 if [ "$6" == "2.0" ]; then
   cd /mnt/resource/sapbits
   echo "hana 2.0 download start" >> /tmp/parameter.txt
@@ -492,6 +438,6 @@ cd /mnt/resource/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64
 echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
 echo "install hana 1.0 end" >> /tmp/parameter.txt
 
-fi
+
 fi
 #shutdown -r 1
