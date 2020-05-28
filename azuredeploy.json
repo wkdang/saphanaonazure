@@ -123,8 +123,9 @@
       "metadata": {
         "description": "Operating system for HANA Machine"
       },
-      "defaultValue": "SLES for SAP 12 SP5",
+      "defaultValue": "SLES for SAP 15 SP1",
       "allowedValues": [
+        "SLES for SAP 15 SP1",
         "SLES for SAP 12 SP5",
         "SLES for SAP 12 SP4",
         "SLES for SAP 12 SP3",
