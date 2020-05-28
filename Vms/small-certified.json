@@ -38,8 +38,9 @@
       "metadata": {
         "description": "Operating system for HANA Machine"
       },
-      "defaultValue": "SLES for SAP 12 SP4",
+      "defaultValue": "SLES for SAP 12 SP5",
       "allowedValues": [
+        "SLES for SAP 12 SP5",
         "SLES for SAP 12 SP4",
         "SLES for SAP 12 SP3",
         "SLES for SAP 12 SP2",
@@ -53,7 +54,7 @@
         "No"
       ],
       "metadata": {
-        "description": "Installation de SAP HANA après le provisionnement"
+        "description": "Installation de SAP HANA aprÃ¨s le provisionnement"
       },
       "defaultValue": "Yes"
 
@@ -193,9 +194,9 @@
     "nicName": "[if (equals(parameters('IPAllocationMethod'),'Static'), concat(parameters('vmName'),'-static'), concat(parameters('vmName'),'-dynamic'))]",
     "subnetRef": "[parameters('HANASubnetRef')]",
     "OperatingSystemSpec": {
-      "imagePublisher": "[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','REDHAT')]",
-      "imageOffer": "[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP')]",
-      "sku": "[if (contains(parameters('OperatingSystem'),'SP4'),'12-SP4','7.5')]"
+            "imagePublisher":"[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
+            "imageOffer":"[if (contains(parameters('OperatingSystem'),'12 SP5'),'sles-sap-12-sp5','RHEL-SAP-HANA')]",
+            "sku":"[if (contains(parameters('OperatingSystem'),'SLES'),'gen1','7.5')]"
     },
     "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
     "diskConfig_Standard_M32ts": {
