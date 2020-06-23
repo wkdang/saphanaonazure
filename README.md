@@ -1,4 +1,4 @@
-# SAP ARM Installation for Meteo Protect (http://www.meteoprotect.com/en/)
+# SAP HANA on Azure : ARM Installation 
 
 Template to deploy the SAP HANA infra 
 
